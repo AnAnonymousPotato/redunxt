@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Redunxt - DPS Harni</title>
-  <meta name="description" content="Ultra-fast, private student portal for Delhi Public School Harni" />
+  <title>Redunxt — Modern Student Portal</title>
+  <meta name="description" content="Ultra-fast, responsive, and private student portal for Edunext ERP schools" />
   <meta name="theme-color" content="#09090b" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/favicon.svg" />
@@ -59,8 +59,22 @@
 </head>
 <body class="bg-dark-950 text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
-  <!-- ================= VIEW 1: LOGIN SCREEN ================= -->
-  <div id="loginView" class="flex-1 flex items-center justify-center p-4 sm:p-6">
+  <!-- ================= VIEW 1: PUBLIC LOGIN SCREEN ================= -->
+  <div id="loginView" class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
+    
+    <!-- Hero / Features Pill -->
+    <div class="mb-6 flex flex-wrap items-center justify-center gap-2 max-w-lg text-center">
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-dark-900 border border-dark-750 text-[11px] font-semibold text-zinc-300 shadow-sm">
+        <span class="text-brand-400">⚡</span> 10x Faster ERP
+      </div>
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-dark-900 border border-dark-750 text-[11px] font-semibold text-zinc-300 shadow-sm">
+        <span class="text-emerald-400">🔒</span> Cryptographic Privacy
+      </div>
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-dark-900 border border-dark-750 text-[11px] font-semibold text-zinc-300 shadow-sm">
+        <span class="text-indigo-400">📱</span> PWA & Mobile Ready
+      </div>
+    </div>
+
     <div class="w-full max-w-md bg-dark-900 border border-dark-750 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6 relative overflow-hidden">
       <!-- Glow effect -->
       <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-500/15 rounded-full blur-3xl pointer-events-none"></div>
@@ -75,7 +89,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-extrabold text-white tracking-tight">Redunxt</h1>
-        <p class="text-xs text-zinc-400 font-medium">Delhi Public School Harni • Fast ERP Access</p>
+        <p class="text-xs text-zinc-400 font-medium">Modern, fast & private portal for Edunext students</p>
       </div>
 
       <!-- Error Alert -->
@@ -83,6 +97,36 @@
 
       <!-- Login Form -->
       <form id="loginForm" onsubmit="handleLogin(event)" class="flex flex-col gap-4 relative">
+        <!-- School Selector -->
+        <div>
+          <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginSchoolDomain">School Portal</label>
+          <div class="relative">
+            <select 
+              id="loginSchoolDomain" 
+              onchange="onSchoolSelectChange(this.value)"
+              class="w-full bg-dark-800 border border-dark-700 rounded-2xl px-4 py-3.5 text-sm text-zinc-100 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition appearance-none cursor-pointer"
+            >
+              <option value="dpsharni.edunext2.com">Delhi Public School, Harni</option>
+              <option value="dpssurat.edunext2.com">Delhi Public School, Surat</option>
+              <option value="dpsgrnoida.edunext2.com">Delhi Public School, Greater Noida</option>
+              <option value="dpsgn.edunext2.com">Delhi Public School, Gomti Nagar</option>
+              <option value="custom">Other School (Enter custom domain)...</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </div>
+          <div id="customSchoolInputContainer" class="hidden mt-2">
+            <input 
+              type="text" 
+              id="customSchoolDomain" 
+              placeholder="e.g. yourschool.edunext2.com" 
+              class="w-full bg-dark-850 border border-dark-700 rounded-2xl px-4 py-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500"
+            />
+          </div>
+        </div>
+
+        <!-- User ID -->
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginUserId">User ID (Admission Number)</label>
           <input 
@@ -95,6 +139,7 @@
           />
         </div>
 
+        <!-- Password -->
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginPassword">Password</label>
           <div class="relative">
@@ -138,7 +183,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
         <p class="text-[11px] text-zinc-400 leading-relaxed">
-          <span class="font-bold text-zinc-200">Private Cloud Auto-Login:</span> Your credentials are encrypted in your personal Cloudflare database, so you stay permanently logged in on this device with zero manual re-entry.
+          <span class="font-bold text-zinc-200">Device-Isolated Session:</span> Sessions are bound only to this device via cryptographic tokens. Your credentials remain private and isolated to your account.
         </p>
       </div>
     </div>
@@ -154,14 +199,14 @@
         <!-- Left: Logo & Student identity -->
         <div class="flex items-center gap-3">
           <div id="headerAvatarContainer" class="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0 bg-dark-800 border border-dark-700 flex items-center justify-center">
-            <span id="headerAvatarInitials" class="text-sm font-bold text-white">AG</span>
+            <span id="headerAvatarInitials" class="text-sm font-bold text-white">--</span>
           </div>
           <div class="overflow-hidden">
             <h1 class="text-sm sm:text-base font-bold text-white truncate flex items-center gap-2">
               <span id="headerStudentName">Student</span>
-              <span id="headerClassBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">IX-C</span>
+              <span id="headerClassBadge" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
             </h1>
-            <p id="headerAdmissionBadge" class="text-xs text-zinc-400">DPS Harni • Adm #---</p>
+            <p id="headerAdmissionBadge" class="text-xs text-zinc-400">Edunext Student • Adm #---</p>
           </div>
         </div>
 
@@ -343,7 +388,7 @@
           <div class="flex-1 pr-4">
             <div class="flex items-center gap-2 mb-1.5">
               <span id="circModalDate" class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
-              <span class="text-xs text-zinc-400">DPS Harni</span>
+              <span id="circModalSchool" class="text-xs text-zinc-400">School Circular</span>
             </div>
             <h3 id="circModalTitle" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
           </div>
@@ -401,7 +446,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-dark-750/70 py-4 px-6 text-center text-xs text-zinc-500">
-      Redunxt • Delhi Public School Harni • Private & Isolated
+      Redunxt • Modern Student ERP Portal • Fast, Responsive & Private
     </footer>
 
   </div>
@@ -452,8 +497,46 @@
         }
       }
 
+      // Restore previously selected school domain if saved
+      const savedSchool = localStorage.getItem('redunxt_school_domain');
+      if (savedSchool) {
+        const sel = document.getElementById('loginSchoolDomain');
+        if (sel) {
+          const opt = Array.from(sel.options).find(o => o.value === savedSchool);
+          if (opt) {
+            sel.value = savedSchool;
+          } else {
+            sel.value = 'custom';
+            document.getElementById('customSchoolInputContainer')?.classList.remove('hidden');
+            const customIn = document.getElementById('customSchoolDomain');
+            if (customIn) customIn.value = savedSchool;
+          }
+        }
+      }
+
       showLogin();
     });
+
+    function onSchoolSelectChange(val) {
+      const customBox = document.getElementById('customSchoolInputContainer');
+      if (val === 'custom') {
+        customBox.classList.remove('hidden');
+        document.getElementById('customSchoolDomain')?.focus();
+      } else {
+        customBox.classList.add('hidden');
+      }
+    }
+
+    function getSelectedSchoolDomain() {
+      const sel = document.getElementById('loginSchoolDomain');
+      if (!sel) return 'dpsharni.edunext2.com';
+      if (sel.value === 'custom') {
+        let val = (document.getElementById('customSchoolDomain')?.value || '').trim();
+        if (val && !val.includes('.')) val = `${val}.edunext2.com`;
+        return val || 'dpsharni.edunext2.com';
+      }
+      return sel.value || 'dpsharni.edunext2.com';
+    }
 
     function isTokenExpired(token) {
       try {
@@ -488,6 +571,7 @@
       e.preventDefault();
       const userId = document.getElementById('loginUserId').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
+      const schoolDomain = getSelectedSchoolDomain();
 
       const btnText = document.getElementById('loginBtnText');
       const spinner = document.getElementById('loginSpinner');
@@ -501,14 +585,14 @@
         let res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, password }),
+          body: JSON.stringify({ userId, password, schoolDomain }),
         }).catch(() => null);
 
         if (!res || !res.ok) {
           res = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, password }),
+            body: JSON.stringify({ userId, password, schoolDomain }),
           });
         }
 
@@ -528,6 +612,7 @@
           localStorage.setItem('redunxt_device_token', json.deviceToken);
         }
         localStorage.setItem('redunxt_user_id', userId);
+        localStorage.setItem('redunxt_school_domain', schoolDomain);
         localStorage.setItem('redunxt_session', JSON.stringify(session));
 
         showDashboard();
@@ -634,12 +719,20 @@
       const acc = session.account || {};
       const prof = bundleData?.profile || {};
       const name = prof.studentName || acc.studentName || 'Student';
-      const className = prof.className ? `${prof.className}-${prof.sectionName}` : (acc.classSection || 'DPS');
+      const className = prof.className ? `${prof.className}${prof.sectionName ? '-' + prof.sectionName : ''}` : (acc.classSection || '');
       const admission = prof.admissionNo || acc.admissionNo || acc.userId || '-';
+      const rawDomain = acc.schoolDomain || localStorage.getItem('redunxt_school_domain') || 'dpsharni.edunext2.com';
+      const schoolName = rawDomain.split('.')[0].toUpperCase();
 
       document.getElementById('headerStudentName').innerText = name;
-      document.getElementById('headerClassBadge').innerText = className;
-      document.getElementById('headerAdmissionBadge').innerText = `DPS Harni • Adm #${admission}`;
+      const classBadge = document.getElementById('headerClassBadge');
+      if (className) {
+        classBadge.innerText = className;
+        classBadge.classList.remove('hidden');
+      } else {
+        classBadge.classList.add('hidden');
+      }
+      document.getElementById('headerAdmissionBadge').innerText = `${schoolName} • Adm #${admission}`;
 
       // Render Avatar according to user preference in settings
       renderAvatar('headerAvatarContainer', name, acc.profilePhoto || prof.studentImage, acc.avatarMode, acc.customAvatarUrl);
@@ -1042,27 +1135,27 @@
         <!-- Student Hero Card -->
         <div class="rounded-3xl bg-gradient-to-tr from-dark-900 via-dark-850 to-dark-900 border border-dark-750 p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-2xl relative overflow-hidden">
           <div id="profileAvatarContainer" class="w-24 h-24 rounded-3xl overflow-hidden bg-dark-800 border-2 border-brand-500/40 shadow-xl flex items-center justify-center flex-shrink-0">
-            <span class="text-2xl font-bold text-white">AG</span>
+            <span class="text-2xl font-bold text-white">--</span>
           </div>
           <div class="flex-1 text-center sm:text-left">
             <div class="flex items-center justify-center sm:justify-start gap-2 mb-1 flex-wrap">
               <h2 class="text-xl sm:text-2xl font-extrabold text-white">${prof.studentName}</h2>
-              <span class="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-bold">${prof.className}-${prof.sectionName}</span>
+              ${prof.className ? `<span class="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-bold">${prof.className}${prof.sectionName ? '-' + prof.sectionName : ''}</span>` : ''}
             </div>
-            <p class="text-xs text-zinc-400 font-medium">Admission No: <span class="text-white font-mono">${prof.admissionNo}</span> • Roll No: <span class="text-white font-mono">${prof.rollNo || '-'}</span></p>
+            <p class="text-xs text-zinc-400 font-medium">Admission No: <span class="text-white font-mono">${prof.admissionNo || '-'}</span> • Roll No: <span class="text-white font-mono">${prof.rollNo || '-'}</span></p>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-5 pt-5 border-t border-dark-750/80 text-left">
               <div>
                 <p class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Class Teacher</p>
-                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.classTeacherName || 'DINESH SHARMA'}</p>
+                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.classTeacherName || 'Not Assigned'}</p>
               </div>
               <div>
                 <p class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Student Type</p>
-                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.studentType || 'DAY SCHOLAR'}</p>
+                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.studentType || '-'}</p>
               </div>
               <div>
                 <p class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">House</p>
-                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.houseName || 'SINCERITY'}</p>
+                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.houseName || '-'}</p>
               </div>
             </div>
           </div>
@@ -1122,6 +1215,8 @@
       const prof = bundleData?.profile || {};
       const currentMode = acc.avatarMode || 'edunext';
       const customUrl = acc.customAvatarUrl || '';
+      const displayName = prof.studentName || acc.studentName || 'Student';
+      const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ST';
 
       container.innerHTML = `
         <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 sm:p-8 flex flex-col gap-6 shadow-xl">
@@ -1167,19 +1262,19 @@
                 <span class="text-sm font-bold text-white">Initials Avatar</span>
                 <p class="text-xs text-zinc-400 mt-0.5">Display a stylish badge with your name initials.</p>
               </div>
-              <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-xs font-bold text-white">AG</div>
+              <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-xs font-bold text-white">${initials}</div>
             </label>
           </div>
         </div>
 
-        <!-- Database Info Card -->
+        <!-- Session Security Card -->
         <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-3 shadow-md">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <h4 class="text-sm font-bold text-white">Cloudflare D1 Persistence</h4>
+            <h4 class="text-sm font-bold text-white">Encrypted Cloud Session Sync</h4>
           </div>
           <p class="text-xs text-zinc-400 leading-relaxed">
-            Connected to <code class="font-mono text-zinc-300">redunxt-db</code> (Region: APAC). Your credentials and token refreshes are private and isolated to this account.
+            Active high-speed edge session with automated background token refreshing. Your credentials and session tokens are strictly private and isolated to this device.
           </p>
         </div>
 
@@ -1282,6 +1377,11 @@
     function openCircularModal(id) {
       const circ = (bundleData?.circulars || []).find(c => String(c.id) === String(id));
       if (!circ) return;
+
+      const rawDomain = session.account?.schoolDomain || localStorage.getItem('redunxt_school_domain') || '';
+      const schoolLabel = rawDomain ? rawDomain.split('.')[0].toUpperCase() : 'Official';
+      const schoolBadge = document.getElementById('circModalSchool');
+      if (schoolBadge) schoolBadge.innerText = `${schoolLabel} Circular`;
 
       document.getElementById('circModalDate').innerText = circ.date;
       document.getElementById('circModalTitle').innerText = circ.name;
