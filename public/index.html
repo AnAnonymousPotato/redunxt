@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Redunxt - DPS Harni</title>
-  <meta name="description" content="Fast, private student portal for Edunext" />
+  <meta name="description" content="Ultra-fast, private student portal for Delhi Public School Harni" />
   <meta name="theme-color" content="#09090b" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/favicon.svg" />
@@ -18,16 +18,19 @@
             brand: {
               50: '#eef2ff',
               100: '#e0e7ff',
+              400: '#818cf8',
               500: '#6366f1',
               600: '#4f46e5',
               700: '#4338ca',
             },
             dark: {
               950: '#09090b',
-              900: '#111115',
-              800: '#18181f',
-              700: '#23232c',
-              600: '#2e2e3a',
+              900: '#121217',
+              850: '#17171f',
+              800: '#1e1e27',
+              750: '#262633',
+              700: '#2f2f3e',
+              600: '#3d3d4f',
             }
           }
         }
@@ -35,54 +38,60 @@
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #272733; border-radius: 9999px; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #2f2f3e; border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
     #modalBody a, #circModalDesc a { color: #818cf8; text-decoration: underline; word-break: break-all; }
-    #modalBody p, #circModalDesc p { margin-bottom: 0.85rem; line-height: 1.65; color: #e4e4e7; }
+    #modalBody p, #circModalDesc p { margin-bottom: 0.75rem; line-height: 1.65; color: #e4e4e7; }
     #modalBody p:last-child, #circModalDesc p:last-child { margin-bottom: 0; }
-    #modalBody ul, #circModalDesc ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 0.85rem; color: #e4e4e7; }
-    #modalBody ol, #circModalDesc ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 0.85rem; color: #e4e4e7; }
+    #modalBody ul, #circModalDesc ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
+    #modalBody ol, #circModalDesc ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
     #modalBody li, #circModalDesc li { margin-bottom: 0.35rem; line-height: 1.6; }
     #modalBody strong, #circModalDesc strong, #modalBody b, #circModalDesc b { font-weight: 700; color: #ffffff; }
-    #modalBody img, #circModalDesc img { max-width: 100%; border-radius: 0.5rem; height: auto; margin: 0.5rem 0; }
+    #modalBody img, #circModalDesc img { max-width: 100%; border-radius: 0.75rem; height: auto; margin: 0.75rem 0; }
     #modalBody table, #circModalDesc table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.85rem; overflow-x: auto; display: block; }
-    #modalBody th, #circModalDesc th, #modalBody td, #circModalDesc td { border: 1px solid #3f3f46; padding: 0.4rem 0.6rem; }
+    #modalBody th, #circModalDesc th, #modalBody td, #circModalDesc td { border: 1px solid #3f3f46; padding: 0.5rem 0.75rem; }
   </style>
 </head>
 <body class="bg-dark-950 text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
   <!-- ================= VIEW 1: LOGIN SCREEN ================= -->
   <div id="loginView" class="flex-1 flex items-center justify-center p-4 sm:p-6">
-    <div class="w-full max-w-md bg-dark-900 border border-dark-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6">
-      
+    <div class="w-full max-w-md bg-dark-900 border border-dark-750 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6 relative overflow-hidden">
+      <!-- Glow effect -->
+      <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
       <!-- Brand Header -->
-      <div class="flex flex-col items-center text-center gap-2">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/25 mb-1">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+      <div class="flex flex-col items-center text-center gap-2 relative">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 flex items-center justify-center shadow-xl shadow-brand-500/30 mb-1">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
           </svg>
         </div>
-        <h1 class="text-xl font-bold text-white tracking-tight">Redunxt Portal</h1>
-        <p class="text-xs text-zinc-400">Delhi Public School Harni • Direct & Private Access</p>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">Redunxt</h1>
+        <p class="text-xs text-zinc-400 font-medium">Delhi Public School Harni • Fast ERP Access</p>
       </div>
 
       <!-- Error Alert -->
-      <div id="loginError" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs text-center font-medium"></div>
+      <div id="loginError" class="hidden p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center font-medium"></div>
 
       <!-- Login Form -->
-      <form id="loginForm" onsubmit="handleLogin(event)" class="flex flex-col gap-4">
+      <form id="loginForm" onsubmit="handleLogin(event)" class="flex flex-col gap-4 relative">
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginUserId">User ID (Admission Number)</label>
           <input 
             type="text" 
             id="loginUserId" 
             required 
-            placeholder="e.g. 1234" 
+            placeholder="e.g. 1001" 
             autocomplete="username"
-            class="w-full bg-dark-800 border border-dark-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition"
+            class="w-full bg-dark-800 border border-dark-700 rounded-2xl px-4 py-3.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition"
           />
         </div>
 
@@ -95,12 +104,12 @@
               required 
               placeholder="Your Edunext password" 
               autocomplete="current-password"
-              class="w-full bg-dark-800 border border-dark-700 rounded-xl px-4 py-3 pr-11 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition"
+              class="w-full bg-dark-800 border border-dark-700 rounded-2xl px-4 py-3.5 pr-11 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition"
             />
             <button 
               type="button" 
               onclick="togglePasswordVisibility()" 
-              class="absolute right-3 top-3 text-zinc-400 hover:text-zinc-200 text-xs p-1"
+              class="absolute right-3.5 top-3.5 text-zinc-400 hover:text-zinc-200 text-xs p-1"
             >
               <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -110,19 +119,12 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-zinc-400 mt-1">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="rememberMe" checked class="rounded border-dark-600 bg-dark-800 text-brand-600 focus:ring-0 w-4 h-4 cursor-pointer" />
-            <span>Remember me on this device</span>
-          </label>
-        </div>
-
         <button 
           type="submit" 
           id="loginSubmitBtn"
-          class="w-full mt-2 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition shadow-lg shadow-brand-600/25 active:scale-[0.98] flex items-center justify-center gap-2"
+          class="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-brand-600/25 active:scale-[0.98] flex items-center justify-center gap-2"
         >
-          <span id="loginBtnText">Sign In</span>
+          <span id="loginBtnText">Sign In to Redunxt</span>
           <svg id="loginSpinner" class="hidden w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
@@ -130,223 +132,336 @@
         </button>
       </form>
 
-      <div class="text-center text-[11px] text-zinc-500">
-        🔒 Private & Secure • Your credentials connect directly to Edunext and are never saved on external servers.
+      <!-- Security Notice -->
+      <div class="rounded-2xl bg-dark-850 border border-dark-750/80 p-3.5 flex items-start gap-3 text-left">
+        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">
+          <span class="font-bold text-zinc-200">Private Cloud Auto-Login:</span> Your credentials are encrypted in your personal Cloudflare database, so you stay permanently logged in on this device with zero manual re-entry.
+        </p>
       </div>
     </div>
   </div>
 
   <!-- ================= VIEW 2: DASHBOARD SCREEN ================= -->
-  <div id="dashboardView" class="hidden flex-1 flex flex-col">
+  <div id="dashboardView" class="hidden flex-1 flex flex-col min-h-screen">
     
-    <!-- Top Header -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-dark-950/80 border-b border-dark-700/60 px-4 py-3 sm:px-6">
-      <div class="max-w-5xl mx-auto flex items-center justify-between">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-40 backdrop-blur-xl bg-dark-950/85 border-b border-dark-750 px-4 py-3 sm:px-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        
+        <!-- Left: Logo & Student identity -->
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-md shadow-brand-500/20">
-            <span class="text-white font-bold text-sm">E</span>
+          <div id="headerAvatarContainer" class="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0 bg-dark-800 border border-dark-700 flex items-center justify-center">
+            <span id="headerAvatarInitials" class="text-sm font-bold text-white">AG</span>
           </div>
-          <div>
-            <h1 class="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-2">
-              Redunxt
-              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">DPS Harni</span>
+          <div class="overflow-hidden">
+            <h1 class="text-sm sm:text-base font-bold text-white truncate flex items-center gap-2">
+              <span id="headerStudentName">Student</span>
+              <span id="headerClassBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">IX-C</span>
             </h1>
-            <p id="studentBadge" class="text-xs text-zinc-400">Loading profile...</p>
+            <p id="headerAdmissionBadge" class="text-xs text-zinc-400">DPS Harni • Adm #---</p>
           </div>
         </div>
 
+        <!-- Right: Actions -->
         <div class="flex items-center gap-2">
-          <button onclick="fetchDashboardData(true)" id="refreshBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-900 hover:bg-dark-800 border border-dark-700 text-xs font-medium text-zinc-300 transition active:scale-95">
+          <button onclick="fetchDashboardData(true)" id="refreshBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-900 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-zinc-300 transition active:scale-95 shadow-sm">
             <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span id="refreshText">Refresh</span>
+            <span id="refreshText" class="hidden sm:inline">Refresh</span>
           </button>
 
-          <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg bg-dark-900 hover:bg-rose-950/40 border border-dark-700 hover:border-rose-800/60 text-zinc-400 hover:text-rose-400 text-xs font-medium transition active:scale-95">
-            Log Out
+          <button onclick="switchTab('settings')" class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-dark-900 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-zinc-300 transition active:scale-95">
+            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="hidden sm:inline">Settings</span>
           </button>
         </div>
       </div>
     </header>
 
-    <!-- Content Area -->
-    <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
+    <!-- Navigation Bar: All 9 Modules + Settings -->
+    <nav class="sticky top-[61px] z-30 bg-dark-900 border-b border-dark-750 px-4 sm:px-6 shadow-sm overflow-x-auto custom-scrollbar">
+      <div class="max-w-7xl mx-auto flex items-center gap-1 sm:gap-2 py-2 min-w-max">
+        
+        <button onclick="switchTab('circulars')" id="nav-circulars" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brand-600 text-white shadow-md shadow-brand-500/20">
+          <span>📢 Circulars</span>
+          <span id="badge-circulars" class="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">0</span>
+        </button>
 
-      <!-- Status Bar -->
-      <div class="rounded-2xl bg-dark-900 border border-dark-700/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
-        <div class="flex items-center gap-3">
-          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <div>
-            <h2 class="text-xs sm:text-sm font-semibold text-white">Live Student Dashboard</h2>
-            <p id="lastSyncLabel" class="text-[11px] text-zinc-400">Synchronized with school servers</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3 text-xs">
-          <div class="bg-dark-950 px-3 py-1.5 rounded-xl border border-dark-700 text-zinc-300">
-            <span class="text-zinc-500">Circulars:</span>
-            <span id="circularCount" class="font-bold text-white ml-1">-</span>
-          </div>
-          <div class="bg-dark-950 px-3 py-1.5 rounded-xl border border-dark-700 text-zinc-300">
-            <span class="text-zinc-500">Messages:</span>
-            <span id="mailCount" class="font-bold text-white ml-1">-</span>
-          </div>
-        </div>
+        <button onclick="switchTab('mailbox')" id="nav-mailbox" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>✉️ Mailbox</span>
+          <span id="badge-mailbox" class="px-1.5 py-0.2 rounded-full bg-dark-750 text-[10px]">0</span>
+        </button>
+
+        <button onclick="switchTab('attendance')" id="nav-attendance" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>📊 Attendance</span>
+          <span id="badge-attendance" class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px]">90%</span>
+        </button>
+
+        <button onclick="switchTab('homework')" id="nav-homework" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>📝 Homework</span>
+          <span id="badge-homework" class="px-1.5 py-0.2 rounded-full bg-dark-750 text-[10px]">0</span>
+        </button>
+
+        <button onclick="switchTab('results')" id="nav-results" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>🏆 Results</span>
+        </button>
+
+        <button onclick="switchTab('syllabus')" id="nav-syllabus" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>📚 Syllabus</span>
+        </button>
+
+        <button onclick="switchTab('downloads')" id="nav-downloads" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>📥 Downloads</span>
+        </button>
+
+        <button onclick="switchTab('news')" id="nav-news" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>📰 School News</span>
+        </button>
+
+        <button onclick="switchTab('profile')" id="nav-profile" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>👤 Profile</span>
+        </button>
+
+        <button onclick="switchTab('settings')" id="nav-settings" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5">
+          <span>⚙️ Settings</span>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- Main Content Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
+
+      <!-- Loading State -->
+      <div id="dashLoading" class="flex flex-col items-center justify-center py-20 text-zinc-400">
+        <svg class="w-10 h-10 animate-spin text-brand-500 mb-3" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        <p class="text-sm font-semibold text-white">Loading your school records...</p>
+        <p class="text-xs text-zinc-500 mt-1">Connecting to school servers</p>
       </div>
 
-      <!-- Tabs Navigation -->
-      <div class="flex border-b border-dark-700 gap-2">
-        <button onclick="switchTab('circulars')" id="tab-circulars" class="px-4 py-2 text-sm font-semibold border-b-2 border-brand-500 text-white flex items-center gap-2 transition">
-          📢 Circulars
-          <span id="circularBadge" class="text-xs px-1.5 py-0.2 rounded-full bg-brand-500/20 text-brand-300">0</span>
-        </button>
-        <button onclick="switchTab('mailbox')" id="tab-mailbox" class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 transition">
-          ✉️ Mailbox
-          <span id="mailBadge" class="text-xs px-1.5 py-0.2 rounded-full bg-dark-800 text-zinc-400">0</span>
-        </button>
+      <!-- Error State -->
+      <div id="dashError" class="hidden flex flex-col items-center justify-center py-12 p-6 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-center">
+        <p class="text-rose-400 font-bold text-sm mb-1" id="dashErrorMessage">Session expired or connection error.</p>
+        <p class="text-xs text-zinc-400 max-w-md mb-4">Please log in again with your credentials.</p>
+        <button onclick="handleLogout()" class="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Log In Again</button>
       </div>
 
-      <!-- Search Bar -->
-      <div class="relative">
-        <input type="text" id="searchInput" oninput="filterContent()" placeholder="Search circulars, subject, or teachers..." class="w-full bg-dark-900 border border-dark-700 rounded-xl px-4 py-2.5 pl-10 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition" />
-        <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Search Bar (Applicable to Circulars, Mail, Downloads, Homework) -->
+      <div id="searchBarSection" class="relative">
+        <input 
+          type="text" 
+          id="searchInput" 
+          oninput="handleGlobalSearch()" 
+          placeholder="Search circulars, teachers, homework, or downloads..." 
+          class="w-full bg-dark-900 border border-dark-750 rounded-2xl px-4 py-3 pl-11 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition shadow-inner" 
+        />
+        <svg class="w-4 h-4 text-zinc-500 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
 
-      <!-- Loading State -->
-      <div id="dashLoading" class="flex flex-col items-center justify-center py-16 text-zinc-400">
-        <svg class="w-8 h-8 animate-spin text-brand-500 mb-3" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-        </svg>
-        <p class="text-sm font-medium">Fetching your school records...</p>
-      </div>
+      <!-- ================= TAB 1: CIRCULARS ================= -->
+      <section id="section-circulars" class="tab-section flex flex-col gap-3"></section>
 
-      <!-- Error State -->
-      <div id="dashError" class="hidden flex flex-col items-center justify-center py-12 p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-center">
-        <p class="text-rose-400 font-semibold text-sm mb-1" id="dashErrorMessage">Session expired or connection failed.</p>
-        <button onclick="handleLogout()" class="mt-3 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold">Log In Again</button>
-      </div>
+      <!-- ================= TAB 2: MAILBOX ================= -->
+      <section id="section-mailbox" class="tab-section hidden flex flex-col gap-3"></section>
 
-      <!-- Containers -->
-      <div id="circularsContainer" class="hidden flex flex-col gap-3"></div>
-      <div id="mailboxContainer" class="hidden flex flex-col gap-3"></div>
+      <!-- ================= TAB 3: ATTENDANCE ================= -->
+      <section id="section-attendance" class="tab-section hidden flex flex-col gap-6"></section>
+
+      <!-- ================= TAB 4: HOMEWORK ================= -->
+      <section id="section-homework" class="tab-section hidden flex flex-col gap-3"></section>
+
+      <!-- ================= TAB 5: RESULTS ================= -->
+      <section id="section-results" class="tab-section hidden flex flex-col gap-4"></section>
+
+      <!-- ================= TAB 6: SYLLABUS ================= -->
+      <section id="section-syllabus" class="tab-section hidden flex flex-col gap-3"></section>
+
+      <!-- ================= TAB 7: DOWNLOADS ================= -->
+      <section id="section-downloads" class="tab-section hidden flex flex-col gap-3"></section>
+
+      <!-- ================= TAB 8: SCHOOL NEWS ================= -->
+      <section id="section-news" class="tab-section hidden flex flex-col gap-4"></section>
+
+      <!-- ================= TAB 9: PROFILE ================= -->
+      <section id="section-profile" class="tab-section hidden flex flex-col gap-6"></section>
+
+      <!-- ================= TAB 10: SETTINGS ================= -->
+      <section id="section-settings" class="tab-section hidden flex flex-col gap-6"></section>
 
     </main>
 
-    <!-- Mail Message Popup Modal -->
+    <!-- Modals -->
+    <!-- 1. Mail Modal -->
     <div id="mailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-      <div class="bg-dark-900 border border-dark-750 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <!-- Header -->
-        <div class="flex items-start justify-between p-4 sm:p-5 border-b border-dark-700/80 bg-dark-800/60">
+      <div class="bg-dark-900 border border-dark-750 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-start justify-between p-4 sm:p-6 border-b border-dark-750 bg-dark-850/60">
           <div class="flex items-center gap-3">
-            <div id="modalSenderAvatar" class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-dark-700 border border-dark-600 flex items-center justify-center text-sm font-bold text-zinc-200"></div>
+            <div id="modalSenderAvatar" class="w-11 h-11 rounded-2xl overflow-hidden flex-shrink-0 bg-dark-800 border border-dark-700 flex items-center justify-center text-sm font-bold text-zinc-200"></div>
             <div>
               <div class="flex items-center gap-2 flex-wrap">
                 <h4 id="modalSenderName" class="text-sm sm:text-base font-bold text-white"></h4>
                 <span id="modalTypeBadge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
               </div>
-              <p id="modalDate" class="text-xs text-zinc-400 mt-0.5"></p>
+              <p id="modalDate" class="text-xs text-zinc-400 mt-0.5 font-mono"></p>
             </div>
           </div>
-          <button onclick="closeMailModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-dark-700 transition">
+          <button onclick="closeMailModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-dark-800 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
-
-        <!-- Scrollable Message Body -->
         <div class="p-5 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
           <h3 id="modalSubject" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
-          
           <div id="modalBody" class="text-sm text-zinc-200 leading-relaxed space-y-3"></div>
-
-          <!-- Attachments -->
-          <div id="modalAttachments" class="hidden pt-4 border-t border-dark-700/80">
-            <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2.5">Attachments</h5>
+          <div id="modalAttachments" class="hidden pt-4 border-t border-dark-750">
+            <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Attachments</h5>
             <div id="modalAttachmentsList" class="flex flex-col gap-2"></div>
           </div>
         </div>
-
-        <!-- Footer -->
-        <div class="p-3.5 sm:p-4 border-t border-dark-700/80 bg-dark-800/40 flex justify-between items-center text-xs">
-          <span class="text-zinc-500 hidden sm:inline">Press ESC or tap outside to close</span>
-          <button onclick="closeMailModal()" class="ml-auto px-4 py-2 rounded-xl bg-dark-750 hover:bg-dark-700 text-white text-xs font-medium transition border border-dark-600">Close</button>
+        <div class="p-4 border-t border-dark-750 bg-dark-850/40 flex justify-between items-center text-xs">
+          <span class="text-zinc-500 hidden sm:inline">Press ESC to close</span>
+          <button onclick="closeMailModal()" class="ml-auto px-4 py-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-white text-xs font-semibold transition border border-dark-700">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Circular Details / Document Modal -->
+    <!-- 2. Circular Modal -->
     <div id="circularModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-      <div class="bg-dark-900 border border-dark-750 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <!-- Header -->
-        <div class="flex items-start justify-between p-4 sm:p-5 border-b border-dark-700/80 bg-dark-800/60">
+      <div class="bg-dark-900 border border-dark-750 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-start justify-between p-4 sm:p-6 border-b border-dark-750 bg-dark-850/60">
           <div class="flex-1 pr-4">
-            <div class="flex items-center gap-2 mb-1">
-              <span id="circModalDate" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
-              <span class="text-xs text-zinc-400">Delhi Public School Harni</span>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span id="circModalDate" class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
+              <span class="text-xs text-zinc-400">DPS Harni</span>
             </div>
             <h3 id="circModalTitle" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
           </div>
-          <button onclick="closeCircularModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-dark-700 transition">
+          <button onclick="closeCircularModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-dark-800 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
-
-        <!-- Scrollable Body -->
         <div class="p-5 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
           <div id="circModalDesc" class="text-sm sm:text-base text-zinc-200 leading-relaxed"></div>
-          
-          <div id="circModalAttachmentBox" class="hidden pt-4 border-t border-dark-700/80">
-            <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2.5">Official Document</h5>
-            <a id="circModalPdfLink" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-xl bg-brand-950/40 border border-brand-500/30 hover:bg-brand-900/40 transition group">
+          <div id="circModalAttachmentBox" class="hidden pt-4 border-t border-dark-750">
+            <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Official Attachment</h5>
+            <a id="circModalPdfLink" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-4 rounded-2xl bg-brand-950/40 border border-brand-500/30 hover:bg-brand-900/40 transition group">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg bg-brand-600/20 border border-brand-500/40 flex items-center justify-center text-brand-400">
+                <div class="w-10 h-10 rounded-xl bg-brand-600/20 border border-brand-500/40 flex items-center justify-center text-brand-400">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                 </div>
                 <div>
-                  <p class="text-xs font-bold text-white group-hover:text-brand-300 transition">View Official PDF Circular</p>
-                  <p class="text-[11px] text-zinc-400">High-speed CloudFront CDN document</p>
+                  <p class="text-xs font-bold text-white group-hover:text-brand-300 transition">Open Official PDF Document</p>
+                  <p class="text-[11px] text-zinc-400">Direct CloudFront CDN download</p>
                 </div>
               </div>
-              <span class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold group-hover:bg-brand-500 transition shadow-sm">Open &rarr;</span>
+              <span class="px-3.5 py-1.5 rounded-xl bg-brand-600 text-white text-xs font-bold group-hover:bg-brand-500 transition shadow-sm">View &rarr;</span>
             </a>
           </div>
         </div>
+        <div class="p-4 border-t border-dark-750 bg-dark-850/40 flex justify-end">
+          <button onclick="closeCircularModal()" class="px-4 py-2 rounded-xl bg-dark-800 hover:bg-dark-750 text-white text-xs font-semibold transition border border-dark-700">Close</button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Footer -->
-        <div class="p-3.5 sm:p-4 border-t border-dark-700/80 bg-dark-800/40 flex justify-end">
-          <button onclick="closeCircularModal()" class="px-4 py-2 rounded-xl bg-dark-750 hover:bg-dark-700 text-white text-xs font-medium transition border border-dark-600">Close</button>
+    <!-- 3. Report Card Viewer Modal -->
+    <div id="reportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/85 backdrop-blur-md transition-opacity">
+      <div class="bg-dark-900 border border-dark-750 rounded-3xl max-w-4xl w-full h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-center justify-between p-4 border-b border-dark-750 bg-dark-850">
+          <div class="flex items-center gap-2">
+            <h3 id="reportModalTitle" class="text-sm sm:text-base font-bold text-white">Periodic Test 1 - Report Card</h3>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 font-semibold">Official CBSE</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <a id="reportModalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <span>Open in Tab</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            <button onclick="closeReportModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-dark-800 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="flex-1 bg-white relative">
+          <iframe id="reportFrame" src="" class="w-full h-full border-0"></iframe>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-dark-700/60 py-4 px-6 text-center text-xs text-zinc-500">
-      Redunxt DPS Harni • Multi-User Client • Encrypted Client Session
+    <footer class="border-t border-dark-750/70 py-4 px-6 text-center text-xs text-zinc-500">
+      Redunxt • Delhi Public School Harni • Private & Isolated
     </footer>
 
   </div>
 
   <script>
-    let session = { token: null, student: null };
-    let dashboardData = { circulars: [], mailbox: [] };
+    // State
+    let session = { token: null, student: null, account: null };
+    let bundleData = null;
     let currentTab = 'circulars';
 
-    // 1. Check existing session on load
-    window.addEventListener('DOMContentLoaded', () => {
-      const stored = localStorage.getItem('edunxt_session') || sessionStorage.getItem('edunxt_session');
-      if (stored) {
+    // 1. App Startup: Check Local Storage & Auto-Login
+    window.addEventListener('DOMContentLoaded', async () => {
+      const storedUserId = localStorage.getItem('redunxt_user_id');
+      const storedSession = localStorage.getItem('redunxt_session');
+
+      if (storedUserId) {
+        if (storedSession) {
+          try {
+            session = JSON.parse(storedSession);
+            if (session.token && !isTokenExpired(session.token)) {
+              showDashboard();
+              return;
+            }
+          } catch {}
+        }
+
+        // Token missing or expired: Perform silent background auto-login using D1 database
         try {
-          session = JSON.parse(stored);
-          if (session.token) {
+          const autoRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: storedUserId })
+          });
+          const autoJson = await autoRes.json();
+          if (autoJson.success && autoJson.token) {
+            session = {
+              token: autoJson.token,
+              account: autoJson.account,
+              student: { userId: autoJson.account?.userId }
+            };
+            localStorage.setItem('redunxt_session', JSON.stringify(session));
             showDashboard();
             return;
           }
         } catch {}
       }
+
       showLogin();
     });
+
+    function isTokenExpired(token) {
+      try {
+        const parts = token.split('.');
+        const payload = JSON.parse(atob(parts[1]));
+        const now = Math.floor(Date.now() / 1000);
+        return (payload.exp - 180) < now;
+      } catch {
+        return true;
+      }
+    }
 
     function togglePasswordVisibility() {
       const pass = document.getElementById('loginPassword');
@@ -361,61 +476,75 @@
     function showDashboard() {
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('dashboardView').classList.remove('hidden');
-      
-      const s = session.student || {};
-      document.getElementById('studentBadge').innerText = `User #${s.userId || '-'} • Class ${s.classId || '-'} (${s.sectionId ? 'Sec ' + s.sectionId : ''})`;
+      updateHeaderIdentity();
       fetchDashboardData();
     }
 
+    // 2. Login Handler
     async function handleLogin(e) {
       e.preventDefault();
       const userId = document.getElementById('loginUserId').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
-      const remember = document.getElementById('rememberMe').checked;
 
       const btnText = document.getElementById('loginBtnText');
       const spinner = document.getElementById('loginSpinner');
       const errBox = document.getElementById('loginError');
 
-      btnText.innerText = 'Verifying...';
+      btnText.innerText = 'Connecting...';
       spinner.classList.remove('hidden');
       errBox.classList.add('hidden');
 
       try {
-        const res = await fetch('/api/login', {
+        let res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, password }),
-        });
+        }).catch(() => null);
+
+        if (!res || !res.ok) {
+          res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, password }),
+          });
+        }
 
         const json = await res.json();
         if (!res.ok || !json.success) {
           throw new Error(json.error || 'Invalid User ID or Password.');
         }
 
-        session = { token: json.token, student: json.student };
-        const storage = remember ? localStorage : sessionStorage;
-        storage.setItem('edunxt_session', JSON.stringify(session));
+        session = {
+          token: json.token,
+          account: json.account,
+          student: { userId: json.account?.userId }
+        };
+
+        // Always save to localStorage for permanent auto-login
+        localStorage.setItem('redunxt_user_id', userId);
+        localStorage.setItem('redunxt_session', JSON.stringify(session));
 
         showDashboard();
       } catch (err) {
         errBox.innerText = err.message || 'Login failed. Please check your credentials.';
         errBox.classList.remove('hidden');
       } finally {
-        btnText.innerText = 'Sign In';
+        btnText.innerText = 'Sign In to Redunxt';
         spinner.classList.add('hidden');
       }
     }
 
+    // 3. Manual Logout Handler
     function handleLogout() {
-      localStorage.removeItem('edunxt_session');
-      sessionStorage.removeItem('edunxt_session');
-      session = { token: null, student: null };
-      dashboardData = { circulars: [], mailbox: [] };
+      localStorage.removeItem('redunxt_user_id');
+      localStorage.removeItem('redunxt_session');
+      session = { token: null, student: null, account: null };
+      bundleData = null;
       document.getElementById('loginPassword').value = '';
       showLogin();
     }
 
+    // 4. Fetch Full Student Bundle (All 9 Modules)
     async function fetchDashboardData(isManual = false) {
       const btnText = document.getElementById('refreshText');
       const icon = document.getElementById('refreshIcon');
@@ -425,23 +554,51 @@
       }
 
       try {
-        const res = await fetch('/api/data', {
+        const uId = session.account?.userId || localStorage.getItem('redunxt_user_id') || '';
+        let res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/data', {
           headers: {
-            'Authorization': `Bearer ${session.token}`,
-            'x-school-domain': session.student?.schoolDomain || 'dpsharni.edunext2.com',
+            'Authorization': session.token ? `Bearer ${session.token}` : '',
+            'x-user-id': uId,
+            'x-school-domain': session.account?.schoolDomain || 'dpsharni.edunext2.com',
           }
-        });
+        }).catch(() => null);
+
+        if (!res || !res.ok) {
+          res = await fetch('/api/data', {
+            headers: {
+              'Authorization': session.token ? `Bearer ${session.token}` : '',
+              'x-user-id': uId,
+              'x-school-domain': session.account?.schoolDomain || 'dpsharni.edunext2.com',
+            }
+          });
+        }
 
         if (res.status === 401) {
+          // Attempt silent refresh via D1
+          const storedUserId = localStorage.getItem('redunxt_user_id');
+          if (storedUserId) {
+            const refreshRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: storedUserId })
+            });
+            const refreshJson = await refreshRes.json();
+            if (refreshJson.success && refreshJson.token) {
+              session.token = refreshJson.token;
+              session.account = refreshJson.account;
+              localStorage.setItem('redunxt_session', JSON.stringify(session));
+              return fetchDashboardData(isManual);
+            }
+          }
           handleLogout();
           return;
         }
 
         const json = await res.json();
-        if (!json.success) throw new Error(json.error || 'Failed to fetch');
+        if (!json.success) throw new Error(json.error || 'Failed to fetch student data');
 
-        dashboardData = json;
-        renderData();
+        bundleData = json;
+        renderAllModules();
 
         document.getElementById('dashLoading').classList.add('hidden');
         document.getElementById('dashError').classList.add('hidden');
@@ -457,62 +614,115 @@
       }
     }
 
-    function renderData() {
-      document.getElementById('lastSyncLabel').innerText = `Last updated: ${new Date(dashboardData.timestamp).toLocaleTimeString()}`;
+    // 5. Update Header Profile Identity & Avatar
+    function updateHeaderIdentity() {
+      const acc = session.account || {};
+      const prof = bundleData?.profile || {};
+      const name = prof.studentName || acc.studentName || 'Student';
+      const className = prof.className ? `${prof.className}-${prof.sectionName}` : (acc.classSection || 'DPS');
+      const admission = prof.admissionNo || acc.admissionNo || acc.userId || '-';
 
-      const circs = dashboardData.circulars || [];
-      const mails = dashboardData.mailbox || [];
+      document.getElementById('headerStudentName').innerText = name;
+      document.getElementById('headerClassBadge').innerText = className;
+      document.getElementById('headerAdmissionBadge').innerText = `DPS Harni • Adm #${admission}`;
 
-      document.getElementById('circularCount').innerText = circs.length;
-      document.getElementById('mailCount').innerText = mails.length;
-      document.getElementById('circularBadge').innerText = circs.length;
-      document.getElementById('mailBadge').innerText = mails.length;
+      // Render Avatar according to user preference in settings
+      renderAvatar('headerAvatarContainer', name, acc.profilePhoto || prof.studentImage, acc.avatarMode, acc.customAvatarUrl);
+    }
+
+    function renderAvatar(containerId, name, edunextPhoto, mode = 'edunext', customUrl = '') {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ST';
+
+      if (mode === 'custom' && customUrl) {
+        container.innerHTML = `<img src="${customUrl}" alt="${name}" class="w-full h-full object-cover" onerror="this.src='${edunextPhoto}'" />`;
+      } else if (mode === 'edunext' && edunextPhoto) {
+        container.innerHTML = `<img src="${edunextPhoto}" alt="${name}" class="w-full h-full object-cover" />`;
+      } else {
+        container.innerHTML = `<span class="text-sm font-bold text-white">${initials}</span>`;
+      }
+    }
+
+    // 6. Master Render of All Modules
+    function renderAllModules() {
+      updateHeaderIdentity();
+
+      // Badges
+      const circs = bundleData.circulars || [];
+      const mails = bundleData.mailbox || [];
+      const hws = bundleData.homework?.assignments || [];
+      const att = bundleData.attendance;
+
+      document.getElementById('badge-circulars').innerText = circs.length;
+      document.getElementById('badge-mailbox').innerText = mails.length;
+      document.getElementById('badge-homework').innerText = hws.length;
+      if (att?.overallPercentage) {
+        document.getElementById('badge-attendance').innerText = att.overallPercentage;
+      }
 
       renderCirculars(circs);
       renderMailbox(mails);
-      showTab(currentTab);
+      renderAttendance(att);
+      renderHomework(bundleData.homework);
+      renderResults(bundleData.results || []);
+      renderSyllabus(bundleData.syllabus || []);
+      renderDownloads(bundleData.downloads || []);
+      renderNews(bundleData.news || []);
+      renderProfile(bundleData.profile);
+      renderSettings();
+
+      switchTab(currentTab);
     }
 
-    function stripHtmlToText(html) {
-      if (!html) return '';
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html;
-      return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
-    }
+    // Tab Switching
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-zinc-200 hover:bg-dark-800 transition flex items-center gap-1.5';
+      });
 
-    function formatHtmlContent(raw) {
-      if (!raw) return '';
-      return raw
-        .replace(/<o:p>[\s\S]*?<\/o:p>/gi, '')
-        .replace(/style="[^"]*"/gi, '')
-        .replace(/class="[^"]*"/gi, '')
-        .replace(/<p>\s*(&nbsp;|\s)*<\/p>/gi, '')
-        .trim();
-    }
+      const activeSection = document.getElementById(`section-${tabId}`);
+      const activeBtn = document.getElementById(`nav-${tabId}`);
 
-    function renderCirculars(list) {
-      const container = document.getElementById('circularsContainer');
-      if (list.length === 0) {
-        container.innerHTML = '<div class="text-center py-12 text-zinc-500 text-sm">No circulars found.</div>';
-        return;
+      if (activeSection) activeSection.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brand-600 text-white shadow-md shadow-brand-500/20';
       }
 
+      // Hide search bar for non-searchable tabs
+      const searchSection = document.getElementById('searchBarSection');
+      if (['attendance', 'results', 'profile', 'settings'].includes(tabId)) {
+        searchSection.classList.add('hidden');
+      } else {
+        searchSection.classList.remove('hidden');
+      }
+    }
+
+    // --- RENDER MODULE 1: CIRCULARS ---
+    function renderCirculars(list) {
+      const container = document.getElementById('section-circulars');
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No circulars posted.</div>';
+        return;
+      }
       container.innerHTML = list.map((c, i) => {
         const pdf = c.attachment?.image_array?.[0]?.cloud_front_serving_url || c.attachment?.image_array?.[0]?.servingUrl;
-        const cleanDesc = stripHtmlToText(c.discription || '');
-
+        const cleanDesc = stripHtml(c.discription || '');
         return `
-          <div onclick="openCircularModal('${c.id}')" class="cursor-pointer group rounded-2xl bg-dark-900 border border-dark-700/80 p-4 sm:p-5 flex flex-col gap-3 hover:border-brand-500/50 hover:bg-dark-850/50 transition">
+          <div onclick="openCircularModal('${c.id}')" class="cursor-pointer group rounded-3xl bg-dark-900 border border-dark-750 p-5 flex flex-col gap-3 hover:border-brand-500/50 hover:bg-dark-850/60 transition shadow-sm">
             <div class="flex items-start justify-between gap-3">
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1.5">
-                  <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/30">${c.date}</span>
-                  ${i === 0 ? '<span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">LATEST</span>' : ''}
+                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30">${c.date}</span>
+                  ${i === 0 ? '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">LATEST</span>' : ''}
                 </div>
                 <h3 class="text-sm sm:text-base font-bold text-white group-hover:text-brand-300 transition-colors">${c.name}</h3>
               </div>
               ${pdf ? `
-                <a href="${pdf}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition active:scale-95 shadow-md shadow-brand-500/20">
+                <a href="${pdf}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-sm active:scale-95">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                   <span>PDF</span>
                 </a>
@@ -524,40 +734,39 @@
       }).join('');
     }
 
+    // --- RENDER MODULE 2: MAILBOX ---
     function renderMailbox(list) {
-      const container = document.getElementById('mailboxContainer');
+      const container = document.getElementById('section-mailbox');
       if (list.length === 0) {
-        container.innerHTML = '<div class="text-center py-12 text-zinc-500 text-sm">No mailbox messages found.</div>';
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No mailbox messages found.</div>';
         return;
       }
-
       container.innerHTML = list.map(m => {
-        const cleanBody = stripHtmlToText(m.message_html || '');
+        const cleanBody = stripHtml(m.message_html || '');
         const avatar = m.employeename_img_path;
         const hasAttachment = m.image_array && m.image_array.length > 0;
-
         return `
-          <div onclick="openMailModal('${m.id}')" class="cursor-pointer group rounded-2xl bg-dark-900 border border-dark-700/80 p-4 sm:p-5 flex flex-col gap-3 hover:border-brand-500/50 hover:bg-dark-850/50 transition">
+          <div onclick="openMailModal('${m.id}')" class="cursor-pointer group rounded-3xl bg-dark-900 border border-dark-750 p-5 flex flex-col gap-3 hover:border-brand-500/50 hover:bg-dark-850/60 transition shadow-sm">
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3">
-                ${avatar ? `<img src="${avatar}" class="w-9 h-9 rounded-full object-cover border border-dark-700 flex-shrink-0" />` : `
-                  <div class="w-9 h-9 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-xs font-bold text-zinc-300 flex-shrink-0">
+                ${avatar ? `<img src="${avatar}" class="w-10 h-10 rounded-2xl object-cover border border-dark-700 flex-shrink-0" />` : `
+                  <div class="w-10 h-10 rounded-2xl bg-dark-800 border border-dark-700 flex items-center justify-center text-xs font-bold text-zinc-300 flex-shrink-0">
                     ${(m.employeename || m.from || 'T').charAt(0)}
                   </div>
                 `}
                 <div>
-                  <h4 class="text-xs font-semibold text-zinc-300">${m.employeename || m.from}</h4>
-                  <p class="text-[11px] text-zinc-500">${m.date}</p>
+                  <h4 class="text-xs font-bold text-zinc-200">${m.employeename || m.from}</h4>
+                  <p class="text-[11px] text-zinc-500 font-mono">${m.date}</p>
                 </div>
               </div>
               <div class="flex items-center gap-2">
                 ${hasAttachment ? `
-                  <span class="flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-300 border border-brand-500/25">
+                  <span class="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-300 border border-brand-500/25">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                     <span>File</span>
                   </span>
                 ` : ''}
-                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full ${m.status === 'Unread' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 text-zinc-400'}">${m.status || 'Received'}</span>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${m.status === 'Unread' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 text-zinc-400'}">${m.status || 'Received'}</span>
               </div>
             </div>
             <div>
@@ -569,9 +778,443 @@
       }).join('');
     }
 
-    // Modal Operations
+    // --- RENDER MODULE 3: ATTENDANCE ---
+    function renderAttendance(att) {
+      const container = document.getElementById('section-attendance');
+      if (!att) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">Attendance records unavailable.</div>';
+        return;
+      }
+
+      const pCard = att.presentCard || {};
+      const aCard = att.absentCard || {};
+      const lCard = att.leaveCard || {};
+
+      container.innerHTML = `
+        <!-- Top Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="rounded-3xl bg-dark-900 border border-emerald-500/30 p-5 flex flex-col gap-1 relative overflow-hidden shadow-lg">
+            <div class="flex items-center justify-between text-xs text-emerald-400 font-bold uppercase tracking-wider">
+              <span>Present</span>
+              <span>✅</span>
+            </div>
+            <div class="text-3xl font-extrabold text-white mt-1">${pCard.presentPercentage || '0%'}</div>
+            <div class="text-xs text-zinc-400">${pCard.presentDays || 0} out of ${pCard.totalDays || 0} days</div>
+          </div>
+
+          <div class="rounded-3xl bg-dark-900 border border-rose-500/30 p-5 flex flex-col gap-1 relative overflow-hidden shadow-lg">
+            <div class="flex items-center justify-between text-xs text-rose-400 font-bold uppercase tracking-wider">
+              <span>Absent</span>
+              <span>❌</span>
+            </div>
+            <div class="text-3xl font-extrabold text-white mt-1">${aCard.absentPercentage || '0%'}</div>
+            <div class="text-xs text-zinc-400">${aCard.absentDays || 0} out of ${aCard.totalDays || 0} days</div>
+          </div>
+
+          <div class="rounded-3xl bg-dark-900 border border-amber-500/30 p-5 flex flex-col gap-1 relative overflow-hidden shadow-lg">
+            <div class="flex items-center justify-between text-xs text-amber-400 font-bold uppercase tracking-wider">
+              <span>Approved Leave</span>
+              <span>📝</span>
+            </div>
+            <div class="text-3xl font-extrabold text-white mt-1">${lCard.leavePercentage || '0%'}</div>
+            <div class="text-xs text-zinc-400">${lCard.leaveDays || 0} out of ${lCard.totalDays || 0} days</div>
+          </div>
+        </div>
+
+        <!-- Monthly Breakdown Grid -->
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 shadow-xl flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white">Monthly Attendance Trend</h3>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-xl bg-dark-800 text-zinc-300">Session 2026-27</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            ${(att.monthlyGraph || []).filter(m => m.percentage > 0).map(m => `
+              <div class="p-3.5 rounded-2xl bg-dark-850 border border-dark-700/80 flex flex-col items-center gap-1 text-center">
+                <span class="text-xs font-bold text-zinc-400 uppercase">${m.month}</span>
+                <span class="text-lg font-extrabold ${m.percentage >= 85 ? 'text-emerald-400' : 'text-amber-400'}">${m.percentage.toFixed(1)}%</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Daily Calendar Record List -->
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 shadow-xl flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white">Daily Recorded Logs</h3>
+            <span class="text-xs text-zinc-400">${(att.calendarList || []).length} registered school days</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+            ${(att.calendarList || []).map(day => `
+              <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs font-medium ${day.status === 'Present' ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-rose-500/10 border-rose-500/25 text-rose-300'}">
+                <span class="font-mono">${day.date}</span>
+                <span class="font-bold text-[11px]">${day.status}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- RENDER MODULE 4: HOMEWORK ---
+    function renderHomework(hw) {
+      const container = document.getElementById('section-homework');
+      const assignments = hw?.assignments || [];
+      if (assignments.length === 0) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No homework assignments found.</div>';
+        return;
+      }
+      container.innerHTML = assignments.map(a => `
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-5 flex flex-col gap-3 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${a.subject}</span>
+                <span class="text-xs text-zinc-400">By ${a.assignedBy}</span>
+              </div>
+              <h3 class="text-sm sm:text-base font-bold text-white">${a.title}</h3>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md ${a.deadlineDate ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 text-zinc-400'}">
+                Due: ${a.deadlineDate || 'No deadline'}
+              </span>
+            </div>
+          </div>
+          ${a.description ? `<p class="text-xs text-zinc-300 leading-relaxed">${a.description}</p>` : ''}
+          ${a.attachments && a.attachments.length > 0 ? `
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-dark-750">
+              ${a.attachments.map(att => `
+                <a href="${att.cloud_front_serving_url || att.servingUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-800 border border-dark-700 hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  <span>${att.filename || 'Attachment'}</span>
+                </a>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    // --- RENDER MODULE 5: RESULTS ---
+    function renderResults(list) {
+      const container = document.getElementById('section-results');
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No report cards or results published.</div>';
+        return;
+      }
+      container.innerHTML = list.map(r => `
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
+              🏆
+            </div>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-dark-800 text-zinc-300 border border-dark-700 font-mono">${r.academicYear || '2026-27'}</span>
+                <span class="text-xs text-zinc-400">Published: ${r.publishDate}</span>
+              </div>
+              <h3 class="text-base font-bold text-white">${r.reportName}</h3>
+            </div>
+          </div>
+          <button onclick="openReportModal('${r.reportName}', '${r.fullReportUrl}')" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>View Full Report Card</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // --- RENDER MODULE 6: SYLLABUS ---
+    function renderSyllabus(list) {
+      const container = document.getElementById('section-syllabus');
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No syllabus uploaded.</div>';
+        return;
+      }
+      container.innerHTML = list.map(s => `
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-5 flex items-center justify-between gap-4 shadow-sm">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold">
+              📚
+            </div>
+            <div>
+              <h4 class="text-sm sm:text-base font-bold text-white">${s.subject || 'All Subjects'}</h4>
+              <p class="text-xs text-zinc-400 line-clamp-1">${s.description || s.fileName}</p>
+            </div>
+          </div>
+          <a href="${s.fileUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 flex-shrink-0">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Download</span>
+          </a>
+        </div>
+      `).join('');
+    }
+
+    // --- RENDER MODULE 7: DOWNLOADS ---
+    function renderDownloads(list) {
+      const container = document.getElementById('section-downloads');
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No study resources found.</div>';
+        return;
+      }
+      container.innerHTML = list.map(d => `
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-5 flex items-center justify-between gap-4 shadow-sm">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 font-bold">
+              📥
+            </div>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-dark-800 text-zinc-300 border border-dark-700">${d.category}</span>
+                <span class="text-xs text-zinc-400 font-mono">${d.date}</span>
+              </div>
+              <h4 class="text-sm sm:text-base font-bold text-white">${d.title}</h4>
+            </div>
+          </div>
+          ${d.fileUrl ? `
+            <a href="${d.fileUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>Download</span>
+            </a>
+          ` : '<span class="text-xs text-zinc-500">No link</span>'}
+        </div>
+      `).join('');
+    }
+
+    // --- RENDER MODULE 8: SCHOOL NEWS ---
+    function renderNews(list) {
+      const container = document.getElementById('section-news');
+      if (list.length === 0) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No school news posted.</div>';
+        return;
+      }
+      container.innerHTML = list.map(n => `
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-3 shadow-sm">
+          <div class="flex items-center justify-between text-xs text-zinc-400">
+            <span class="font-bold text-brand-300">${n.author || 'Administration'}</span>
+            <span class="font-mono">${n.date}</span>
+          </div>
+          <h3 class="text-base font-bold text-white">${n.subject}</h3>
+          ${n.description ? `<p class="text-xs text-zinc-300 leading-relaxed">${n.description}</p>` : ''}
+          ${n.mediaUrl ? `
+            <div class="mt-2">
+              <img src="${n.mediaUrl}" class="rounded-2xl max-h-72 object-cover border border-dark-700" alt="News Image" />
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    // --- RENDER MODULE 9: PROFILE ---
+    function renderProfile(prof) {
+      const container = document.getElementById('section-profile');
+      if (!prof) {
+        container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">Profile loading...</div>';
+        return;
+      }
+
+      const acc = session.account || {};
+      const cats = prof.detailsByCategory || {};
+
+      container.innerHTML = `
+        <!-- Student Hero Card -->
+        <div class="rounded-3xl bg-gradient-to-tr from-dark-900 via-dark-850 to-dark-900 border border-dark-750 p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-2xl relative overflow-hidden">
+          <div id="profileAvatarContainer" class="w-24 h-24 rounded-3xl overflow-hidden bg-dark-800 border-2 border-brand-500/40 shadow-xl flex items-center justify-center flex-shrink-0">
+            <span class="text-2xl font-bold text-white">AG</span>
+          </div>
+          <div class="flex-1 text-center sm:text-left">
+            <div class="flex items-center justify-center sm:justify-start gap-2 mb-1 flex-wrap">
+              <h2 class="text-xl sm:text-2xl font-extrabold text-white">${prof.studentName}</h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-bold">${prof.className}-${prof.sectionName}</span>
+            </div>
+            <p class="text-xs text-zinc-400 font-medium">Admission No: <span class="text-white font-mono">${prof.admissionNo}</span> • Roll No: <span class="text-white font-mono">${prof.rollNo || '-'}</span></p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-5 pt-5 border-t border-dark-750/80 text-left">
+              <div>
+                <p class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Class Teacher</p>
+                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.classTeacherName || 'DINESH SHARMA'}</p>
+              </div>
+              <div>
+                <p class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Student Type</p>
+                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.studentType || 'DAY SCHOLAR'}</p>
+              </div>
+              <div>
+                <p class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">House</p>
+                <p class="text-xs font-bold text-zinc-200 mt-0.5">${prof.houseName || 'SINCERITY'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact & Guardian Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-4 shadow-lg">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span>📞</span> Contact Information
+            </h3>
+            <div class="space-y-3 text-xs">
+              <div>
+                <span class="text-zinc-500 font-medium">Primary Mobile:</span>
+                <span class="text-zinc-200 font-bold ml-2 font-mono">${prof.studentMobile || '-'}</span>
+              </div>
+              <div>
+                <span class="text-zinc-500 font-medium">Email Address:</span>
+                <span class="text-zinc-200 font-bold ml-2">${prof.studentEmail || '-'}</span>
+              </div>
+              <div>
+                <span class="text-zinc-500 font-medium">Residential Address:</span>
+                <p class="text-zinc-200 font-medium mt-1 bg-dark-850 p-3 rounded-xl border border-dark-700/80 leading-relaxed">${prof.studentAddress || '-'}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-4 shadow-lg">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span>👨‍👩‍👦</span> Family Information
+            </h3>
+            <div class="space-y-3 text-xs">
+              <div>
+                <span class="text-zinc-500 font-medium">Father's Name:</span>
+                <span class="text-zinc-200 font-bold ml-2">${prof.fatherName || '-'}</span>
+              </div>
+              <div>
+                <span class="text-zinc-500 font-medium">Mother's Name:</span>
+                <span class="text-zinc-200 font-bold ml-2">${prof.motherName || '-'}</span>
+              </div>
+              <div>
+                <span class="text-zinc-500 font-medium">Academic Session:</span>
+                <span class="text-zinc-200 font-bold ml-2 font-mono">${prof.academicYear || '2026-27'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      renderAvatar('profileAvatarContainer', prof.studentName, prof.studentImage, acc.avatarMode, acc.customAvatarUrl);
+    }
+
+    // --- RENDER MODULE 10: SETTINGS ---
+    function renderSettings() {
+      const container = document.getElementById('section-settings');
+      const acc = session.account || {};
+      const prof = bundleData?.profile || {};
+      const currentMode = acc.avatarMode || 'edunext';
+      const customUrl = acc.customAvatarUrl || '';
+
+      container.innerHTML = `
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 sm:p-8 flex flex-col gap-6 shadow-xl">
+          <div>
+            <h3 class="text-lg font-bold text-white">Profile Picture Preferences</h3>
+            <p class="text-xs text-zinc-400 mt-1">Select how your avatar is displayed across the Redunxt app.</p>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Mode 1: Edunext Photo -->
+            <label class="flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition ${currentMode === 'edunext' ? 'bg-brand-500/10 border-brand-500' : 'bg-dark-850 border-dark-700 hover:border-dark-600'}">
+              <input type="radio" name="avatarMode" value="edunext" ${currentMode === 'edunext' ? 'checked' : ''} onchange="handleAvatarModeChange('edunext')" class="mt-1 text-brand-600 focus:ring-0" />
+              <div class="flex-1">
+                <span class="text-sm font-bold text-white">Official Edunext Photo</span>
+                <p class="text-xs text-zinc-400 mt-0.5">Show your official school ID photo retrieved from Edunext ERP.</p>
+              </div>
+              ${prof.studentImage || acc.profilePhoto ? `<img src="${prof.studentImage || acc.profilePhoto}" class="w-10 h-10 rounded-xl object-cover border border-dark-600" />` : ''}
+            </label>
+
+            <!-- Mode 2: Custom URL -->
+            <label class="flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition ${currentMode === 'custom' ? 'bg-brand-500/10 border-brand-500' : 'bg-dark-850 border-dark-700 hover:border-dark-600'}">
+              <input type="radio" name="avatarMode" value="custom" ${currentMode === 'custom' ? 'checked' : ''} onchange="handleAvatarModeChange('custom')" class="mt-1 text-brand-600 focus:ring-0" />
+              <div class="flex-1">
+                <span class="text-sm font-bold text-white">Custom Redunxt Picture</span>
+                <p class="text-xs text-zinc-400 mt-0.5">Set any image URL just for Redunxt (gaming avatar, anime, photo).</p>
+                <div class="mt-3">
+                  <input 
+                    type="url" 
+                    id="customAvatarInput" 
+                    value="${customUrl}" 
+                    placeholder="https://example.com/avatar.png" 
+                    class="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+                  />
+                  <button onclick="saveCustomAvatarUrl()" class="mt-2 px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition">Save Custom Picture</button>
+                </div>
+              </div>
+            </label>
+
+            <!-- Mode 3: Initials -->
+            <label class="flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition ${currentMode === 'initials' ? 'bg-brand-500/10 border-brand-500' : 'bg-dark-850 border-dark-700 hover:border-dark-600'}">
+              <input type="radio" name="avatarMode" value="initials" ${currentMode === 'initials' ? 'checked' : ''} onchange="handleAvatarModeChange('initials')" class="mt-1 text-brand-600 focus:ring-0" />
+              <div class="flex-1">
+                <span class="text-sm font-bold text-white">Initials Avatar</span>
+                <p class="text-xs text-zinc-400 mt-0.5">Display a stylish badge with your name initials.</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-xs font-bold text-white">AG</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Database Info Card -->
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-3 shadow-md">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h4 class="text-sm font-bold text-white">Cloudflare D1 Persistence</h4>
+          </div>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Connected to <code class="font-mono text-zinc-300">redunxt-db</code> (Region: APAC). Your credentials and token refreshes are private and isolated to this account.
+          </p>
+        </div>
+
+        <!-- Log Out Section -->
+        <div class="rounded-3xl bg-dark-900 border border-rose-500/20 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h4 class="text-sm font-bold text-white">Device Session</h4>
+            <p class="text-xs text-zinc-400 mt-0.5">Logging out clears this phone's session. You will be prompted for credentials to log back in.</p>
+          </div>
+          <button onclick="handleLogout()" class="px-5 py-2.5 rounded-2xl bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-bold transition shadow-md active:scale-95">
+            Log Out of This Device
+          </button>
+        </div>
+      `;
+    }
+
+    async function handleAvatarModeChange(newMode) {
+      if (!session.account) session.account = {};
+      session.account.avatarMode = newMode;
+      localStorage.setItem('redunxt_session', JSON.stringify(session));
+      updateHeaderIdentity();
+      renderSettings();
+
+      const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+      if (userId) {
+        await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, avatarMode: newMode, customAvatarUrl: session.account.customAvatarUrl })
+        }).catch(() => {});
+      }
+    }
+
+    async function saveCustomAvatarUrl() {
+      const input = document.getElementById('customAvatarInput');
+      const url = input?.value.trim() || '';
+      if (!session.account) session.account = {};
+      session.account.customAvatarUrl = url;
+      session.account.avatarMode = 'custom';
+      localStorage.setItem('redunxt_session', JSON.stringify(session));
+      updateHeaderIdentity();
+      renderSettings();
+
+      const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+      if (userId) {
+        await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, avatarMode: 'custom', customAvatarUrl: url })
+        }).catch(() => {});
+      }
+    }
+
+    // Modal Helpers
     function openMailModal(id) {
-      const mail = (dashboardData.mailbox || []).find(m => String(m.id) === String(id));
+      const mail = (bundleData?.mailbox || []).find(m => String(m.id) === String(id));
       if (!mail) return;
 
       const avatarEl = document.getElementById('modalSenderAvatar');
@@ -585,7 +1228,7 @@
       document.getElementById('modalTypeBadge').innerText = mail.communicationtype || 'Message';
       document.getElementById('modalDate').innerText = mail.date;
       document.getElementById('modalSubject').innerText = mail.subject;
-      document.getElementById('modalBody').innerHTML = formatHtmlContent(mail.message_html) || '<p class="text-zinc-400 italic">No message content.</p>';
+      document.getElementById('modalBody').innerHTML = sanitizeHtml(mail.message_html) || '<p class="text-zinc-400 italic">No message body.</p>';
 
       const attachBox = document.getElementById('modalAttachments');
       const attachList = document.getElementById('modalAttachmentsList');
@@ -593,20 +1236,15 @@
         attachBox.classList.remove('hidden');
         attachList.innerHTML = mail.image_array.map(att => {
           const fileUrl = att.cloud_front_serving_url || att.servingUrl || att.download_file_path;
-          const fileName = att.filename || 'Document Attachment';
           return `
-            <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-xl bg-dark-800/80 border border-dark-700 hover:border-brand-500/40 hover:bg-dark-750 transition group">
-              <div class="flex items-center gap-2.5 overflow-hidden">
-                <svg class="w-4 h-4 text-brand-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span class="text-xs text-zinc-200 truncate group-hover:text-white font-medium">${fileName}</span>
-              </div>
-              <span class="text-xs font-semibold text-brand-400 group-hover:underline flex-shrink-0 ml-3">Download &rarr;</span>
+            <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-2xl bg-dark-800 border border-dark-700 hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
+              <span class="truncate">${att.filename || 'Document'}</span>
+              <span class="ml-3 flex-shrink-0 text-brand-400">Download &rarr;</span>
             </a>
           `;
         }).join('');
       } else {
         attachBox.classList.add('hidden');
-        attachList.innerHTML = '';
       }
 
       document.getElementById('mailModal').classList.remove('hidden');
@@ -619,14 +1257,12 @@
     }
 
     function openCircularModal(id) {
-      const circ = (dashboardData.circulars || []).find(c => String(c.id) === String(id));
+      const circ = (bundleData?.circulars || []).find(c => String(c.id) === String(id));
       if (!circ) return;
 
       document.getElementById('circModalDate').innerText = circ.date;
       document.getElementById('circModalTitle').innerText = circ.name;
-      
-      const formatted = formatHtmlContent(circ.discription);
-      document.getElementById('circModalDesc').innerHTML = formatted || '<p class="text-zinc-400 italic">No written description. Please refer to the official PDF attachment below.</p>';
+      document.getElementById('circModalDesc').innerHTML = sanitizeHtml(circ.discription) || '<p class="text-zinc-400 italic">No description provided. See PDF attachment.</p>';
 
       const pdfUrl = circ.attachment?.image_array?.[0]?.cloud_front_serving_url || circ.attachment?.image_array?.[0]?.servingUrl;
       const pdfBox = document.getElementById('circModalAttachmentBox');
@@ -637,7 +1273,6 @@
         pdfLink.href = pdfUrl;
       } else {
         pdfBox.classList.add('hidden');
-        pdfLink.href = '#';
       }
 
       document.getElementById('circularModal').classList.remove('hidden');
@@ -649,63 +1284,82 @@
       document.body.classList.remove('overflow-hidden');
     }
 
-    // Close on backdrop click
-    document.getElementById('mailModal')?.addEventListener('click', (e) => {
-      if (e.target.id === 'mailModal') closeMailModal();
-    });
-    document.getElementById('circularModal')?.addEventListener('click', (e) => {
-      if (e.target.id === 'circularModal') closeCircularModal();
+    function openReportModal(title, url) {
+      document.getElementById('reportModalTitle').innerText = title;
+      document.getElementById('reportModalExternalLink').href = url;
+      document.getElementById('reportFrame').src = url;
+      document.getElementById('reportModal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').classList.add('hidden');
+      document.getElementById('reportFrame').src = '';
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    // Backdrop click & Escape key
+    ['mailModal', 'circularModal', 'reportModal'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', (e) => {
+        if (e.target.id === id) {
+          if (id === 'mailModal') closeMailModal();
+          if (id === 'circularModal') closeCircularModal();
+          if (id === 'reportModal') closeReportModal();
+        }
+      });
     });
 
-    // Close on Escape
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeMailModal();
         closeCircularModal();
+        closeReportModal();
       }
     });
 
-    function switchTab(tab) {
-      currentTab = tab;
-      showTab(tab);
+    // Sanitization & Utilities
+    function stripHtml(html) {
+      if (!html) return '';
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
     }
 
-    function showTab(tab) {
-      const circContainer = document.getElementById('circularsContainer');
-      const mailContainer = document.getElementById('mailboxContainer');
-      const tabCircBtn = document.getElementById('tab-circulars');
-      const tabMailBtn = document.getElementById('tab-mailbox');
-
-      if (tab === 'circulars') {
-        circContainer.classList.remove('hidden');
-        mailContainer.classList.add('hidden');
-        tabCircBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-brand-500 text-white flex items-center gap-2 transition';
-        tabMailBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 transition';
-      } else {
-        circContainer.classList.add('hidden');
-        mailContainer.classList.remove('hidden');
-        tabMailBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-brand-500 text-white flex items-center gap-2 transition';
-        tabCircBtn.className = 'px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 flex items-center gap-2 transition';
-      }
+    function sanitizeHtml(raw) {
+      if (!raw) return '';
+      return raw
+        .replace(/<o:p>[\s\S]*?<\/o:p>/gi, '')
+        .replace(/style="[^"]*"/gi, '')
+        .replace(/class="[^"]*"/gi, '')
+        .replace(/<p>\s*(&nbsp;|\s)*<\/p>/gi, '')
+        .trim();
     }
 
-    function filterContent() {
+    function handleGlobalSearch() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
-      if (!q) {
-        renderCirculars(dashboardData.circulars || []);
-        renderMailbox(dashboardData.mailbox || []);
-        return;
+      if (!bundleData) return;
+
+      if (currentTab === 'circulars') {
+        const filtered = (bundleData.circulars || []).filter(c => 
+          (c.name || '').toLowerCase().includes(q) || (c.discription || '').toLowerCase().includes(q)
+        );
+        renderCirculars(filtered);
+      } else if (currentTab === 'mailbox') {
+        const filtered = (bundleData.mailbox || []).filter(m => 
+          (m.subject || '').toLowerCase().includes(q) || (m.employeename || m.from || '').toLowerCase().includes(q) || (m.message_html || '').toLowerCase().includes(q)
+        );
+        renderMailbox(filtered);
+      } else if (currentTab === 'homework') {
+        const filtered = (bundleData.homework?.assignments || []).filter(h => 
+          (h.title || '').toLowerCase().includes(q) || (h.subject || '').toLowerCase().includes(q) || (h.assignedBy || '').toLowerCase().includes(q)
+        );
+        renderHomework({ assignments: filtered });
+      } else if (currentTab === 'downloads') {
+        const filtered = (bundleData.downloads || []).filter(d => 
+          (d.title || '').toLowerCase().includes(q) || (d.category || '').toLowerCase().includes(q)
+        );
+        renderDownloads(filtered);
       }
-
-      const filteredCircs = (dashboardData.circulars || []).filter(c => 
-        (c.name || '').toLowerCase().includes(q) || (c.discription || '').toLowerCase().includes(q)
-      );
-      const filteredMail = (dashboardData.mailbox || []).filter(m => 
-        (m.subject || '').toLowerCase().includes(q) || (m.employeename || m.from || '').toLowerCase().includes(q) || (m.message_html || '').toLowerCase().includes(q)
-      );
-
-      renderCirculars(filteredCircs);
-      renderMailbox(filteredMail);
     }
 
     if ('serviceWorker' in navigator) {

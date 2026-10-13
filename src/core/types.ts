@@ -109,8 +109,112 @@ export interface SchoolNewsItem {
   mediaUrl?: string;
 }
 
+// Attendance Types
+export interface AttendanceCard {
+  totalDays: number;
+  presentDays?: number;
+  absentDays?: number;
+  leaveDays?: number;
+  presentPercentage?: string;
+  absentPercentage?: string;
+  leavePercentage?: string;
+  label?: string;
+}
+
+export interface AttendanceCalendarDay {
+  date: string;
+  status: 'Present' | 'Absent' | 'Leave' | 'Holiday' | string;
+  color?: string;
+}
+
+export interface AttendanceData {
+  overallPercentage: string;
+  presentCard: AttendanceCard;
+  absentCard: AttendanceCard;
+  leaveCard: AttendanceCard;
+  calendarList: AttendanceCalendarDay[];
+  monthlyGraph: Array<{ month: string; percentage: number }>;
+}
+
+// Results Types
+export interface ResultItem {
+  termId: number;
+  reportName: string;
+  publishDate: string;
+  academicYear: string;
+  reportUrl: string; // Direct /mobile/schoolexamencdata URL
+  fullReportUrl: string; // Absolute HTTPS link to printable CBSE report card
+}
+
+// Syllabus Types
+export interface SyllabusItem {
+  id: number;
+  subject: string;
+  fileName: string;
+  description: string;
+  fileUrl: string; // CloudFront CDN link
+}
+
+// Downloads / E-Resources Types
+export interface DownloadItem {
+  id: number;
+  title: string;
+  category: string;
+  date: string;
+  createdBy: string;
+  description: string;
+  fileName?: string;
+  fileUrl?: string; // CloudFront CDN link
+  contentType?: string;
+}
+
+// Profile & Personal Information Types
+export interface StudentDetailField {
+  database_label: string;
+  column_label: string;
+  data: string;
+  isparenteditable?: boolean;
+}
+
+export interface StudentProfileData {
+  studentName: string;
+  admissionNo: string;
+  rollNo?: string;
+  className: string;
+  sectionName: string;
+  classTeacherName: string;
+  studentType: string;
+  studentImage: string;
+  fatherName: string;
+  motherName: string;
+  studentEmail: string;
+  studentMobile: string;
+  studentAddress: string;
+  houseName: string;
+  academicYear: string;
+  detailsByCategory: Record<string, StudentDetailField[]>;
+}
+
+// Account Record & Settings
+export interface AccountSettings {
+  avatarMode: 'edunext' | 'custom' | 'initials';
+  customAvatarUrl?: string;
+}
+
+export interface AccountRecord {
+  userId: string;
+  schoolDomain: string;
+  studentName: string;
+  admissionNo: string;
+  classSection: string;
+  profilePhoto: string;
+  settings: AccountSettings;
+  lastSyncedAt?: string;
+}
+
 export interface StudentBundle {
   student: DecodedToken | null;
+  profile: StudentProfileData | null;
   circulars: CircularItem[];
   mailbox: MailboxItem[];
   homework: {
@@ -118,6 +222,9 @@ export interface StudentBundle {
     subjects: SubjectMeta[];
   };
   news: SchoolNewsItem[];
+  attendance: AttendanceData | null;
+  results: ResultItem[];
+  syllabus: SyllabusItem[];
+  downloads: DownloadItem[];
   timestamp: string;
 }
-
