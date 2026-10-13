@@ -763,33 +763,51 @@
 
     // 6. Master Render of All Modules
     function renderAllModules() {
-      updateHeaderIdentity();
+      try { updateHeaderIdentity(); } catch (e) { console.error('Header identity failed:', e); }
 
-      // Badges
-      const circs = bundleData.circulars || [];
-      const mails = bundleData.mailbox || [];
-      const hws = bundleData.homework?.assignments || [];
-      const att = bundleData.attendance;
+      // Safe extraction for badges
+      const circs = Array.isArray(bundleData?.circulars) ? bundleData.circulars : (bundleData?.circulars?.circular_list || bundleData?.circulars?.circularlist || []);
+      const mails = Array.isArray(bundleData?.mailbox) ? bundleData.mailbox : (bundleData?.mailbox?.mail_box_list || bundleData?.mailbox?.list || []);
+      const hws = Array.isArray(bundleData?.homework?.assignments) ? bundleData.homework.assignments : (Array.isArray(bundleData?.homework) ? bundleData.homework : (bundleData?.homework?.homework_list || []));
+      const att = bundleData?.attendance;
 
-      document.getElementById('badge-circulars').innerText = circs.length;
-      document.getElementById('badge-mailbox').innerText = mails.length;
-      document.getElementById('badge-homework').innerText = hws.length;
-      if (att?.overallPercentage) {
-        document.getElementById('badge-attendance').innerText = att.overallPercentage;
+      const badgeCirc = document.getElementById('badge-circulars');
+      if (badgeCirc) badgeCirc.innerText = circs.length;
+      const badgeMail = document.getElementById('badge-mailbox');
+      if (badgeMail) badgeMail.innerText = mails.length;
+      const badgeHw = document.getElementById('badge-homework');
+      if (badgeHw) badgeHw.innerText = hws.length;
+      const badgeAtt = document.getElementById('badge-attendance');
+      if (badgeAtt && att?.overallPercentage) {
+        badgeAtt.innerText = att.overallPercentage;
       }
 
-      renderCirculars(circs);
-      renderMailbox(mails);
-      renderAttendance(att);
-      renderHomework(bundleData.homework);
-      renderResults(bundleData.results || []);
-      renderSyllabus(bundleData.syllabus || []);
-      renderDownloads(bundleData.downloads || []);
-      renderNews(bundleData.news || []);
-      renderProfile(bundleData.profile);
-      renderSettings();
+      const modules = [
+        ['Circulars', () => renderCirculars(bundleData?.circulars)],
+        ['Mailbox', () => renderMailbox(bundleData?.mailbox)],
+        ['Attendance', () => renderAttendance(bundleData?.attendance)],
+        ['Homework', () => renderHomework(bundleData?.homework)],
+        ['Results', () => renderResults(bundleData?.results)],
+        ['Syllabus', () => renderSyllabus(bundleData?.syllabus)],
+        ['Downloads', () => renderDownloads(bundleData?.downloads)],
+        ['News', () => renderNews(bundleData?.news)],
+        ['Profile', () => renderProfile(bundleData?.profile)],
+        ['Settings', () => renderSettings()],
+      ];
 
-      switchTab(currentTab);
+      for (const [name, fn] of modules) {
+        try {
+          fn();
+        } catch (err) {
+          console.error(`Error rendering module ${name}:`, err);
+        }
+      }
+
+      try {
+        switchTab(currentTab);
+      } catch (err) {
+        console.error('switchTab error:', err);
+      }
     }
 
     // Tab Switching
@@ -820,7 +838,7 @@
     // --- RENDER MODULE 1: CIRCULARS ---
     function renderCirculars(data) {
       const container = document.getElementById('section-circulars');
-      const list = Array.isArray(data) ? data : (data?.circular_list || []);
+      const list = Array.isArray(data) ? data : (data?.circular_list || data?.circularlist || []);
       if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No circulars posted.</div>';
         return;
@@ -854,7 +872,7 @@
     // --- RENDER MODULE 2: MAILBOX ---
     function renderMailbox(data) {
       const container = document.getElementById('section-mailbox');
-      const list = Array.isArray(data) ? data : (data?.mail_box_list || []);
+      const list = Array.isArray(data) ? data : (data?.mail_box_list || data?.list || []);
       if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No mailbox messages found.</div>';
         return;
@@ -862,7 +880,7 @@
       container.innerHTML = list.map(m => {
         const cleanBody = stripHtml(m.message_html || '');
         const avatar = m.employeename_img_path;
-        const hasAttachment = m.image_array && m.image_array.length > 0;
+        const hasAttachment = Array.isArray(m.image_array) && m.image_array.length > 0;
         return `
           <div onclick="openMailModal('${m.id}')" class="cursor-pointer group rounded-3xl bg-dark-900 border border-dark-750 p-5 flex flex-col gap-3 hover:border-brand-500/50 hover:bg-dark-850/60 transition shadow-sm">
             <div class="flex items-start justify-between gap-3">
@@ -908,6 +926,9 @@
       const aCard = att.absentCard || {};
       const lCard = att.leaveCard || {};
 
+      const monthlyList = Array.isArray(att.monthlyGraph) ? att.monthlyGraph : [];
+      const calendarDays = Array.isArray(att.calendarList) ? att.calendarList : [];
+
       container.innerHTML = `
         <!-- Top Stats Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -947,10 +968,10 @@
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
-            ${(att.monthlyGraph || []).filter(m => m.percentage > 0).map(m => `
+            ${monthlyList.filter(m => Number(m.percentage || 0) > 0).map(m => `
               <div class="p-3.5 rounded-2xl bg-dark-850 border border-dark-700/80 flex flex-col items-center gap-1 text-center">
                 <span class="text-xs font-bold text-zinc-400 uppercase">${m.month}</span>
-                <span class="text-lg font-extrabold ${m.percentage >= 85 ? 'text-emerald-400' : 'text-amber-400'}">${m.percentage.toFixed(1)}%</span>
+                <span class="text-lg font-extrabold ${Number(m.percentage) >= 85 ? 'text-emerald-400' : 'text-amber-400'}">${Number(m.percentage || 0).toFixed(1)}%</span>
               </div>
             `).join('')}
           </div>
@@ -960,11 +981,11 @@
         <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 shadow-xl flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <h3 class="text-base font-bold text-white">Daily Recorded Logs</h3>
-            <span class="text-xs text-zinc-400">${(att.calendarList || []).length} registered school days</span>
+            <span class="text-xs text-zinc-400">${calendarDays.length} registered school days</span>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
-            ${(att.calendarList || []).map(day => `
+            ${calendarDays.map(day => `
               <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs font-medium ${day.status === 'Present' ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-rose-500/10 border-rose-500/25 text-rose-300'}">
                 <span class="font-mono">${day.date}</span>
                 <span class="font-bold text-[11px]">${day.status}</span>
@@ -978,8 +999,11 @@
     // --- RENDER MODULE 4: HOMEWORK ---
     function renderHomework(hw) {
       const container = document.getElementById('section-homework');
-      const assignments = hw?.assignments || [];
-      if (assignments.length === 0) {
+      const assignments = Array.isArray(hw?.assignments) 
+        ? hw.assignments 
+        : (Array.isArray(hw) ? hw : (Array.isArray(hw?.homework_list) ? hw.homework_list : []));
+
+      if (!Array.isArray(assignments) || assignments.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No homework assignments found.</div>';
         return;
       }
@@ -988,22 +1012,22 @@
           <div class="flex items-start justify-between gap-3">
             <div>
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${a.subject}</span>
-                <span class="text-xs text-zinc-400">By ${a.assignedBy}</span>
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${a.subject || a.subjectname || 'General'}</span>
+                <span class="text-xs text-zinc-400">By ${a.assignedBy || a.assignBy || 'Teacher'}</span>
               </div>
-              <h3 class="text-sm sm:text-base font-bold text-white">${a.title}</h3>
+              <h3 class="text-sm sm:text-base font-bold text-white">${a.title || a.assignmentname || 'Assignment'}</h3>
             </div>
             <div class="text-right">
               <span class="text-xs font-semibold px-2 py-0.5 rounded-md ${a.deadlineDate ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-dark-800 text-zinc-400'}">
-                Due: ${a.deadlineDate || 'No deadline'}
+                Due: ${a.deadlineDate || a.deadlinedate || 'No deadline'}
               </span>
             </div>
           </div>
           ${a.description ? `<p class="text-xs text-zinc-300 leading-relaxed">${a.description}</p>` : ''}
-          ${a.attachments && a.attachments.length > 0 ? `
+          ${Array.isArray(a.attachments) && a.attachments.length > 0 ? `
             <div class="flex flex-wrap gap-2 pt-2 border-t border-dark-750">
               ${a.attachments.map(att => `
-                <a href="${att.cloud_front_serving_url || att.servingUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-800 border border-dark-700 hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
+                <a href="${att.cloud_front_serving_url || att.servingUrl || att.url || '#'}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-800 border border-dark-700 hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                   <span>${att.filename || 'Attachment'}</span>
                 </a>
@@ -1017,37 +1041,57 @@
     // --- RENDER MODULE 5: RESULTS ---
     function renderResults(data) {
       const container = document.getElementById('section-results');
-      const list = Array.isArray(data) ? data : (data?.resultdata || (Array.isArray(data?.results) ? data.results : []));
+      const list = Array.isArray(data) 
+        ? data 
+        : (Array.isArray(data?.resultdata) 
+          ? data.resultdata 
+          : (Array.isArray(data?.results) 
+            ? data.results 
+            : (Array.isArray(data?.data?.resultdata) ? data.data.resultdata : [])));
+
       if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No report cards or results published.</div>';
         return;
       }
-      container.innerHTML = list.map(r => `
-        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
-              🏆
-            </div>
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-dark-800 text-zinc-300 border border-dark-700 font-mono">${r.academicYear || '2026-27'}</span>
-                <span class="text-xs text-zinc-400">Published: ${r.publishDate}</span>
+      const schoolDomain = session.account?.schoolDomain || 'dpsharni.edunext2.com';
+      container.innerHTML = list.map(r => {
+        const reportTitle = r.reportName || r.reportname || 'Report Card';
+        const pubDate = r.publishDate || r.publishdate || '-';
+        const yr = r.academicYear || r.academicyearid || '2026-27';
+        const rawUrl = r.fullReportUrl || r.reportUrl || r.report || '';
+        const reportUrl = rawUrl ? (rawUrl.startsWith('http') ? rawUrl : 'https://' + schoolDomain + rawUrl) : '';
+        const safeTitle = reportTitle.replace(/'/g, "\\'");
+        const safeUrl = reportUrl.replace(/'/g, "\\'");
+
+        return `
+          <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
+                🏆
               </div>
-              <h3 class="text-base font-bold text-white">${r.reportName}</h3>
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-dark-800 text-zinc-300 border border-dark-700 font-mono">${yr}</span>
+                  <span class="text-xs text-zinc-400">Published: ${pubDate}</span>
+                </div>
+                <h3 class="text-base font-bold text-white">${reportTitle}</h3>
+              </div>
             </div>
+            ${reportUrl ? `
+              <button onclick="openReportModal('${safeTitle}', '${safeUrl}')" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+                <span>View Full Report Card</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            ` : '<span class="text-xs text-zinc-500">Report pending</span>'}
           </div>
-          <button onclick="openReportModal('${r.reportName}', '${r.fullReportUrl}')" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition flex items-center justify-center gap-2">
-            <span>View Full Report Card</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // --- RENDER MODULE 6: SYLLABUS ---
     function renderSyllabus(data) {
       const container = document.getElementById('section-syllabus');
-      const list = Array.isArray(data) ? data : (data?.syllabus_list || []);
+      const list = Array.isArray(data) ? data : (data?.syllabus_list || data?.list || []);
       if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No syllabus uploaded.</div>';
         return;
@@ -1060,13 +1104,15 @@
             </div>
             <div>
               <h4 class="text-sm sm:text-base font-bold text-white">${s.subject || 'All Subjects'}</h4>
-              <p class="text-xs text-zinc-400 line-clamp-1">${s.description || s.fileName}</p>
+              <p class="text-xs text-zinc-400 line-clamp-1">${s.description || s.fileName || ''}</p>
             </div>
           </div>
-          <a href="${s.fileUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 flex-shrink-0">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>Download</span>
-          </a>
+          ${s.fileUrl ? `
+            <a href="${s.fileUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>Download</span>
+            </a>
+          ` : '<span class="text-xs text-zinc-500">No file</span>'}
         </div>
       `).join('');
     }
@@ -1074,7 +1120,7 @@
     // --- RENDER MODULE 7: DOWNLOADS ---
     function renderDownloads(data) {
       const container = document.getElementById('section-downloads');
-      const list = Array.isArray(data) ? data : (data?.download_list || []);
+      const list = Array.isArray(data) ? data : (data?.download_list || data?.list || []);
       if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No study resources found.</div>';
         return;
@@ -1087,10 +1133,10 @@
             </div>
             <div>
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-dark-800 text-zinc-300 border border-dark-700">${d.category}</span>
-                <span class="text-xs text-zinc-400 font-mono">${d.date}</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-dark-800 text-zinc-300 border border-dark-700">${d.category || 'Document'}</span>
+                <span class="text-xs text-zinc-400 font-mono">${d.date || ''}</span>
               </div>
-              <h4 class="text-sm sm:text-base font-bold text-white">${d.title}</h4>
+              <h4 class="text-sm sm:text-base font-bold text-white">${d.title || 'Resource'}</h4>
             </div>
           </div>
           ${d.fileUrl ? `
@@ -1106,7 +1152,7 @@
     // --- RENDER MODULE 8: SCHOOL NEWS ---
     function renderNews(data) {
       const container = document.getElementById('section-news');
-      const list = Array.isArray(data) ? data : (data?.news_list || []);
+      const list = Array.isArray(data) ? data : (data?.news_list || data?.schoolnewslist || []);
       if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No school news posted.</div>';
         return;
@@ -1115,9 +1161,9 @@
         <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-3 shadow-sm">
           <div class="flex items-center justify-between text-xs text-zinc-400">
             <span class="font-bold text-brand-300">${n.author || 'Administration'}</span>
-            <span class="font-mono">${n.date}</span>
+            <span class="font-mono">${n.date || ''}</span>
           </div>
-          <h3 class="text-base font-bold text-white">${n.subject}</h3>
+          <h3 class="text-base font-bold text-white">${n.subject || 'News Update'}</h3>
           ${n.description ? `<p class="text-xs text-zinc-300 leading-relaxed">${n.description}</p>` : ''}
           ${n.mediaUrl ? `
             <div class="mt-2">
@@ -1456,7 +1502,7 @@
 
       const attachBox = document.getElementById('modalAttachments');
       const attachList = document.getElementById('modalAttachmentsList');
-      if (mail.image_array && mail.image_array.length > 0) {
+      if (Array.isArray(mail.image_array) && mail.image_array.length > 0) {
         attachBox.classList.remove('hidden');
         attachList.innerHTML = mail.image_array.map(att => {
           const fileUrl = att.cloud_front_serving_url || att.servingUrl || att.download_file_path;
