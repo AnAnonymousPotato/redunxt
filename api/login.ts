@@ -61,6 +61,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
         JSON.stringify({
           success: true,
           token: json.token,
+          deviceToken: json.deviceToken,
           account: json.account,
         })
       );

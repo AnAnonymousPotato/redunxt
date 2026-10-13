@@ -429,24 +429,27 @@
         }
 
         // Token missing or expired: Perform silent background auto-login using D1 database
-        try {
-          const autoRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: storedUserId })
-          });
-          const autoJson = await autoRes.json();
-          if (autoJson.success && autoJson.token) {
-            session = {
-              token: autoJson.token,
-              account: autoJson.account,
-              student: { userId: autoJson.account?.userId }
-            };
-            localStorage.setItem('redunxt_session', JSON.stringify(session));
-            showDashboard();
-            return;
-          }
-        } catch {}
+        const storedDeviceToken = localStorage.getItem('redunxt_device_token');
+        if (storedUserId && storedDeviceToken) {
+          try {
+            const autoRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: storedUserId, deviceToken: storedDeviceToken })
+            });
+            const autoJson = await autoRes.json();
+            if (autoJson.success && autoJson.token) {
+              session = {
+                token: autoJson.token,
+                account: autoJson.account,
+                student: { userId: autoJson.account?.userId }
+              };
+              localStorage.setItem('redunxt_session', JSON.stringify(session));
+              showDashboard();
+              return;
+            }
+          } catch {}
+        }
       }
 
       showLogin();
@@ -521,6 +524,9 @@
         };
 
         // Always save to localStorage for permanent auto-login
+        if (json.deviceToken) {
+          localStorage.setItem('redunxt_device_token', json.deviceToken);
+        }
         localStorage.setItem('redunxt_user_id', userId);
         localStorage.setItem('redunxt_session', JSON.stringify(session));
 
@@ -535,8 +541,18 @@
     }
 
     // 3. Manual Logout Handler
-    function handleLogout() {
+    async function handleLogout() {
+      const storedUserId = localStorage.getItem('redunxt_user_id');
+      const storedDeviceToken = localStorage.getItem('redunxt_device_token');
+      if (storedUserId && storedDeviceToken) {
+        fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: storedUserId, deviceToken: storedDeviceToken })
+        }).catch(() => {});
+      }
       localStorage.removeItem('redunxt_user_id');
+      localStorage.removeItem('redunxt_device_token');
       localStorage.removeItem('redunxt_session');
       session = { token: null, student: null, account: null };
       bundleData = null;
@@ -555,32 +571,31 @@
 
       try {
         const uId = session.account?.userId || localStorage.getItem('redunxt_user_id') || '';
-        let res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/data', {
-          headers: {
-            'Authorization': session.token ? `Bearer ${session.token}` : '',
-            'x-user-id': uId,
-            'x-school-domain': session.account?.schoolDomain || 'dpsharni.edunext2.com',
-          }
-        }).catch(() => null);
+        const dToken = localStorage.getItem('redunxt_device_token') || '';
+        const fetchHeaders = {
+          'Authorization': session.token ? `Bearer ${session.token}` : '',
+          'x-user-id': uId,
+          'x-device-token': dToken,
+          'x-school-domain': session.account?.schoolDomain || 'dpsharni.edunext2.com',
+        };
+
+        let res = await fetch('/api/data', { headers: fetchHeaders }).catch(() => null);
 
         if (!res || !res.ok) {
-          res = await fetch('/api/data', {
-            headers: {
-              'Authorization': session.token ? `Bearer ${session.token}` : '',
-              'x-user-id': uId,
-              'x-school-domain': session.account?.schoolDomain || 'dpsharni.edunext2.com',
-            }
-          });
+          res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/data', {
+            headers: fetchHeaders
+          }).catch(() => null);
         }
 
-        if (res.status === 401) {
-          // Attempt silent refresh via D1
+        if (res && res.status === 401) {
+          // Attempt silent refresh via D1 with deviceToken
           const storedUserId = localStorage.getItem('redunxt_user_id');
-          if (storedUserId) {
+          const storedDeviceToken = localStorage.getItem('redunxt_device_token');
+          if (storedUserId && storedDeviceToken) {
             const refreshRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId: storedUserId })
+              body: JSON.stringify({ userId: storedUserId, deviceToken: storedDeviceToken })
             });
             const refreshJson = await refreshRes.json();
             if (refreshJson.success && refreshJson.token) {
@@ -702,9 +717,10 @@
     }
 
     // --- RENDER MODULE 1: CIRCULARS ---
-    function renderCirculars(list) {
+    function renderCirculars(data) {
       const container = document.getElementById('section-circulars');
-      if (list.length === 0) {
+      const list = Array.isArray(data) ? data : (data?.circular_list || []);
+      if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No circulars posted.</div>';
         return;
       }
@@ -735,9 +751,10 @@
     }
 
     // --- RENDER MODULE 2: MAILBOX ---
-    function renderMailbox(list) {
+    function renderMailbox(data) {
       const container = document.getElementById('section-mailbox');
-      if (list.length === 0) {
+      const list = Array.isArray(data) ? data : (data?.mail_box_list || []);
+      if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No mailbox messages found.</div>';
         return;
       }
@@ -897,9 +914,10 @@
     }
 
     // --- RENDER MODULE 5: RESULTS ---
-    function renderResults(list) {
+    function renderResults(data) {
       const container = document.getElementById('section-results');
-      if (list.length === 0) {
+      const list = Array.isArray(data) ? data : (data?.resultdata || (Array.isArray(data?.results) ? data.results : []));
+      if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No report cards or results published.</div>';
         return;
       }
@@ -926,9 +944,10 @@
     }
 
     // --- RENDER MODULE 6: SYLLABUS ---
-    function renderSyllabus(list) {
+    function renderSyllabus(data) {
       const container = document.getElementById('section-syllabus');
-      if (list.length === 0) {
+      const list = Array.isArray(data) ? data : (data?.syllabus_list || []);
+      if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No syllabus uploaded.</div>';
         return;
       }
@@ -952,9 +971,10 @@
     }
 
     // --- RENDER MODULE 7: DOWNLOADS ---
-    function renderDownloads(list) {
+    function renderDownloads(data) {
       const container = document.getElementById('section-downloads');
-      if (list.length === 0) {
+      const list = Array.isArray(data) ? data : (data?.download_list || []);
+      if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No study resources found.</div>';
         return;
       }
@@ -983,9 +1003,10 @@
     }
 
     // --- RENDER MODULE 8: SCHOOL NEWS ---
-    function renderNews(list) {
+    function renderNews(data) {
       const container = document.getElementById('section-news');
-      if (list.length === 0) {
+      const list = Array.isArray(data) ? data : (data?.news_list || []);
+      if (!Array.isArray(list) || list.length === 0) {
         container.innerHTML = '<div class="text-center py-16 text-zinc-500 text-sm">No school news posted.</div>';
         return;
       }
@@ -1183,11 +1204,12 @@
       renderSettings();
 
       const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
-      if (userId) {
+      const deviceToken = localStorage.getItem('redunxt_device_token');
+      if (userId && deviceToken) {
         await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, avatarMode: newMode, customAvatarUrl: session.account.customAvatarUrl })
+          body: JSON.stringify({ userId, deviceToken, avatarMode: newMode, customAvatarUrl: session.account.customAvatarUrl })
         }).catch(() => {});
       }
     }
@@ -1203,11 +1225,12 @@
       renderSettings();
 
       const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
-      if (userId) {
+      const deviceToken = localStorage.getItem('redunxt_device_token');
+      if (userId && deviceToken) {
         await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, avatarMode: 'custom', customAvatarUrl: url })
+          body: JSON.stringify({ userId, deviceToken, avatarMode: 'custom', customAvatarUrl: url })
         }).catch(() => {});
       }
     }

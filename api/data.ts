@@ -17,14 +17,15 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   let token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
   const schoolDomain = (req.headers['x-school-domain'] as string) || 'dpsharni.edunext2.com';
   const userId = req.headers['x-user-id'] as string;
+  const deviceToken = req.headers['x-device-token'] as string;
 
-  // If no token but userId is provided, attempt auto-login via Cloudflare D1
-  if (!token && userId) {
+  // If no token but userId and deviceToken are provided, attempt secure auto-login via Cloudflare D1
+  if (!token && userId && deviceToken) {
     try {
       const d1Res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, deviceToken }),
       });
       const d1Data = (await d1Res.json()) as any;
       if (d1Data.success && d1Data.token) {
