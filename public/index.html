@@ -629,6 +629,15 @@
     async function handleLogout() {
       const storedUserId = localStorage.getItem('redunxt_user_id');
       const storedDeviceToken = localStorage.getItem('redunxt_device_token');
+      if ('serviceWorker' in navigator) {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          const sub = await reg.pushManager.getSubscription();
+          if (sub) {
+            await sub.unsubscribe();
+          }
+        } catch {}
+      }
       if (storedUserId && storedDeviceToken) {
         fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/logout', {
           method: 'POST',
@@ -832,6 +841,10 @@
         searchSection.classList.add('hidden');
       } else {
         searchSection.classList.remove('hidden');
+      }
+
+      if (tabId === 'settings') {
+        setTimeout(updatePushUI, 50);
       }
     }
 
@@ -1347,6 +1360,48 @@
           </div>
         </div>
 
+        <!-- Push Notifications Card -->
+        <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-4 shadow-md">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Push Notifications</h4>
+                <p class="text-xs text-zinc-400">Receive alerts for new Circulars and Mail even when Redunxt is closed.</p>
+              </div>
+            </div>
+            <span id="pushStatusBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-dark-800 text-zinc-400 border border-dark-750">Checking...</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-dark-750">
+            <div class="text-xs text-zinc-400" id="pushStatusDescription">
+              Encrypted Web Push with strict multi-account isolation.
+            </div>
+            <div class="flex items-center gap-2">
+              <button 
+                id="pushTestBtn" 
+                type="button" 
+                onclick="sendTestPushNotification()" 
+                class="hidden px-3.5 py-1.5 rounded-xl bg-dark-800 hover:bg-dark-750 text-brand-300 border border-brand-500/30 text-xs font-semibold transition active:scale-95 flex items-center gap-1.5"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Test Push</span>
+              </button>
+
+              <button 
+                id="pushToggleBtn" 
+                type="button" 
+                onclick="togglePushSubscription()" 
+                class="px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-sm active:scale-95"
+              >
+                Enable Notifications
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Session Security Card -->
         <div class="rounded-3xl bg-dark-900 border border-dark-750 p-6 flex flex-col gap-3 shadow-md">
           <div class="flex items-center gap-2">
@@ -1369,6 +1424,8 @@
           </button>
         </div>
       `;
+
+      setTimeout(updatePushUI, 50);
     }
 
     // Helper: compress image file to lightweight canvas data URL
@@ -1479,6 +1536,204 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, deviceToken, avatarMode: newMode, customAvatarUrl: null })
         }).catch(() => {});
+      }
+    }
+
+    // --- WEB PUSH NOTIFICATIONS & TOAST HELPERS ---
+    function showToast(message, type = 'info') {
+      let toastContainer = document.getElementById('toastContainer');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none';
+        document.body.appendChild(toastContainer);
+      }
+      const toast = document.createElement('div');
+      const bg = type === 'error' ? 'bg-rose-600' : (type === 'success' ? 'bg-emerald-600' : 'bg-brand-600');
+      toast.className = `${bg} text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto`;
+      toast.innerHTML = `<span>${message}</span>`;
+      toastContainer.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      });
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    async function updatePushUI() {
+      const badge = document.getElementById('pushStatusBadge');
+      const desc = document.getElementById('pushStatusDescription');
+      const toggleBtn = document.getElementById('pushToggleBtn');
+      const testBtn = document.getElementById('pushTestBtn');
+
+      if (!badge || !toggleBtn) return;
+
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        badge.innerText = 'Not Supported';
+        badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700';
+        desc.innerText = 'Web Push is not supported on this browser or environment.';
+        toggleBtn.innerText = 'Not Supported';
+        toggleBtn.disabled = true;
+        toggleBtn.className = 'px-4 py-1.5 rounded-xl bg-dark-800 text-zinc-500 text-xs font-bold cursor-not-allowed border border-dark-750';
+        if (testBtn) testBtn.classList.add('hidden');
+        return;
+      }
+
+      if (Notification.permission === 'denied') {
+        badge.innerText = 'Blocked in Browser';
+        badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30';
+        desc.innerText = 'Notifications are blocked. Please allow notifications in your browser or phone site settings.';
+        toggleBtn.innerText = 'Permission Blocked';
+        toggleBtn.disabled = true;
+        toggleBtn.className = 'px-4 py-1.5 rounded-xl bg-dark-800 text-zinc-500 text-xs font-bold cursor-not-allowed border border-dark-750';
+        if (testBtn) testBtn.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+
+        if (sub) {
+          badge.innerText = 'Active (This Device)';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          desc.innerText = 'Active. You will receive push notifications when new circulars or mails arrive.';
+          toggleBtn.innerText = 'Disable Notifications';
+          toggleBtn.disabled = false;
+          toggleBtn.className = 'px-4 py-1.5 rounded-xl bg-dark-800 hover:bg-rose-500/20 hover:text-rose-300 text-zinc-300 border border-dark-700 text-xs font-semibold transition active:scale-95';
+          if (testBtn) testBtn.classList.remove('hidden');
+        } else {
+          badge.innerText = 'Disabled';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-dark-800 text-zinc-400 border border-dark-750';
+          desc.innerText = 'Enable push notifications to receive real-time updates even when Redunxt is closed.';
+          toggleBtn.innerText = 'Enable Notifications';
+          toggleBtn.disabled = false;
+          toggleBtn.className = 'px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-sm active:scale-95';
+          if (testBtn) testBtn.classList.add('hidden');
+        }
+      } catch (err) {
+        badge.innerText = 'Unavailable';
+        desc.innerText = 'Checking push status failed.';
+      }
+    }
+
+    async function togglePushSubscription() {
+      const toggleBtn = document.getElementById('pushToggleBtn');
+      if (toggleBtn) {
+        toggleBtn.disabled = true;
+        toggleBtn.innerText = 'Processing...';
+      }
+
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        const existingSub = await reg.pushManager.getSubscription();
+
+        if (existingSub) {
+          // Unsubscribe locally and on edge worker
+          await existingSub.unsubscribe();
+          const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+          const deviceToken = localStorage.getItem('redunxt_device_token');
+
+          await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/unsubscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, deviceToken, endpoint: existingSub.endpoint })
+          }).catch(() => {});
+
+          showToast('Push notifications disabled on this device.', 'info');
+        } else {
+          // Request permission
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            showToast('Notification permission was not granted.', 'error');
+            updatePushUI();
+            return;
+          }
+
+          // Fetch active VAPID key
+          const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
+          const vapidData = await vapidRes.json();
+          if (!vapidData.success || !vapidData.publicKey) {
+            throw new Error('Failed to fetch notification server key.');
+          }
+
+          const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
+          const newSub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey
+          });
+
+          const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+          const deviceToken = localStorage.getItem('redunxt_device_token');
+
+          const subRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              deviceToken,
+              subscription: newSub.toJSON()
+            })
+          });
+
+          const subData = await subRes.json();
+          if (!subData.success) {
+            throw new Error(subData.error || 'Failed to register push subscription on server.');
+          }
+
+          showToast('Push notifications active on this device!', 'success');
+        }
+      } catch (err) {
+        showToast(err.message || 'Notification configuration failed.', 'error');
+      } finally {
+        if (toggleBtn) toggleBtn.disabled = false;
+        updatePushUI();
+      }
+    }
+
+    async function sendTestPushNotification() {
+      const testBtn = document.getElementById('pushTestBtn');
+      if (testBtn) {
+        testBtn.disabled = true;
+        testBtn.classList.add('opacity-50');
+      }
+
+      try {
+        const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+        const deviceToken = localStorage.getItem('redunxt_device_token');
+
+        const res = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, deviceToken })
+        });
+
+        const json = await res.json();
+        if (!json.success) {
+          throw new Error(json.error || 'Test notification failed to dispatch.');
+        }
+
+        showToast('Test notification sent! Check your device notification bar.', 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to send test notification.', 'error');
+      } finally {
+        if (testBtn) {
+          testBtn.disabled = false;
+          testBtn.classList.remove('opacity-50');
+        }
       }
     }
 

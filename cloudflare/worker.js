@@ -1,5 +1,156 @@
+// Redunxt Cloudflare Edge Worker with D1 Persistence, Multi-Account Session Isolation, and RFC 8291 Web Push Engine
+
+function b64Url(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function b64UrlToBytes(str) {
+  const pad = '='.repeat((4 - (str.length % 4)) % 4);
+  const b64 = (str + pad).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(b64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) {
+    arr[i] = raw.charCodeAt(i);
+  }
+  return arr;
+}
+
+async function getVapidAuthHeader(endpoint, vapidConfig) {
+  const aud = new URL(endpoint).origin;
+  const header = b64Url(new TextEncoder().encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
+  const claims = b64Url(new TextEncoder().encode(JSON.stringify({
+    aud,
+    exp: Math.floor(Date.now() / 1000) + 43200,
+    sub: vapidConfig.subject || 'mailto:support@redunxt.org'
+  })));
+  const unsignedToken = header + '.' + claims;
+
+  const key = await crypto.subtle.importKey(
+    'jwk',
+    {
+      kty: 'EC',
+      crv: 'P-256',
+      x: vapidConfig.x,
+      y: vapidConfig.y,
+      d: vapidConfig.privateKey
+    },
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    false,
+    ['sign']
+  );
+
+  const sig = await crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    key,
+    new TextEncoder().encode(unsignedToken)
+  );
+
+  const jwt = unsignedToken + '.' + b64Url(sig);
+  return 'vapid t=' + jwt + ', k=' + vapidConfig.publicKey;
+}
+
+async function sendWebPush(subscription, payload, vapidConfig) {
+  const authHeader = await getVapidAuthHeader(subscription.endpoint, vapidConfig);
+
+  const clientPubRaw = b64UrlToBytes(subscription.p256dh);
+  const clientAuthRaw = b64UrlToBytes(subscription.auth);
+
+  const serverKeyPair = await crypto.subtle.generateKey(
+    { name: 'ECDH', namedCurve: 'P-256' },
+    true,
+    ['deriveKey', 'deriveBits']
+  );
+  const serverPubRaw = await crypto.subtle.exportKey('raw', serverKeyPair.publicKey);
+
+  const clientPubKey = await crypto.subtle.importKey(
+    'raw',
+    clientPubRaw,
+    { name: 'ECDH', namedCurve: 'P-256' },
+    false,
+    []
+  );
+
+  const sharedSecret = await crypto.subtle.deriveBits(
+    { name: 'ECDH', public: clientPubKey },
+    serverKeyPair.privateKey,
+    256
+  );
+
+  const infoHeader = new TextEncoder().encode('WebPush: info\0');
+  const keyInfo = new Uint8Array(infoHeader.length + clientPubRaw.byteLength + serverPubRaw.byteLength);
+  keyInfo.set(infoHeader, 0);
+  keyInfo.set(clientPubRaw, infoHeader.length);
+  keyInfo.set(new Uint8Array(serverPubRaw), infoHeader.length + clientPubRaw.byteLength);
+
+  const prkKey = await crypto.subtle.importKey('raw', sharedSecret, 'HKDF', false, ['deriveBits']);
+  const ikm = await crypto.subtle.deriveBits(
+    { name: 'HKDF', hash: 'SHA-256', salt: clientAuthRaw, info: keyInfo },
+    prkKey,
+    256
+  );
+
+  const salt = new Uint8Array(16);
+  crypto.getRandomValues(salt);
+
+  const saltKey = await crypto.subtle.importKey('raw', ikm, 'HKDF', false, ['deriveKey', 'deriveBits']);
+  const cekInfo = new TextEncoder().encode('Content-Encoding: aes128gcm\0');
+  const cek = await crypto.subtle.deriveKey(
+    { name: 'HKDF', hash: 'SHA-256', salt, info: cekInfo },
+    saltKey,
+    { name: 'AES-GCM', length: 128 },
+    false,
+    ['encrypt']
+  );
+
+  const nonceInfo = new TextEncoder().encode('Content-Encoding: nonce\0');
+  const nonce = await crypto.subtle.deriveBits(
+    { name: 'HKDF', hash: 'SHA-256', salt, info: nonceInfo },
+    saltKey,
+    96
+  );
+
+  const payloadText = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  const payloadBytes = new TextEncoder().encode(payloadText);
+  const padded = new Uint8Array(payloadBytes.length + 1);
+  padded.set(payloadBytes, 0);
+  padded[payloadBytes.length] = 2;
+
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: nonce },
+    cek,
+    padded
+  );
+
+  const recordSize = new Uint8Array([0, 0, 16, 0]); // 4096
+  const keyIdLen = new Uint8Array([65]);
+  const body = new Uint8Array(16 + 4 + 1 + 65 + ciphertext.byteLength);
+  let offset = 0;
+  body.set(salt, offset); offset += 16;
+  body.set(recordSize, offset); offset += 4;
+  body.set(keyIdLen, offset); offset += 1;
+  body.set(new Uint8Array(serverPubRaw), offset); offset += 65;
+  body.set(new Uint8Array(ciphertext), offset);
+
+  return fetch(subscription.endpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': authHeader,
+      'Content-Type': 'application/octet-stream',
+      'Content-Encoding': 'aes128gcm',
+      'TTL': '86400',
+      'Urgency': 'normal'
+    },
+    body
+  });
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const origin = request.headers.get('Origin') || '';
     const isAllowedOrigin = !origin || 
       origin.includes('vercel.app') || 
@@ -40,7 +191,6 @@ export default {
           });
         }
 
-        // Authenticate directly against Edunext REST endpoint
         const loginRes = await fetch('https://m1.edubac.com/rest/v4/student/openconnect', {
           method: 'POST',
           headers: {
@@ -64,7 +214,6 @@ export default {
 
         const token = loginData.data.openIdConnect;
 
-        // Fetch basic profile info
         let studentName = 'Student';
         let admissionNo = '';
         let classSection = '';
@@ -88,7 +237,6 @@ export default {
           }
         } catch {}
 
-        // Decode token expiration
         let tokenExpiry = 0;
         try {
           const parts = token.split('.');
@@ -96,7 +244,6 @@ export default {
           tokenExpiry = payload.exp || 0;
         } catch {}
 
-        // Parameterized upsert into D1 accounts table (SQL injection impossible)
         await env.DB.prepare("INSERT INTO accounts (user_id, password, school_domain, student_name, admission_no, class_section, profile_photo, cached_token, token_expires_at, last_synced_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(user_id) DO UPDATE SET password = excluded.password, school_domain = excluded.school_domain, student_name = excluded.student_name, admission_no = excluded.admission_no, class_section = excluded.class_section, profile_photo = excluded.profile_photo, cached_token = excluded.cached_token, token_expires_at = excluded.token_expires_at, last_synced_at = excluded.last_synced_at, updated_at = CURRENT_TIMESTAMP").bind(
           uId,
           pass,
@@ -109,18 +256,15 @@ export default {
           tokenExpiry
         ).run();
 
-        // Generate cryptographically secure random device token for this authorized device
         const deviceToken = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
         const userAgent = request.headers.get('User-Agent') || 'browser';
 
         await env.DB.prepare("INSERT INTO device_sessions (user_id, device_token, user_agent, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)").bind(uId, deviceToken, userAgent).run();
 
-        // Fetch avatar settings
         const existing = await env.DB.prepare(
           'SELECT avatar_mode, custom_avatar_url FROM accounts WHERE user_id = ?'
         ).bind(uId).first();
 
-        // Strictly omit password from the response
         return new Response(JSON.stringify({
           success: true,
           token,
@@ -160,7 +304,6 @@ export default {
           });
         }
 
-        // Verify that this device has an authorized device_session
         if (!dToken) {
           return new Response(JSON.stringify({
             success: false,
@@ -185,7 +328,6 @@ export default {
           });
         }
 
-        // Query ONLY the requesting account
         const account = await env.DB.prepare(
           'SELECT * FROM accounts WHERE user_id = ?'
         ).bind(uId).first();
@@ -201,7 +343,6 @@ export default {
         const now = Math.floor(Date.now() / 1000);
         const isExpired = !account.token_expires_at || account.token_expires_at - 300 < now;
 
-        // If expired or missing, auto-authenticate against Edunext using securely stored password
         if (isExpired || !token) {
           const loginRes = await fetch('https://m1.edubac.com/rest/v4/student/openconnect', {
             method: 'POST',
@@ -236,7 +377,6 @@ export default {
           ).bind(token, newExp, account.user_id).run();
         }
 
-        // Return token and profile without password
         return new Response(JSON.stringify({
           success: true,
           token,
@@ -261,7 +401,7 @@ export default {
       }
     }
 
-    // 4. POST /accounts/logout - Invalidate THIS device session in D1
+    // 4. POST /accounts/logout - Invalidate THIS device session & attached push subscriptions in D1
     if (url.pathname === '/accounts/logout' && request.method === 'POST') {
       try {
         const { userId, deviceToken } = await request.json();
@@ -272,9 +412,14 @@ export default {
           await env.DB.prepare(
             'DELETE FROM device_sessions WHERE user_id = ? AND device_token = ?'
           ).bind(uId, dToken).run();
+
+          // Revoke push subscriptions on this device immediately so no notifications leak
+          await env.DB.prepare(
+            'DELETE FROM push_subscriptions WHERE user_id = ? AND device_token = ?'
+          ).bind(uId, dToken).run();
         }
 
-        return new Response(JSON.stringify({ success: true, message: 'Device session revoked.' }), {
+        return new Response(JSON.stringify({ success: true, message: 'Device session and push subscription revoked.' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       } catch (err) {
@@ -325,7 +470,183 @@ export default {
       }
     }
 
-    // 6. GET/POST /data - Concurrently fetch all 9 modules directly from Edunext microservices
+    // 6. GET /accounts/push/vapid-public-key - Return active VAPID public key
+    if (url.pathname === '/accounts/push/vapid-public-key' && request.method === 'GET') {
+      try {
+        const vapidRow = await env.DB.prepare("SELECT value FROM system_config WHERE key = 'vapid'").first();
+        if (!vapidRow?.value) {
+          return new Response(JSON.stringify({ success: false, error: 'VAPID not configured' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        const vapid = JSON.parse(vapidRow.value);
+        return new Response(JSON.stringify({ success: true, publicKey: vapid.publicKey }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // 7. POST /accounts/push/subscribe - Register device push subscription for THIS user
+    if (url.pathname === '/accounts/push/subscribe' && request.method === 'POST') {
+      try {
+        const { userId, deviceToken, subscription } = await request.json();
+        const uId = String(userId || '').trim();
+        const dToken = String(deviceToken || '').trim();
+
+        if (!uId || !dToken || !subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) {
+          return new Response(JSON.stringify({ success: false, error: 'Missing subscription details or device authentication.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const validSession = await env.DB.prepare(
+          'SELECT id FROM device_sessions WHERE user_id = ? AND device_token = ?'
+        ).bind(uId, dToken).first();
+
+        if (!validSession) {
+          return new Response(JSON.stringify({ success: false, error: 'Unauthorized device session.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        // Upsert subscription: conflict on endpoint transfers ownership strictly to new user & device token
+        await env.DB.prepare(
+          "INSERT INTO push_subscriptions (user_id, device_token, endpoint, p256dh, auth, updated_at) VALUES (?, ?, ?, ?, ?, datetime('now')) ON CONFLICT(endpoint) DO UPDATE SET user_id = excluded.user_id, device_token = excluded.device_token, p256dh = excluded.p256dh, auth = excluded.auth, updated_at = datetime('now')"
+        ).bind(uId, dToken, subscription.endpoint, subscription.keys.p256dh, subscription.keys.auth).run();
+
+        return new Response(JSON.stringify({ success: true, message: 'Push subscription registered.' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // 8. POST /accounts/push/unsubscribe - Revoke device push subscription
+    if (url.pathname === '/accounts/push/unsubscribe' && request.method === 'POST') {
+      try {
+        const { userId, deviceToken, endpoint } = await request.json();
+        const uId = String(userId || '').trim();
+        const dToken = String(deviceToken || '').trim();
+
+        if (dToken) {
+          await env.DB.prepare(
+            'DELETE FROM push_subscriptions WHERE device_token = ?'
+          ).bind(dToken).run();
+        } else if (endpoint) {
+          await env.DB.prepare(
+            'DELETE FROM push_subscriptions WHERE endpoint = ?'
+          ).bind(endpoint).run();
+        }
+
+        return new Response(JSON.stringify({ success: true, message: 'Push subscription removed.' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // 9. POST /accounts/push/test - Send immediate test push to verify notifications on THIS device
+    if (url.pathname === '/accounts/push/test' && request.method === 'POST') {
+      try {
+        const { userId, deviceToken } = await request.json();
+        const uId = String(userId || '').trim();
+        const dToken = String(deviceToken || '').trim();
+
+        if (!uId || !dToken) {
+          return new Response(JSON.stringify({ success: false, error: 'Authentication required.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const validSession = await env.DB.prepare(
+          'SELECT id FROM device_sessions WHERE user_id = ? AND device_token = ?'
+        ).bind(uId, dToken).first();
+
+        if (!validSession) {
+          return new Response(JSON.stringify({ success: false, error: 'Unauthorized device session.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const account = await env.DB.prepare(
+          'SELECT student_name FROM accounts WHERE user_id = ?'
+        ).bind(uId).first();
+
+        const studentName = account?.student_name || 'Student';
+
+        const sub = await env.DB.prepare(
+          'SELECT * FROM push_subscriptions WHERE user_id = ? AND device_token = ?'
+        ).bind(uId, dToken).first();
+
+        if (!sub) {
+          return new Response(JSON.stringify({ success: false, error: 'No active push subscription registered on this device.' }), {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const vapidRow = await env.DB.prepare("SELECT value FROM system_config WHERE key = 'vapid'").first();
+        if (!vapidRow?.value) {
+          return new Response(JSON.stringify({ success: false, error: 'VAPID configuration not found.' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        const vapidConfig = JSON.parse(vapidRow.value);
+
+        const pushPayload = {
+          title: 'Redunxt Push Verified!',
+          body: 'Hello ' + studentName + '! Push notifications are working perfectly on this device.',
+          icon: '/favicon.svg',
+          url: '/',
+          tag: 'redunxt-test-' + Date.now()
+        };
+
+        const pushRes = await sendWebPush(sub, pushPayload, vapidConfig);
+        const pushStatus = pushRes.status;
+
+        // Clean up expired subscriptions
+        if (pushStatus === 404 || pushStatus === 410) {
+          await env.DB.prepare('DELETE FROM push_subscriptions WHERE id = ?').bind(sub.id).run();
+          return new Response(JSON.stringify({ success: false, error: 'Push subscription expired or invalid at gateway (status ' + pushStatus + '). Please re-subscribe.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Test notification dispatched successfully (gateway status: ' + pushStatus + ').'
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // 10. GET/POST /data - Concurrently fetch all 9 modules directly from Edunext microservices
     if (url.pathname === '/data') {
       const authHeader = request.headers.get('Authorization') || '';
       let token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
@@ -506,5 +827,113 @@ export default {
     }
 
     return new Response('Not Found', { status: 404, headers: corsHeaders });
+  },
+
+  // Background Cron handler: Checks for new circulars and mails per user and sends Web Push
+  async scheduled(event, env, ctx) {
+    const users = await env.DB.prepare('SELECT DISTINCT user_id FROM push_subscriptions').all();
+    if (!users?.results || users.results.length === 0) return;
+
+    const vapidRow = await env.DB.prepare("SELECT value FROM system_config WHERE key = 'vapid'").first();
+    if (!vapidRow?.value) return;
+    const vapidConfig = JSON.parse(vapidRow.value);
+
+    for (const row of users.results) {
+      const userId = row.user_id;
+      ctx.waitUntil((async () => {
+        try {
+          const account = await env.DB.prepare('SELECT * FROM accounts WHERE user_id = ?').bind(userId).first();
+          if (!account) return;
+
+          let token = account.cached_token;
+          const now = Math.floor(Date.now() / 1000);
+          if (!token || !account.token_expires_at || account.token_expires_at - 300 < now) {
+            const lRes = await fetch('https://m1.edubac.com/rest/v4/student/openconnect', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'mvcdomainurl': account.school_domain || 'dpsharni.edunext2.com',
+                'Connection-type': '_write'
+              },
+              body: JSON.stringify({ userid: account.user_id, password: account.password })
+            });
+            const lData = await lRes.json();
+            if (lData.success && lData.data?.openIdConnect) {
+              token = lData.data.openIdConnect;
+              let exp = 0;
+              try { exp = JSON.parse(atob(token.split('.')[1])).exp || 0; } catch {}
+              await env.DB.prepare('UPDATE accounts SET cached_token = ?, token_expires_at = ?, last_synced_at = CURRENT_TIMESTAMP WHERE user_id = ?').bind(token, exp, userId).run();
+            } else {
+              return;
+            }
+          }
+
+          const headers = {
+            'Authorization': 'Bearer ' + token,
+            'mvcdomainurl': account.school_domain || 'dpsharni.edunext2.com',
+            'Connection-type': '_read',
+            'Content-Type': 'application/json'
+          };
+
+          const [circRes, mailRes] = await Promise.all([
+            fetch('https://m1.edubac.com/rest/v4/student/getCircularList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 3 }) }).catch(() => null),
+            fetch('https://m1.edubac.com/rest/v4/student/getMailBoxList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 3, is_inbox: '1' }) }).catch(() => null)
+          ]);
+
+          const circData = circRes ? await circRes.json().catch(() => ({})) : {};
+          const mailData = mailRes ? await mailRes.json().catch(() => ({})) : {};
+
+          const circulars = circData?.data?.circular_list || circData?.data?.circularlist || [];
+          const mails = mailData?.data?.mail_box_list || mailData?.data?.list || [];
+
+          const subs = await env.DB.prepare('SELECT * FROM push_subscriptions WHERE user_id = ?').bind(userId).all();
+          if (!subs?.results) return;
+
+          for (const sub of subs.results) {
+            // Check for new circular
+            if (circulars.length > 0) {
+              const latestCirc = circulars[0];
+              const latestCircId = String(latestCirc.circularid || latestCirc.circular_id || latestCirc.id || '');
+              if (latestCircId && latestCircId !== sub.last_circular_id) {
+                const circTitle = latestCirc.circularname || latestCirc.circular_name || 'New Circular';
+                const circDesc = (latestCirc.description || latestCirc.summary || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
+
+                await sendWebPush(sub, {
+                  title: 'Circular: ' + circTitle,
+                  body: circDesc || 'A new school circular has been published.',
+                  icon: '/favicon.svg',
+                  url: '/#circulars',
+                  tag: 'circ-' + latestCircId
+                }, vapidConfig).catch(() => null);
+
+                await env.DB.prepare('UPDATE push_subscriptions SET last_circular_id = ?, last_checked_at = CURRENT_TIMESTAMP WHERE id = ?').bind(latestCircId, sub.id).run();
+              }
+            }
+
+            // Check for new mail
+            if (mails.length > 0) {
+              const latestMail = mails[0];
+              const latestMailId = String(latestMail.mailid || latestMail.mail_id || latestMail.id || '');
+              if (latestMailId && latestMailId !== sub.last_mail_id) {
+                const mailSubject = latestMail.subject || 'New School Mail';
+                const sender = latestMail.sender_name || latestMail.sendername || 'School';
+
+                await sendWebPush(sub, {
+                  title: 'Mail: ' + mailSubject,
+                  body: 'From: ' + sender,
+                  icon: '/favicon.svg',
+                  url: '/#mailbox',
+                  tag: 'mail-' + latestMailId
+                }, vapidConfig).catch(() => null);
+
+                await env.DB.prepare('UPDATE push_subscriptions SET last_mail_id = ?, last_checked_at = CURRENT_TIMESTAMP WHERE id = ?').bind(latestMailId, sub.id).run();
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Scheduled notification error for user ' + userId, err);
+        }
+      })());
+    }
   }
 };
