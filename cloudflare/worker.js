@@ -220,7 +220,7 @@ export default {
         let profilePhoto = '';
 
         try {
-          const profRes = await fetch('https://m1.edubac.com/rest/v4/student/getStudentPersonalDetail', {
+          const profRes = await fetch('https://m2.edubac.com/rest/v4/student/studentDetailsnew', {
             headers: {
               'Authorization': 'Bearer ' + token,
               'mvcdomainurl': schoolDomain,
@@ -228,12 +228,12 @@ export default {
             }
           });
           const profData = await profRes.json();
-          if (profData.success && profData.data?.personalDetail) {
-            const p = profData.data.personalDetail;
-            studentName = p.student_name || studentName;
-            admissionNo = p.admission_no || admissionNo;
-            classSection = p.class_name ? (p.class_name + (p.section_name ? '-' + p.section_name : '')) : '';
-            profilePhoto = p.student_photo || '';
+          const p = profData.data?.studentMap;
+          if (p) {
+            studentName = p.studentname || studentName;
+            admissionNo = p.enrollmentNo || admissionNo;
+            classSection = p.className ? (p.className + (p.sectionName ? '-' + p.sectionName : '')) : '';
+            profilePhoto = p.studentImage || '';
           }
         } catch {}
 
@@ -377,15 +377,45 @@ export default {
           ).bind(token, newExp, account.user_id).run();
         }
 
+        let studentName = account.student_name || 'Student';
+        let admissionNo = account.admission_no || '';
+        let classSection = account.class_section || '';
+        let profilePhoto = account.profile_photo || '';
+
+        // If profile columns are empty or default, self-heal immediately from Edunext API
+        if (!admissionNo || studentName === 'Student' || !classSection) {
+          try {
+            const profRes = await fetch('https://m2.edubac.com/rest/v4/student/studentDetailsnew', {
+              headers: {
+                'Authorization': 'Bearer ' + token,
+                'mvcdomainurl': account.school_domain || 'dpsharni.edunext2.com',
+                'Connection-type': '_read'
+              }
+            });
+            const profData = await profRes.json();
+            const p = profData.data?.studentMap;
+            if (p) {
+              studentName = p.studentname || studentName;
+              admissionNo = p.enrollmentNo || admissionNo;
+              classSection = p.className ? (p.className + (p.sectionName ? '-' + p.sectionName : '')) : '';
+              profilePhoto = p.studentImage || profilePhoto;
+
+              await env.DB.prepare(
+                'UPDATE accounts SET student_name = ?, admission_no = ?, class_section = ?, profile_photo = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?'
+              ).bind(studentName, admissionNo, classSection, profilePhoto, account.user_id).run();
+            }
+          } catch {}
+        }
+
         return new Response(JSON.stringify({
           success: true,
           token,
           account: {
             userId: account.user_id,
-            studentName: account.student_name,
-            admissionNo: account.admission_no,
-            classSection: account.class_section,
-            profilePhoto: account.profile_photo,
+            studentName,
+            admissionNo,
+            classSection,
+            profilePhoto,
             avatarMode: account.avatar_mode || 'edunext',
             customAvatarUrl: account.custom_avatar_url,
             schoolDomain: account.school_domain
@@ -669,11 +699,13 @@ export default {
       try {
         let yearId = 21;
         let profileId = 691;
+        let uId = request.headers.get('x-user-id') || '';
         try {
           const parts = token.split('.');
           const payload = JSON.parse(atob(parts[1]));
           if (payload.academicyearid) yearId = payload.academicyearid;
           if (payload.studentprofileid) profileId = payload.studentprofileid;
+          if (!uId && (payload.sub || payload.username)) uId = String(payload.sub || payload.username);
         } catch {}
 
         const attUrl = 'https://m2.edubac.com/rest/v4/student/getStudentAttendanceCalander?academicyearid=' + yearId + '&fromdate=2026-04-01&todate=2027-03-31&studentprofileid=' + profileId;
@@ -690,14 +722,14 @@ export default {
           downloadsRes,
           attendanceRes
         ] = await Promise.all([
-          fetch('https://m1.edubac.com/rest/v4/student/getCircularList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 100 }) }).catch(() => null),
-          fetch('https://m1.edubac.com/rest/v4/student/getMailBoxList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 100, is_inbox: '1' }) }).catch(() => null),
-          fetch('https://m1.edubac.com/rest/v4/student/getNewsList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 50 }) }).catch(() => null),
-          fetch('https://m1.edubac.com/rest/v4/student/getStudentPersonalDetail', { method: 'POST', headers, body: JSON.stringify({}) }).catch(() => null),
-          fetch('https://m1.edubac.com/rest/v4/student/getHomeworkList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 100 }) }).catch(() => null),
+          fetch('https://m1.edubac.com/rest/v4/student/getcirculardata', { method: 'GET', headers }).catch(() => null),
+          fetch('https://m1.edubac.com/rest/v4/student/Studentinboxnew?limit=1', { method: 'GET', headers }).catch(() => null),
+          fetch('https://m1.edubac.com/rest/v4/student/getstudentnews', { method: 'GET', headers }).catch(() => null),
+          fetch('https://m2.edubac.com/rest/v4/student/studentDetailsnew', { method: 'GET', headers }).catch(() => null),
+          fetch('https://m1.edubac.com/rest/v4/student/studentHomework', { method: 'GET', headers }).catch(() => null),
           fetch(resUrl, { method: 'GET', headers }).catch(() => null),
-          fetch('https://m1.edubac.com/rest/v4/student/getSyllabusList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 100 }) }).catch(() => null),
-          fetch('https://m1.edubac.com/rest/v4/student/getDownloadMasterList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 100 }) }).catch(() => null),
+          fetch('https://m1.edubac.com/rest/v4/student/StudentSyllabus?limit=1&fts=', { method: 'GET', headers }).catch(() => null),
+          fetch('https://m1.edubac.com/rest/v4/student/getEresourceApi?fts=&limit=1', { method: 'GET', headers }).catch(() => null),
           fetch(attUrl, { method: 'GET', headers }).catch(() => null)
         ]);
 
@@ -800,9 +832,77 @@ export default {
         const normalizedCirculars = circulars?.data?.circular_list || circulars?.data?.circularlist || (Array.isArray(circulars?.data) ? circulars?.data : (Array.isArray(circulars) ? circulars : []));
         const normalizedMailbox = mailbox?.data?.mail_box_list || mailbox?.data?.list || (Array.isArray(mailbox?.data) ? mailbox?.data : (Array.isArray(mailbox) ? mailbox : []));
         const normalizedNews = news?.data?.news_list || news?.data?.schoolnewslist || (Array.isArray(news?.data) ? news?.data : (Array.isArray(news) ? news : []));
-        const normalizedSyllabus = syllabus?.data?.syllabus_list || syllabus?.data?.list || (Array.isArray(syllabus?.data) ? syllabus?.data : (Array.isArray(syllabus) ? syllabus : []));
-        const normalizedDownloads = downloads?.data?.download_list || downloads?.data?.list || (Array.isArray(downloads?.data) ? downloads?.data : (Array.isArray(downloads) ? downloads : []));
-        const normalizedProfile = profile?.data?.personalDetail || profile?.data?.studentDetails || profile?.data || null;
+        const rawSyllabusList = syllabus?.data?.syllabusdata || syllabus?.data?.syllabus_list || syllabus?.data?.list || [];
+        const normalizedSyllabus = Array.isArray(rawSyllabusList) ? rawSyllabusList.map(item => ({
+          id: item.id,
+          subject: item.subjectname || item.subject || 'All Subjects',
+          fileName: item.fileName || item.filename || '',
+          description: (item.description || '').replace(/<[^>]+>/g, '').trim(),
+          fileUrl: item.single_clound_front_url || item.servingUrl || item.fileUrl || ''
+        })) : [];
+
+        const rawDownloadList = downloads?.data?.data_array || downloads?.data?.download_list || downloads?.data?.list || [];
+        const normalizedDownloads = Array.isArray(rawDownloadList) ? rawDownloadList.map(item => {
+          let fileName = item.fileName || '';
+          let fileUrl = item.fileUrl || '';
+          if (item.filepath) {
+            try {
+              const obj = typeof item.filepath === 'string' ? JSON.parse(item.filepath) : item.filepath;
+              const img = obj?.image_array?.[0];
+              if (img) {
+                fileName = img.filename || '';
+                fileUrl = img.cloud_front_serving_url || img.servingUrl || '';
+              }
+            } catch {}
+          }
+          return {
+            id: item.id,
+            title: item.title1 || item.title || 'Untitled Resource',
+            category: item.category1 || item.category || 'General',
+            date: item.date1 || item.date || '',
+            createdBy: item.createdBy || '',
+            description: item.description1 || item.description || '',
+            fileName,
+            fileUrl
+          };
+        }) : [];
+
+        let normalizedProfile = null;
+        if (profile?.data?.studentMap) {
+          const sm = profile.data.studentMap;
+          normalizedProfile = {
+            studentName: sm.studentname || 'Student',
+            admissionNo: sm.enrollmentNo || '',
+            className: sm.className || '',
+            sectionName: sm.sectionName || '',
+            rollNo: sm.username || '',
+            classTeacherName: sm.classTeacherName || '',
+            studentType: sm.studenttypename || '',
+            houseName: sm.houseName || '',
+            studentImage: sm.studentImage || '',
+            studentMobile: sm.studentmobileno || '',
+            studentEmail: sm.studentemailid || '',
+            studentAddress: sm.studentaddress || '',
+            fatherName: sm.fatherName || '',
+            motherName: sm.motherName || '',
+            academicYear: profile.data?.currentacademicyearName || '2026-27'
+          };
+
+          if (uId && env.DB) {
+            const classSec = sm.className ? (sm.className + (sm.sectionName ? '-' + sm.sectionName : '')) : '';
+            env.DB.prepare(
+              "UPDATE accounts SET student_name = ?, admission_no = ?, class_section = ?, profile_photo = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?"
+            ).bind(
+              normalizedProfile.studentName,
+              normalizedProfile.admissionNo,
+              classSec,
+              normalizedProfile.studentImage,
+              uId
+            ).run().catch(() => {});
+          }
+        } else {
+          normalizedProfile = profile?.data?.personalDetail || profile?.data?.studentDetails || profile?.data || null;
+        }
 
         return new Response(JSON.stringify({
           success: true,
@@ -876,15 +976,15 @@ export default {
           };
 
           const [circRes, mailRes] = await Promise.all([
-            fetch('https://m1.edubac.com/rest/v4/student/getCircularList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 3 }) }).catch(() => null),
-            fetch('https://m1.edubac.com/rest/v4/student/getMailBoxList', { method: 'POST', headers, body: JSON.stringify({ page: 1, limit: 3, is_inbox: '1' }) }).catch(() => null)
+            fetch('https://m1.edubac.com/rest/v4/student/getcirculardata', { method: 'GET', headers }).catch(() => null),
+            fetch('https://m1.edubac.com/rest/v4/student/Studentinboxnew?limit=1', { method: 'GET', headers }).catch(() => null)
           ]);
 
           const circData = circRes ? await circRes.json().catch(() => ({})) : {};
           const mailData = mailRes ? await mailRes.json().catch(() => ({})) : {};
 
-          const circulars = circData?.data?.circular_list || circData?.data?.circularlist || [];
-          const mails = mailData?.data?.mail_box_list || mailData?.data?.list || [];
+          const circulars = circData?.data?.circularlist || circData?.data?.circular_list || [];
+          const mails = mailData?.data?.list || mailData?.data?.mail_box_list || [];
 
           const subs = await env.DB.prepare('SELECT * FROM push_subscriptions WHERE user_id = ?').bind(userId).all();
           if (!subs?.results) return;
@@ -893,10 +993,10 @@ export default {
             // Check for new circular
             if (circulars.length > 0) {
               const latestCirc = circulars[0];
-              const latestCircId = String(latestCirc.circularid || latestCirc.circular_id || latestCirc.id || '');
+              const latestCircId = String(latestCirc.id || latestCirc.circularid || latestCirc.circular_id || '');
               if (latestCircId && latestCircId !== sub.last_circular_id) {
-                const circTitle = latestCirc.circularname || latestCirc.circular_name || 'New Circular';
-                const circDesc = (latestCirc.description || latestCirc.summary || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
+                const circTitle = latestCirc.name || latestCirc.circularname || latestCirc.circular_name || 'New Circular';
+                const circDesc = (latestCirc.discription || latestCirc.description || latestCirc.summary || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
 
                 await sendWebPush(sub, {
                   title: 'Circular: ' + circTitle,
@@ -913,10 +1013,10 @@ export default {
             // Check for new mail
             if (mails.length > 0) {
               const latestMail = mails[0];
-              const latestMailId = String(latestMail.mailid || latestMail.mail_id || latestMail.id || '');
+              const latestMailId = String(latestMail.id || latestMail.mailid || latestMail.mail_id || '');
               if (latestMailId && latestMailId !== sub.last_mail_id) {
                 const mailSubject = latestMail.subject || 'New School Mail';
-                const sender = latestMail.sender_name || latestMail.sendername || 'School';
+                const sender = latestMail.employeename || latestMail.from || latestMail.sender_name || 'School';
 
                 await sendWebPush(sub, {
                   title: 'Mail: ' + mailSubject,
