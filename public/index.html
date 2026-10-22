@@ -444,9 +444,20 @@
             
             <!-- Feed Filter Pills & Search for Mobile -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
                 <h3 class="text-base font-bold text-white">Recent Updates</h3>
                 <span id="unreadTotalBadge" class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-500 text-white">0 NEW</span>
+                <button 
+                  id="markAllReadBtn" 
+                  onclick="markAllAsRead()" 
+                  title="Mark all updates as read"
+                  class="hidden text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 active:scale-95 border border-brand-500/20"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7m-14 4l4 4L19 11"/>
+                  </svg>
+                  <span>Mark all read</span>
+                </button>
               </div>
 
               <!-- Filter Pills -->
@@ -1607,6 +1618,15 @@
         }
       }
 
+      const markAllBtn = document.getElementById('markAllReadBtn');
+      if (markAllBtn) {
+        if (unreadCount > 0) {
+          markAllBtn.classList.remove('hidden');
+        } else {
+          markAllBtn.classList.add('hidden');
+        }
+      }
+
       // Filter by current tab
       if (currentFeedFilter === 'unread') {
         combined = combined.filter(i => !seenItemIds.has(i.id));
@@ -1728,6 +1748,36 @@
         seenItemIds.add(itemId);
         localStorage.setItem('redunxt_seen_items', JSON.stringify(Array.from(seenItemIds)));
         renderUnifiedFeed();
+      }
+    }
+
+    function markAllAsRead() {
+      const circs = Array.isArray(bundleData?.circulars) ? bundleData.circulars : (bundleData?.circulars?.circular_list || bundleData?.circulars?.circularlist || []);
+      const mails = Array.isArray(bundleData?.mailbox) ? bundleData.mailbox : (bundleData?.mailbox?.mail_box_list || bundleData?.mailbox?.list || []);
+
+      let added = 0;
+      circs.forEach(c => {
+        const id = `circ_${c.id}`;
+        if (!seenItemIds.has(id)) {
+          seenItemIds.add(id);
+          added++;
+        }
+      });
+
+      mails.forEach(m => {
+        const id = `mail_${m.id}`;
+        if (!seenItemIds.has(id)) {
+          seenItemIds.add(id);
+          added++;
+        }
+      });
+
+      if (added > 0) {
+        localStorage.setItem('redunxt_seen_items', JSON.stringify(Array.from(seenItemIds)));
+        renderUnifiedFeed();
+        showToast(`Marked ${added} ${added === 1 ? 'update' : 'updates'} as read.`, 'success');
+      } else {
+        showToast('All updates are already marked as read.', 'info');
       }
     }
 
