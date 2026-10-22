@@ -20,6 +20,19 @@ function b64UrlToBytes(str) {
   return arr;
 }
 
+function parseJwtPayload(token) {
+  try {
+    if (!token || typeof token !== 'string') return null;
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+    const pad = '='.repeat((4 - (parts[1].length % 4)) % 4);
+    const b64 = (parts[1] + pad).replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(b64));
+  } catch {
+    return null;
+  }
+}
+
 async function getVapidAuthHeader(endpoint, vapidConfig) {
   const aud = new URL(endpoint).origin;
   const header = b64Url(new TextEncoder().encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
@@ -239,9 +252,8 @@ export default {
 
         let tokenExpiry = 0;
         try {
-          const parts = token.split('.');
-          const payload = JSON.parse(atob(parts[1]));
-          tokenExpiry = payload.exp || 0;
+          const payload = parseJwtPayload(token);
+          tokenExpiry = payload?.exp || 0;
         } catch {}
 
         await env.DB.prepare("INSERT INTO accounts (user_id, password, school_domain, student_name, admission_no, class_section, profile_photo, cached_token, token_expires_at, last_synced_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(user_id) DO UPDATE SET password = excluded.password, school_domain = excluded.school_domain, student_name = excluded.student_name, admission_no = excluded.admission_no, class_section = excluded.class_section, profile_photo = excluded.profile_photo, cached_token = excluded.cached_token, token_expires_at = excluded.token_expires_at, last_synced_at = excluded.last_synced_at, updated_at = CURRENT_TIMESTAMP").bind(
@@ -368,8 +380,8 @@ export default {
 
           let newExp = 0;
           try {
-            const parts = token.split('.');
-            newExp = JSON.parse(atob(parts[1])).exp || 0;
+            const payload = parseJwtPayload(token);
+            newExp = payload?.exp || 0;
           } catch {}
 
           await env.DB.prepare(
@@ -702,17 +714,16 @@ export default {
         let uId = request.headers.get('x-user-id') || '';
         let isExpired = false;
         try {
-          const parts = token.split('.');
-          const payload = JSON.parse(atob(parts[1]));
-          if (payload.academicyearid) yearId = payload.academicyearid;
-          if (payload.studentprofileid) profileId = payload.studentprofileid;
-          if (!uId && (payload.sub || payload.username)) uId = String(payload.sub || payload.username);
-          if (payload.exp && (payload.exp - 300) < Math.floor(Date.now() / 1000)) {
-            isExpired = true;
+          const payload = parseJwtPayload(token);
+          if (payload) {
+            if (payload.academicyearid) yearId = payload.academicyearid;
+            if (payload.studentprofileid) profileId = payload.studentprofileid;
+            if (!uId && (payload.sub || payload.username)) uId = String(payload.sub || payload.username);
+            if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+              isExpired = true;
+            }
           }
-        } catch {
-          isExpired = true;
-        }
+        } catch {}
 
         // Auto-refresh token from Edunext if expired and we have account credentials in D1
         if (isExpired && uId && env.DB) {
@@ -733,7 +744,7 @@ export default {
               isExpired = false;
               headers['Authorization'] = 'Bearer ' + token;
               let exp = 0;
-              try { exp = JSON.parse(atob(token.split('.')[1])).exp || 0; } catch {}
+              try { exp = parseJwtPayload(token)?.exp || 0; } catch {}
               await env.DB.prepare('UPDATE accounts SET cached_token = ?, token_expires_at = ?, last_synced_at = CURRENT_TIMESTAMP WHERE user_id = ?').bind(token, exp, uId).run();
             }
           }
@@ -1010,7 +1021,7 @@ export default {
             if (lData.success && lData.data?.openIdConnect) {
               token = lData.data.openIdConnect;
               let exp = 0;
-              try { exp = JSON.parse(atob(token.split('.')[1])).exp || 0; } catch {}
+              try { exp = parseJwtPayload(token)?.exp || 0; } catch {}
               await env.DB.prepare('UPDATE accounts SET cached_token = ?, token_expires_at = ?, last_synced_at = CURRENT_TIMESTAMP WHERE user_id = ?').bind(token, exp, userId).run();
             } else {
               return;

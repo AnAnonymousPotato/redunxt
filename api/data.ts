@@ -4,7 +4,7 @@ import { EdunextClient } from '../src/core/client.js';
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-school-domain, x-user-id');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-school-domain, x-user-id, x-device-token');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 200;
@@ -24,12 +24,16 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   if (token) {
     try {
       const parts = token.split('.');
-      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
-      if (payload.exp && (payload.exp - 300) < Math.floor(Date.now() / 1000)) {
-        isExpired = true;
+      if (parts.length >= 2) {
+        let b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        const payload = JSON.parse(Buffer.from(b64, 'base64').toString('utf-8'));
+        if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+          isExpired = true;
+        }
       }
     } catch {
-      isExpired = true;
+      // Don't mark as expired if parse fails; let Edunext client attempt call
     }
   }
 

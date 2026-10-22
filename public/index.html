@@ -80,8 +80,34 @@
 </head>
 <body class="bg-[#0a0a0c] text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
+  <!-- ================= APP INITIAL LAUNCH SPLASH LOADER ================= -->
+  <div id="appSplashLoader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0c] transition-opacity duration-300">
+    <div class="flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 p-0.5 shadow-2xl shadow-brand-500/30 flex items-center justify-center animate-pulse">
+          <div class="w-full h-full bg-[#0d0d11] rounded-[22px] flex items-center justify-center text-3xl">
+            🎓
+          </div>
+        </div>
+        <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0a0a0c] flex items-center justify-center">
+          <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+        </div>
+      </div>
+      <div class="text-center">
+        <h1 class="text-base font-bold text-white tracking-tight">Redunxt</h1>
+        <p class="text-xs text-zinc-400 mt-1.5 flex items-center justify-center gap-2">
+          <svg class="w-3.5 h-3.5 animate-spin text-brand-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          <span id="splashMsg">Connecting to Command Center...</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= VIEW 1: PUBLIC LOGIN SCREEN ================= -->
-  <div id="loginView" class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
+  <div id="loginView" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
     <!-- Hero / Features Pill -->
     <div class="mb-6 flex flex-wrap items-center justify-center gap-2 max-w-lg text-center">
       <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
@@ -1082,6 +1108,8 @@
         // Token missing or expired: Perform silent background auto-login using D1 database
         const storedDeviceToken = localStorage.getItem('redunxt_device_token');
         if (storedUserId && storedDeviceToken) {
+          const splashMsg = document.getElementById('splashMsg');
+          if (splashMsg) splashMsg.innerText = 'Refreshing student session...';
           try {
             const autoRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
               method: 'POST',
@@ -1099,7 +1127,9 @@
               showDashboard();
               return;
             }
-          } catch {}
+          } catch (e) {
+            console.warn('Auto-login refresh error:', e);
+          }
         }
       }
 
@@ -1123,6 +1153,16 @@
       showLogin();
     });
 
+    function hideSplash() {
+      const splash = document.getElementById('appSplashLoader');
+      if (splash && !splash.classList.contains('hidden')) {
+        splash.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          splash.classList.add('hidden');
+        }, 300);
+      }
+    }
+
     function onSchoolSelectChange(val) {
       const customBox = document.getElementById('customSchoolInputContainer');
       if (val === 'custom') {
@@ -1144,14 +1184,36 @@
       return sel.value || 'dpsharni.edunext2.com';
     }
 
+    function decodeJwtPayload(token) {
+      try {
+        if (!token || typeof token !== 'string') return null;
+        const parts = token.split('.');
+        if (parts.length < 2) return null;
+        let b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4 !== 0) b64 += '=';
+        const jsonStr = decodeURIComponent(atob(b64).split('').map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonStr);
+      } catch (e) {
+        try {
+          let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+          while (b64.length % 4 !== 0) b64 += '=';
+          return JSON.parse(atob(b64));
+        } catch {
+          return null;
+        }
+      }
+    }
+
     function isTokenExpired(token) {
       try {
-        const parts = token.split('.');
-        const payload = JSON.parse(atob(parts[1]));
+        const payload = decodeJwtPayload(token);
+        if (!payload || !payload.exp) return false;
         const now = Math.floor(Date.now() / 1000);
-        return (payload.exp - 180) < now;
+        return payload.exp < now;
       } catch {
-        return true;
+        return false;
       }
     }
 
@@ -1160,14 +1222,27 @@
       pass.type = pass.type === 'password' ? 'text' : 'password';
     }
 
-    function showLogin() {
-      document.getElementById('loginView').classList.remove('hidden');
-      document.getElementById('dashboardView').classList.add('hidden');
+    function showLogin(customMsg) {
+      hideSplash();
+      const loginView = document.getElementById('loginView');
+      const dashView = document.getElementById('dashboardView');
+      if (loginView) loginView.classList.remove('hidden');
+      if (dashView) dashView.classList.add('hidden');
+      if (customMsg) {
+        const errBox = document.getElementById('loginError');
+        if (errBox) {
+          errBox.innerText = customMsg;
+          errBox.classList.remove('hidden');
+        }
+      }
     }
 
     function showDashboard() {
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('dashboardView').classList.remove('hidden');
+      hideSplash();
+      const loginView = document.getElementById('loginView');
+      const dashView = document.getElementById('dashboardView');
+      if (loginView) loginView.classList.add('hidden');
+      if (dashView) dashView.classList.remove('hidden');
       updateHeaderIdentity();
       renderAlmanacCalendar();
       fetchDashboardData();
@@ -1295,7 +1370,7 @@
           'Authorization': session.token ? `Bearer ${session.token}` : '',
           'x-user-id': uId,
           'x-device-token': dToken,
-          'x-school-domain': session.account?.schoolDomain || 'dpsharni.edunext2.com',
+          'x-school-domain': session.account?.schoolDomain || localStorage.getItem('redunxt_school_domain') || 'dpsharni.edunext2.com',
         };
 
         let res = await fetch('/api/data', { headers: fetchHeaders }).catch(() => null);
@@ -1313,23 +1388,26 @@
         if (!res || res.status === 401 || isSilentlyRejected) {
           const storedUserId = localStorage.getItem('redunxt_user_id');
           const storedDeviceToken = localStorage.getItem('redunxt_device_token');
-          if (storedUserId && storedDeviceToken) {
-            const refreshRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId: storedUserId, deviceToken: storedDeviceToken })
-            });
-            const refreshJson = await refreshRes.json();
-            if (refreshJson.success && refreshJson.token) {
-              session.token = refreshJson.token;
-              session.account = refreshJson.account;
-              localStorage.setItem('redunxt_session', JSON.stringify(session));
-              return fetchDashboardData(isManual);
+          if (storedUserId && storedDeviceToken && !isManual) {
+            try {
+              const refreshRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: storedUserId, deviceToken: storedDeviceToken })
+              });
+              const refreshJson = await refreshRes.json();
+              if (refreshJson.success && refreshJson.token) {
+                session.token = refreshJson.token;
+                session.account = refreshJson.account;
+                localStorage.setItem('redunxt_session', JSON.stringify(session));
+                return fetchDashboardData(isManual);
+              }
+            } catch (e) {
+              console.warn('Auto-login refresh retry failed:', e);
             }
           }
           if (res?.status === 401) {
-            handleLogout();
-            return;
+            throw new Error('Your session expired. Please sign in again.');
           }
         }
 
@@ -2365,6 +2443,8 @@
           testBtn.classList.remove('opacity-50');
         }
       }
+    }
+
     // ================= PWA INSTALLATION MANAGER =================
     let deferredInstallPrompt = null;
 
