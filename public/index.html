@@ -233,8 +233,8 @@
         </p>
       </div>
 
-      <!-- Optional PWA Install Action on Login View (Visible when not standalone) -->
-      <div id="loginInstallBanner" class="hidden rounded-2xl bg-brand-500/10 border border-brand-500/20 p-3.5 flex items-center justify-between gap-3 text-left">
+      <!-- Optional PWA Install Action on Login View (Visible when not standalone on phone) -->
+      <div id="loginInstallBanner" class="hidden md:hidden rounded-2xl bg-brand-500/10 border border-brand-500/20 p-3.5 flex items-center justify-between gap-3 text-left">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 flex-shrink-0">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,8 +297,8 @@
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-2">
-          <!-- Install App Header Action (Visible when running in browser) -->
-          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Download & Install Redunxt as Web App" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600/90 hover:bg-brand-500 border border-brand-400/30 text-xs font-semibold text-white transition active:scale-95 shadow-md shadow-brand-500/20">
+          <!-- Install App Header Action (Visible when running in browser on phone) -->
+          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Download & Install Redunxt as Web App" class="hidden md:hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600/90 hover:bg-brand-500 border border-brand-400/30 text-xs font-semibold text-white transition active:scale-95 shadow-md shadow-brand-500/20">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -862,7 +862,7 @@
   </div>
 
   <!-- ================= FLOATING PWA INSTALL BOTTOM POPUP ================= -->
-  <div id="pwaInstallPopup" class="hidden fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
+  <div id="pwaInstallPopup" class="hidden md:hidden fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
     <div class="relative overflow-hidden rounded-3xl bg-[#131318]/95 border border-brand-500/30 backdrop-blur-2xl shadow-2xl p-4 sm:p-5 flex flex-col gap-3.5 ring-1 ring-white/10">
       <div class="flex items-start justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -2456,6 +2456,17 @@
              window.matchMedia('(display-mode: minimal-ui)').matches;
     }
 
+    function isMobilePhone() {
+      const ua = navigator.userAgent || '';
+      const isMobileUA = /Android.*Mobile|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
+      const isSmallScreenTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) && window.matchMedia('(max-width: 768px)').matches;
+      const isDesktopUA = /Macintosh|Windows NT|Linux x86_64/i.test(ua) && !/Mobile/i.test(ua);
+      if (isDesktopUA && window.matchMedia('(min-width: 768px)').matches) {
+        return false;
+      }
+      return isMobileUA || isSmallScreenTouch;
+    }
+
     function getDevicePlatform() {
       const ua = navigator.userAgent || '';
       if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
@@ -2469,7 +2480,9 @@
         e.preventDefault();
         deferredInstallPrompt = e;
         updatePwaInstallUi();
-        checkAndShowInstallBanner();
+        if (isMobilePhone()) {
+          checkAndShowInstallBanner();
+        }
       });
 
       // 2. Listen for successful installation
@@ -2480,17 +2493,19 @@
         showToast('Redunxt installed successfully! Launch it directly from your home screen.', 'success');
       });
 
-      // 3. Update UI on startup
+      // 3. Update UI on startup and on window resize
       updatePwaInstallUi();
+      window.addEventListener('resize', () => updatePwaInstallUi());
 
-      // 4. If not installed and not recently dismissed, schedule bottom popup
-      if (!isPwaInstalled()) {
+      // 4. If on mobile phone, not installed, and not recently dismissed, schedule bottom popup
+      if (!isPwaInstalled() && isMobilePhone()) {
         checkAndShowInstallBanner();
       }
     }
 
     function updatePwaInstallUi() {
       const installed = isPwaInstalled();
+      const isPhone = isMobilePhone();
       const headerBtn = document.getElementById('headerInstallBtn');
       const loginBanner = document.getElementById('loginInstallBanner');
       const popup = document.getElementById('pwaInstallPopup');
@@ -2517,7 +2532,25 @@
             </span>
           `;
         }
+      } else if (!isPhone) {
+        // Desktop browser - hide install popup and header/login buttons
+        if (headerBtn) {
+          headerBtn.classList.add('hidden');
+          headerBtn.classList.remove('flex');
+        }
+        if (loginBanner) loginBanner.classList.add('hidden');
+        if (popup) popup.classList.add('hidden');
+        if (badge) {
+          badge.innerText = 'Desktop Web';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]';
+        }
+        if (actionRow) {
+          actionRow.innerHTML = `
+            <span class="text-[11px] text-zinc-400">Desktop browser mode. To install on PC, click the <strong>⊕</strong> icon in your browser address bar.</span>
+          `;
+        }
       } else {
+        // Phone browser - show header button and login banner if not installed
         if (headerBtn) {
           headerBtn.classList.remove('hidden');
           headerBtn.classList.add('flex');
@@ -2527,11 +2560,20 @@
           badge.innerText = 'Not Installed';
           badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
         }
+        if (actionRow) {
+          actionRow.innerHTML = `
+            <span id="pwaInstallDesc" class="text-[11px] text-zinc-400">Run Redunxt natively from your home screen</span>
+            <button id="settingsInstallBtn" onclick="triggerPwaInstall()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Install App</span>
+            </button>
+          `;
+        }
       }
     }
 
     function checkAndShowInstallBanner() {
-      if (isPwaInstalled()) return;
+      if (isPwaInstalled() || !isMobilePhone()) return;
 
       // Don't show if user dismissed it within the last 24 hours
       const dismissedTime = localStorage.getItem('redunxt_pwa_dismissed_at');
@@ -2542,7 +2584,7 @@
 
       // Smooth delay so the prompt glides in gracefully
       setTimeout(() => {
-        if (isPwaInstalled()) return;
+        if (isPwaInstalled() || !isMobilePhone()) return;
         const popup = document.getElementById('pwaInstallPopup');
         if (popup) popup.classList.remove('hidden');
       }, 1800);
