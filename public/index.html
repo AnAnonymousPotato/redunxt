@@ -206,6 +206,27 @@
           <span class="font-bold text-zinc-200">Device-Isolated Session:</span> Authenticated via Cloudflare edge tokens with zero credential leakage across devices.
         </p>
       </div>
+
+      <!-- Optional PWA Install Action on Login View (Visible when not standalone) -->
+      <div id="loginInstallBanner" class="hidden rounded-2xl bg-brand-500/10 border border-brand-500/20 p-3.5 flex items-center justify-between gap-3 text-left">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-white">Install Redunxt App</p>
+            <p class="text-[10px] text-zinc-400">Download to home screen for instant school alerts</p>
+          </div>
+        </div>
+        <button type="button" onclick="triggerPwaInstall()" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 flex-shrink-0">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span>Download</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -250,6 +271,15 @@
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-2">
+          <!-- Install App Header Action (Visible when running in browser) -->
+          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Download & Install Redunxt as Web App" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600/90 hover:bg-brand-500 border border-brand-400/30 text-xs font-semibold text-white transition active:scale-95 shadow-md shadow-brand-500/20">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span class="hidden sm:inline">Install App</span>
+            <span class="sm:hidden">Install</span>
+          </button>
+
           <button onclick="fetchDashboardData(true)" id="refreshBtn" title="Sync Latest Data" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-300 transition active:scale-95 shadow-sm">
             <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -706,6 +736,30 @@
 
       <div class="p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-6">
         
+        <!-- App Installation Card (PWA Standalone) -->
+        <div class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">App Installation</h4>
+                <p class="text-[11px] text-zinc-400">Standalone Web App (PWA)</p>
+              </div>
+            </div>
+            <span id="pwaInstalledBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]">Checking...</span>
+          </div>
+
+          <div id="pwaInstallActionRow" class="flex items-center justify-between pt-2 border-t border-white/[0.06]">
+            <span id="pwaInstallDesc" class="text-[11px] text-zinc-400">Run Redunxt natively from your home screen</span>
+            <button id="settingsInstallBtn" onclick="triggerPwaInstall()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Install App</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Push Notifications Card -->
         <div class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] flex flex-col gap-3">
           <div class="flex items-center justify-between">
@@ -778,6 +832,70 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- ================= FLOATING PWA INSTALL BOTTOM POPUP ================= -->
+  <div id="pwaInstallPopup" class="hidden fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
+    <div class="relative overflow-hidden rounded-3xl bg-[#131318]/95 border border-brand-500/30 backdrop-blur-2xl shadow-2xl p-4 sm:p-5 flex flex-col gap-3.5 ring-1 ring-white/10">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 p-0.5 shadow-lg shadow-brand-500/25 flex items-center justify-center flex-shrink-0">
+            <div class="w-full h-full bg-[#0d0d11] rounded-[14px] flex items-center justify-center text-xl">
+              🎓
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h4 class="text-sm font-bold text-white tracking-tight">Install Redunxt</h4>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Web App</span>
+            </div>
+            <p class="text-xs text-zinc-400 mt-0.5 leading-snug">Download to your home screen for instant school alerts and a native standalone app experience.</p>
+          </div>
+        </div>
+        <button onclick="dismissInstallBanner()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition -mr-1 -mt-1" title="Dismiss">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="flex items-center gap-2 pt-1">
+        <button onclick="triggerPwaInstall()" class="flex-1 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white text-xs font-bold shadow-lg shadow-brand-500/25 transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span>Download App</span>
+        </button>
+        <button onclick="dismissInstallBanner()" class="px-4 py-2.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-400 hover:text-zinc-200 text-xs font-semibold border border-white/[0.08] transition">
+          Later
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PWA MANUAL INSTALL GUIDE MODAL ================= -->
+  <div id="pwaGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
+    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-md w-full p-6 flex flex-col gap-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 p-0.5 flex items-center justify-center shadow-lg shadow-brand-500/25 flex-shrink-0">
+            <div class="w-full h-full bg-[#0d0d11] rounded-[14px] flex items-center justify-center text-lg">🎓</div>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Install Redunxt</h3>
+            <p class="text-xs text-zinc-400">Add to your device home screen</p>
+          </div>
+        </div>
+        <button onclick="closePwaGuideModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="pwaGuideContent" class="flex flex-col gap-3 text-xs text-zinc-300">
+        <!-- Dynamically populated based on device (iOS vs Android vs Desktop) -->
+      </div>
+
+      <button onclick="closePwaGuideModal()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition">
+        Got It
+      </button>
     </div>
   </div>
 
@@ -924,6 +1042,9 @@
 
     // 1. App Startup: Check Local Storage & Auto-Login
     window.addEventListener('DOMContentLoaded', async () => {
+      // Initialize PWA Web App Install Prompt & State
+      initPwaInstallManager();
+
       // Load seen items from localStorage
       try {
         const storedSeen = JSON.parse(localStorage.getItem('redunxt_seen_items') || '[]');
@@ -1915,6 +2036,7 @@
       document.getElementById('settingsModal').classList.remove('hidden');
       document.body.classList.add('overflow-hidden');
       setTimeout(updatePushUI, 50);
+      setTimeout(updatePwaInstallUi, 50);
     }
 
     function closeSettingsModal() {
@@ -2015,7 +2137,7 @@
     }
 
     // Backdrop click & Escape Key listeners
-    ['mailModal', 'circularModal', 'reportModal', 'settingsModal', 'resourceDrawerBackdrop'].forEach(id => {
+    ['mailModal', 'circularModal', 'reportModal', 'settingsModal', 'resourceDrawerBackdrop', 'pwaGuideModal'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', (e) => {
         if (e.target.id === id) {
           if (id === 'mailModal') closeMailModal();
@@ -2023,6 +2145,7 @@
           if (id === 'reportModal') closeReportModal();
           if (id === 'settingsModal') closeSettingsModal();
           if (id === 'resourceDrawerBackdrop') closeResourceDrawer();
+          if (id === 'pwaGuideModal') closePwaGuideModal();
         }
       });
     });
@@ -2034,6 +2157,7 @@
         closeReportModal();
         closeSettingsModal();
         closeResourceDrawer();
+        closePwaGuideModal();
       }
     });
 
@@ -2241,6 +2365,223 @@
           testBtn.classList.remove('opacity-50');
         }
       }
+    // ================= PWA INSTALLATION MANAGER =================
+    let deferredInstallPrompt = null;
+
+    function isPwaInstalled() {
+      return window.matchMedia('(display-mode: standalone)').matches ||
+             window.navigator.standalone === true ||
+             document.referrer.includes('android-app://') ||
+             window.matchMedia('(display-mode: fullscreen)').matches ||
+             window.matchMedia('(display-mode: minimal-ui)').matches;
+    }
+
+    function getDevicePlatform() {
+      const ua = navigator.userAgent || '';
+      if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+      if (/Android/.test(ua)) return 'android';
+      return 'desktop';
+    }
+
+    function initPwaInstallManager() {
+      // 1. Capture direct beforeinstallprompt event (Chrome, Edge, Android WebAPK)
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        updatePwaInstallUi();
+        checkAndShowInstallBanner();
+      });
+
+      // 2. Listen for successful installation
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        dismissInstallBanner(true);
+        updatePwaInstallUi();
+        showToast('Redunxt installed successfully! Launch it directly from your home screen.', 'success');
+      });
+
+      // 3. Update UI on startup
+      updatePwaInstallUi();
+
+      // 4. If not installed and not recently dismissed, schedule bottom popup
+      if (!isPwaInstalled()) {
+        checkAndShowInstallBanner();
+      }
+    }
+
+    function updatePwaInstallUi() {
+      const installed = isPwaInstalled();
+      const headerBtn = document.getElementById('headerInstallBtn');
+      const loginBanner = document.getElementById('loginInstallBanner');
+      const popup = document.getElementById('pwaInstallPopup');
+      const badge = document.getElementById('pwaInstalledBadge');
+      const actionRow = document.getElementById('pwaInstallActionRow');
+
+      if (installed) {
+        if (headerBtn) {
+          headerBtn.classList.add('hidden');
+          headerBtn.classList.remove('flex');
+        }
+        if (loginBanner) loginBanner.classList.add('hidden');
+        if (popup) popup.classList.add('hidden');
+        if (badge) {
+          badge.innerText = 'Installed (Standalone)';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        }
+        if (actionRow) {
+          actionRow.innerHTML = `
+            <span class="text-[11px] text-zinc-400">Running as native standalone Web App with system notifications</span>
+            <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              Active
+            </span>
+          `;
+        }
+      } else {
+        if (headerBtn) {
+          headerBtn.classList.remove('hidden');
+          headerBtn.classList.add('flex');
+        }
+        if (loginBanner) loginBanner.classList.remove('hidden');
+        if (badge) {
+          badge.innerText = 'Not Installed';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
+        }
+      }
+    }
+
+    function checkAndShowInstallBanner() {
+      if (isPwaInstalled()) return;
+
+      // Don't show if user dismissed it within the last 24 hours
+      const dismissedTime = localStorage.getItem('redunxt_pwa_dismissed_at');
+      if (dismissedTime) {
+        const elapsed = Date.now() - parseInt(dismissedTime, 10);
+        if (elapsed < 24 * 60 * 60 * 1000) return;
+      }
+
+      // Smooth delay so the prompt glides in gracefully
+      setTimeout(() => {
+        if (isPwaInstalled()) return;
+        const popup = document.getElementById('pwaInstallPopup');
+        if (popup) popup.classList.remove('hidden');
+      }, 1800);
+    }
+
+    function dismissInstallBanner(permanent = false) {
+      const popup = document.getElementById('pwaInstallPopup');
+      if (popup) popup.classList.add('hidden');
+      if (permanent) {
+        localStorage.setItem('redunxt_pwa_dismissed_at', String(Date.now() + 365 * 24 * 60 * 60 * 1000));
+      } else {
+        localStorage.setItem('redunxt_pwa_dismissed_at', String(Date.now()));
+      }
+    }
+
+    async function triggerPwaInstall() {
+      // If native browser prompt is captured (Chrome on Android / Chromium desktop)
+      if (deferredInstallPrompt) {
+        try {
+          deferredInstallPrompt.prompt();
+          const choiceResult = await deferredInstallPrompt.userChoice;
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            deferredInstallPrompt = null;
+            dismissInstallBanner(true);
+            updatePwaInstallUi();
+            showToast('Installing Redunxt app to your device...', 'success');
+          }
+        } catch (err) {
+          console.warn('Install prompt error:', err);
+          openPwaGuideModal();
+        }
+      } else {
+        // Fallback: Show visual step-by-step guide tailored to OS/Browser
+        openPwaGuideModal();
+      }
+    }
+
+    function openPwaGuideModal() {
+      const modal = document.getElementById('pwaGuideModal');
+      const content = document.getElementById('pwaGuideContent');
+      if (!modal || !content) return;
+
+      const platform = getDevicePlatform();
+
+      if (platform === 'ios') {
+        content.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
+            <div>
+              <p class="font-bold text-white text-xs">Tap the Share Button</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">At the bottom of Safari, tap the <strong>Share</strong> icon (square with arrow pointing up).</p>
+            </div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
+            <div>
+              <p class="font-bold text-white text-xs">Select "Add to Home Screen"</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen"</strong>.</p>
+            </div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">3</div>
+            <div>
+              <p class="font-bold text-white text-xs">Tap "Add"</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Tap <strong>Add</strong> in the top-right corner. Redunxt will appear on your home screen!</p>
+            </div>
+          </div>
+        `;
+      } else if (platform === 'android') {
+        content.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
+            <div>
+              <p class="font-bold text-white text-xs">Open Chrome Menu</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Tap the <strong>three dots (⋮)</strong> in the top-right corner of Chrome.</p>
+            </div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
+            <div>
+              <p class="font-bold text-white text-xs">Tap "Install app" or "Add to Home screen"</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Select <strong>"Install app"</strong> (or <strong>"Add to Home screen"</strong>).</p>
+            </div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">3</div>
+            <div>
+              <p class="font-bold text-white text-xs">Confirm Install</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Confirm installation. Android will automatically download and install the WebAPK on your phone with native notification support.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
+            <div>
+              <p class="font-bold text-white text-xs">Address Bar Install Icon</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Click the <strong>Install (⊕)</strong> icon on the right side of Chrome's address bar.</p>
+            </div>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
+            <div>
+              <p class="font-bold text-white text-xs">Click Install</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Redunxt will install and launch in its own dedicated, clean window.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closePwaGuideModal() {
+      const modal = document.getElementById('pwaGuideModal');
+      if (modal) modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
     }
 
     // Sanitization & Utilities
