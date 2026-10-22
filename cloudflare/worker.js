@@ -700,13 +700,51 @@ export default {
         let yearId = 21;
         let profileId = 691;
         let uId = request.headers.get('x-user-id') || '';
+        let isExpired = false;
         try {
           const parts = token.split('.');
           const payload = JSON.parse(atob(parts[1]));
           if (payload.academicyearid) yearId = payload.academicyearid;
           if (payload.studentprofileid) profileId = payload.studentprofileid;
           if (!uId && (payload.sub || payload.username)) uId = String(payload.sub || payload.username);
-        } catch {}
+          if (payload.exp && (payload.exp - 300) < Math.floor(Date.now() / 1000)) {
+            isExpired = true;
+          }
+        } catch {
+          isExpired = true;
+        }
+
+        // Auto-refresh token from Edunext if expired and we have account credentials in D1
+        if (isExpired && uId && env.DB) {
+          const acc = await env.DB.prepare('SELECT * FROM accounts WHERE user_id = ?').bind(uId).first();
+          if (acc && acc.password) {
+            const lRes = await fetch('https://m1.edubac.com/rest/v4/student/openconnect', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'mvcdomainurl': acc.school_domain || schoolDomain,
+                'Connection-type': '_write'
+              },
+              body: JSON.stringify({ userid: acc.user_id, password: acc.password })
+            }).catch(() => null);
+            const lData = lRes ? await lRes.json().catch(() => ({})) : {};
+            if (lData?.success && lData?.data?.openIdConnect) {
+              token = lData.data.openIdConnect;
+              isExpired = false;
+              headers['Authorization'] = 'Bearer ' + token;
+              let exp = 0;
+              try { exp = JSON.parse(atob(token.split('.')[1])).exp || 0; } catch {}
+              await env.DB.prepare('UPDATE accounts SET cached_token = ?, token_expires_at = ?, last_synced_at = CURRENT_TIMESTAMP WHERE user_id = ?').bind(token, exp, uId).run();
+            }
+          }
+        }
+
+        if (isExpired) {
+          return new Response(JSON.stringify({ success: false, error: 'Authorization token expired. Please log in.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
 
         const attUrl = 'https://m2.edubac.com/rest/v4/student/getStudentAttendanceCalander?academicyearid=' + yearId + '&fromdate=2026-04-01&todate=2027-03-31&studentprofileid=' + profileId;
         const resUrl = 'https://m12.edubac.com/rest/v4/student/getResultAnalysis?acedemicYearId=' + yearId;
@@ -904,6 +942,17 @@ export default {
           normalizedProfile = profile?.data?.personalDetail || profile?.data?.studentDetails || profile?.data || null;
         }
 
+        // Guard against silent 401s where all modules return empty arrays and no profile
+        if ((!normalizedCirculars || normalizedCirculars.length === 0) && (!normalizedMailbox || normalizedMailbox.length === 0) && !normalizedProfile) {
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Session expired or rejected by school portal. Please re-authenticate.'
+          }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
         return new Response(JSON.stringify({
           success: true,
           circulars: normalizedCirculars,
@@ -990,42 +1039,66 @@ export default {
           if (!subs?.results) return;
 
           for (const sub of subs.results) {
-            // Check for new circular
+            // Check for new circulars (supports multiple in one poll cycle)
             if (circulars.length > 0) {
-              const latestCirc = circulars[0];
-              const latestCircId = String(latestCirc.id || latestCirc.circularid || latestCirc.circular_id || '');
-              if (latestCircId && latestCircId !== sub.last_circular_id) {
-                const circTitle = latestCirc.name || latestCirc.circularname || latestCirc.circular_name || 'New Circular';
-                const circDesc = (latestCirc.discription || latestCirc.description || latestCirc.summary || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
+              const newCircs = [];
+              for (const c of circulars) {
+                const cId = String(c.id || c.circularid || c.circular_id || '');
+                if (!cId) continue;
+                if (sub.last_circular_id && cId === String(sub.last_circular_id)) break;
+                newCircs.push(c);
+                if (newCircs.length >= 3) break;
+              }
 
-                await sendWebPush(sub, {
-                  title: 'Circular: ' + circTitle,
-                  body: circDesc || 'A new school circular has been published.',
-                  icon: '/favicon.svg',
-                  url: '/#circulars',
-                  tag: 'circ-' + latestCircId
-                }, vapidConfig).catch(() => null);
+              if (newCircs.length > 0) {
+                for (const c of newCircs.slice().reverse()) {
+                  const cId = String(c.id || c.circularid || c.circular_id || '');
+                  const circTitle = c.name || c.circularname || c.circular_name || 'New Circular';
+                  const circDesc = (c.discription || c.description || c.summary || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
 
+                  await sendWebPush(sub, {
+                    title: 'Circular: ' + circTitle,
+                    body: circDesc || 'A new school circular has been published.',
+                    icon: '/icon-192.png',
+                    badge: '/badge-96.png',
+                    url: '/#circulars',
+                    tag: 'circ-' + cId
+                  }, vapidConfig).catch(() => null);
+                }
+
+                const latestCircId = String(circulars[0].id || circulars[0].circularid || circulars[0].circular_id || '');
                 await env.DB.prepare('UPDATE push_subscriptions SET last_circular_id = ?, last_checked_at = CURRENT_TIMESTAMP WHERE id = ?').bind(latestCircId, sub.id).run();
               }
             }
 
-            // Check for new mail
+            // Check for new mails (supports multiple new mails in one poll cycle)
             if (mails.length > 0) {
-              const latestMail = mails[0];
-              const latestMailId = String(latestMail.id || latestMail.mailid || latestMail.mail_id || '');
-              if (latestMailId && latestMailId !== sub.last_mail_id) {
-                const mailSubject = latestMail.subject || 'New School Mail';
-                const sender = latestMail.employeename || latestMail.from || latestMail.sender_name || 'School';
+              const newMails = [];
+              for (const m of mails) {
+                const mId = String(m.id || m.mailid || m.mail_id || '');
+                if (!mId) continue;
+                if (sub.last_mail_id && mId === String(sub.last_mail_id)) break;
+                newMails.push(m);
+                if (newMails.length >= 3) break;
+              }
 
-                await sendWebPush(sub, {
-                  title: 'Mail: ' + mailSubject,
-                  body: 'From: ' + sender,
-                  icon: '/favicon.svg',
-                  url: '/#mailbox',
-                  tag: 'mail-' + latestMailId
-                }, vapidConfig).catch(() => null);
+              if (newMails.length > 0) {
+                for (const m of newMails.slice().reverse()) {
+                  const mId = String(m.id || m.mailid || m.mail_id || '');
+                  const mailSubject = m.subject || 'New School Mail';
+                  const sender = m.employeename || m.from || m.sender_name || 'School';
 
+                  await sendWebPush(sub, {
+                    title: 'Mail: ' + mailSubject,
+                    body: 'From: ' + sender,
+                    icon: '/icon-192.png',
+                    badge: '/badge-96.png',
+                    url: '/#mailbox',
+                    tag: 'mail-' + mId
+                  }, vapidConfig).catch(() => null);
+                }
+
+                const latestMailId = String(mails[0].id || mails[0].mailid || mails[0].mail_id || '');
                 await env.DB.prepare('UPDATE push_subscriptions SET last_mail_id = ?, last_checked_at = CURRENT_TIMESTAMP WHERE id = ?').bind(latestMailId, sub.id).run();
               }
             }

@@ -1150,6 +1150,26 @@
       try {
         const uId = session.account?.userId || localStorage.getItem('redunxt_user_id') || '';
         const dToken = localStorage.getItem('redunxt_device_token') || '';
+
+        // If active session token is expired or missing, auto-refresh via D1 first
+        if (!session.token || isTokenExpired(session.token)) {
+          if (uId && dToken) {
+            try {
+              const refreshRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: uId, deviceToken: dToken })
+              });
+              const refreshJson = await refreshRes.json();
+              if (refreshJson.success && refreshJson.token) {
+                session.token = refreshJson.token;
+                session.account = refreshJson.account;
+                localStorage.setItem('redunxt_session', JSON.stringify(session));
+              }
+            } catch {}
+          }
+        }
+
         const fetchHeaders = {
           'Authorization': session.token ? `Bearer ${session.token}` : '',
           'x-user-id': uId,
@@ -1165,7 +1185,11 @@
           }).catch(() => null);
         }
 
-        if (res && res.status === 401) {
+        let json = res ? await res.json().catch(() => null) : null;
+
+        // If unauthorized or token was silently rejected (empty data with no profile)
+        const isSilentlyRejected = json && json.success && (!json.circulars || json.circulars.length === 0) && (!json.mailbox || json.mailbox.length === 0) && !json.profile;
+        if (!res || res.status === 401 || isSilentlyRejected) {
           const storedUserId = localStorage.getItem('redunxt_user_id');
           const storedDeviceToken = localStorage.getItem('redunxt_device_token');
           if (storedUserId && storedDeviceToken) {
@@ -1182,12 +1206,13 @@
               return fetchDashboardData(isManual);
             }
           }
-          handleLogout();
-          return;
+          if (res?.status === 401) {
+            handleLogout();
+            return;
+          }
         }
 
-        const json = await res.json();
-        if (!json.success) throw new Error(json.error || 'Failed to fetch student data');
+        if (!json || !json.success) throw new Error(json?.error || 'Failed to fetch student data');
 
         bundleData = json;
         
@@ -1537,7 +1562,21 @@
 
     function parseFeedDate(str) {
       if (!str) return 0;
-      // Handles format like "16 Sep 2026", "2026-09-16", etc.
+      if (typeof str === 'number') return str;
+      str = String(str).trim();
+
+      // Handle DD-MM-YYYY HH:mm or DD-MM-YYYY format from Edunext mailbox
+      const dmyMatch = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+(\d{1,2}):(\d{1,2}))?/);
+      if (dmyMatch) {
+        const day = parseInt(dmyMatch[1], 10);
+        const month = parseInt(dmyMatch[2], 10) - 1;
+        const year = parseInt(dmyMatch[3], 10);
+        const hour = dmyMatch[4] ? parseInt(dmyMatch[4], 10) : 0;
+        const min = dmyMatch[5] ? parseInt(dmyMatch[5], 10) : 0;
+        return new Date(year, month, day, hour, min).getTime();
+      }
+
+      // Standard ISO YYYY-MM-DD or other standard formats
       const parsed = Date.parse(str);
       return isNaN(parsed) ? 0 : parsed;
     }

@@ -1,7 +1,12 @@
-const CACHE_NAME = 'redunxt-pwa-v2';
+const CACHE_NAME = 'redunxt-pwa-v3';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(['/icon-192.png', '/badge-96.png', '/favicon.svg']);
+    }).catch(() => null)
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -23,7 +28,8 @@ self.addEventListener('push', (event) => {
   let data = {
     title: 'Redunxt Notification',
     body: 'New update from school',
-    icon: '/favicon.svg',
+    icon: '/icon-192.png',
+    badge: '/badge-96.png',
     url: '/'
   };
 
@@ -37,12 +43,12 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body || 'You have a new school update.',
-    icon: data.icon || '/favicon.svg',
-    badge: '/favicon.svg',
+    icon: data.icon || '/icon-192.png',
+    badge: '/badge-96.png',
     data: {
       url: data.url || '/'
     },
-    tag: data.tag || 'redunxt-notification',
+    tag: data.tag || ('redunxt-' + Date.now()),
     renotify: true,
     vibrate: [200, 100, 200]
   };
