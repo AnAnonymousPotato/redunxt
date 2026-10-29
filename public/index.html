@@ -1338,6 +1338,9 @@
       localStorage.removeItem('redunxt_user_id');
       localStorage.removeItem('redunxt_device_token');
       localStorage.removeItem('redunxt_session');
+      localStorage.removeItem('redunxt_seen_items');
+      localStorage.removeItem('redunxt_local_avatar');
+      seenItemIds = new Set();
       session = { token: null, student: null, account: null };
       bundleData = null;
       document.getElementById('loginPassword').value = '';
