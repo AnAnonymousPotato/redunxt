@@ -211,8 +211,7 @@ export default {
             'mvcdomainurl': schoolDomain,
             'Connection-type': '_write'
           },
-          body: JSON.stringify({ userid: uId, password: pass })
-        });
+          body: JSON.stringify({ userid: uId, password: pass })\n        });
         const loginData = await loginRes.json();
 
         if (!loginData.success || !loginData.data?.openIdConnect) {
@@ -678,6 +677,166 @@ export default {
           success: true,
           message: 'Test notification dispatched successfully (gateway status: ' + pushStatus + ').'
         }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // 9.5 GET/POST /accounts/push/check-now - Immediate poll for new circulars/mails and dispatch push alerts
+    if (url.pathname === '/accounts/push/check-now') {
+      try {
+        const vapidRow = await env.DB.prepare("SELECT value FROM system_config WHERE key = 'vapid'").first();
+        if (!vapidRow?.value) {
+          return new Response(JSON.stringify({ success: false, error: 'VAPID configuration not found.' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        const vapidConfig = JSON.parse(vapidRow.value);
+
+        const users = await env.DB.prepare('SELECT DISTINCT user_id FROM push_subscriptions').all();
+        if (!users?.results || users.results.length === 0) {
+          return new Response(JSON.stringify({ success: true, message: 'No registered push subscriptions found.', checked: 0 }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const report = [];
+
+        for (const row of users.results) {
+          const userId = row.user_id;
+          const account = await env.DB.prepare('SELECT * FROM accounts WHERE user_id = ?').bind(userId).first();
+          if (!account) continue;
+
+          let token = account.cached_token;
+          const now = Math.floor(Date.now() / 1000);
+          if (!token || !account.token_expires_at || account.token_expires_at - 300 < now) {
+            const lRes = await fetch('https://m1.edubac.com/rest/v4/student/openconnect', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'mvcdomainurl': account.school_domain || 'dpsharni.edunext2.com',
+                'Connection-type': '_write'
+              },
+              body: JSON.stringify({ userid: account.user_id, password: account.password })
+            });
+            const lData = await lRes.json();
+            if (lData.success && lData.data?.openIdConnect) {
+              token = lData.data.openIdConnect;
+              let exp = 0;
+              try { exp = parseJwtPayload(token)?.exp || 0; } catch {}
+              await env.DB.prepare('UPDATE accounts SET cached_token = ?, token_expires_at = ?, last_synced_at = CURRENT_TIMESTAMP WHERE user_id = ?').bind(token, exp, userId).run();
+            } else {
+              report.push({ userId, status: 'token_refresh_failed' });
+              continue;
+            }
+          }
+
+          const headers = {
+            'Authorization': 'Bearer ' + token,
+            'mvcdomainurl': account.school_domain || 'dpsharni.edunext2.com',
+            'Connection-type': '_read',
+            'Content-Type': 'application/json'
+          };
+
+          const [circRes, mailRes] = await Promise.all([
+            fetch('https://m1.edubac.com/rest/v4/student/getcirculardata', { method: 'GET', headers }).catch(() => null),
+            fetch('https://m1.edubac.com/rest/v4/student/Studentinboxnew?limit=1', { method: 'GET', headers }).catch(() => null)
+          ]);
+
+          const circData = circRes ? await circRes.json().catch(() => ({})) : {};
+          const mailData = mailRes ? await mailRes.json().catch(() => ({})) : {};
+
+          const circulars = circData?.data?.circularlist || circData?.data?.circular_list || [];
+          const mails = mailData?.data?.list || mailData?.data?.mail_box_list || [];
+
+          const subs = await env.DB.prepare('SELECT * FROM push_subscriptions WHERE user_id = ?').bind(userId).all();
+          let userPushed = 0;
+
+          if (subs?.results) {
+            for (const sub of subs.results) {
+              // Check circulars
+              if (circulars.length > 0) {
+                const newCircs = [];
+                for (const c of circulars) {
+                  const cId = String(c.id || c.circularid || c.circular_id || '');
+                  if (!cId) continue;
+                  if (sub.last_circular_id && cId === String(sub.last_circular_id)) break;
+                  newCircs.push(c);
+                  if (newCircs.length >= 3) break;
+                }
+
+                if (newCircs.length > 0) {
+                  for (const c of newCircs.slice().reverse()) {
+                    const cId = String(c.id || c.circularid || c.circular_id || '');
+                    const circTitle = c.name || c.circularname || c.circular_name || 'New Circular';
+                    const circDesc = (c.discription || c.description || c.summary || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
+
+                    await sendWebPush(sub, {
+                      title: 'Circular: ' + circTitle,
+                      body: circDesc || 'A new school circular has been published.',
+                      icon: '/icon-192.png',
+                      badge: '/badge-96.png',
+                      url: '/#circulars',
+                      tag: 'circ-' + cId
+                    }, vapidConfig).catch(() => null);
+                    userPushed++;
+                  }
+
+                  const latestCircId = String(circulars[0].id || circulars[0].circularid || circulars[0].circular_id || '');
+                  await env.DB.prepare('UPDATE push_subscriptions SET last_circular_id = ?, last_checked_at = CURRENT_TIMESTAMP WHERE id = ?').bind(latestCircId, sub.id).run();
+                }
+              }
+
+              // Check mails
+              if (mails.length > 0) {
+                const newMails = [];
+                for (const m of mails) {
+                  const mId = String(m.id || m.mailid || m.mail_id || '');
+                  if (!mId) continue;
+                  if (sub.last_mail_id && mId === String(sub.last_mail_id)) break;
+                  newMails.push(m);
+                  if (newMails.length >= 3) break;
+                }
+
+                if (newMails.length > 0) {
+                  for (const m of newMails.slice().reverse()) {
+                    const mId = String(m.id || m.mailid || m.mail_id || '');
+                    const mailSubject = m.subject || 'New School Mail';
+                    const sender = m.employeename || m.from || m.sender_name || 'School';
+
+                    await sendWebPush(sub, {
+                      title: 'Mail: ' + mailSubject,
+                      body: 'From: ' + sender,
+                      icon: '/icon-192.png',
+                      badge: '/badge-96.png',
+                      url: '/#mailbox',
+                      tag: 'mail-' + mId
+                    }, vapidConfig).catch(() => null);
+                    userPushed++;
+                  }
+
+                  const latestMailId = String(mails[0].id || mails[0].mailid || mails[0].mail_id || '');
+                  await env.DB.prepare('UPDATE push_subscriptions SET last_mail_id = ?, last_checked_at = CURRENT_TIMESTAMP WHERE id = ?').bind(latestMailId, sub.id).run();
+                }
+              }
+            }
+          }
+
+          report.push({
+            userId,
+            circularsCount: circulars.length,
+            mailsCount: mails.length,
+            notificationsDispatched: userPushed
+          });
+        }
+
+        return new Response(JSON.stringify({ success: true, report }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       } catch (err) {
