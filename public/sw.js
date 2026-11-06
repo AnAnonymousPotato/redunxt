@@ -41,10 +41,15 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  const iconUrl = (data.icon && data.icon.startsWith('http')) 
+    ? data.icon 
+    : new URL(data.icon || '/icon-192.png', self.location.origin).href;
+  const badgeUrl = new URL('/badge-96.png', self.location.origin).href;
+
   const options = {
     body: data.body || 'You have a new school update.',
-    icon: data.icon || '/icon-192.png',
-    badge: '/badge-96.png',
+    icon: iconUrl,
+    badge: badgeUrl,
     data: {
       url: data.url || '/'
     },
