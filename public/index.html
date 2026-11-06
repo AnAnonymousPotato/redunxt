@@ -370,7 +370,7 @@
               <div>
                 <p id="pulseCountdownLabel" class="text-[10px] uppercase font-bold text-amber-400 tracking-wider">Upcoming Recess</p>
                 <p id="pulseCountdownValue" class="text-xs font-bold text-white">Calculating break dates...</p>
-                <p id="pulseCountdownSub" class="text-[10px] text-zinc-400 font-mono mt-0.5">Circular 014 dates verified</p>
+                <p id="pulseCountdownSub" class="text-[10px] text-zinc-400 font-mono mt-0.5">Nov 05 – Nov 24</p>
               </div>
             </div>
           </div>
@@ -583,7 +583,7 @@
                 </div>
                 <div class="flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                  <span>Circular 014 Rev</span>
+                  <span>Vacation / Recess</span>
                 </div>
               </div>
 
@@ -598,13 +598,13 @@
                 </div>
               </div>
 
-              <!-- Circular 014 Alert Callout Card -->
+              <!-- Vacation Schedule Callout Card -->
               <div class="rounded-2xl bg-amber-500/10 border border-amber-500/25 p-3.5 flex items-start gap-3">
-                <span class="text-base text-amber-400 flex-shrink-0 mt-0.5">⚠️</span>
+                <span class="text-base text-amber-400 flex-shrink-0 mt-0.5">☀️</span>
                 <div class="text-xs text-zinc-300">
-                  <p class="font-bold text-amber-300 mb-0.5">Circular No. 014 Official Revision</p>
+                  <p class="font-bold text-amber-300 mb-0.5">Vacation Schedule</p>
                   <p class="text-[11px] text-zinc-400 leading-relaxed">
-                    Diwali break is officially revised to <span class="text-zinc-200 font-semibold">Nov 05 – Nov 24, 2026</span> (reopening Nov 25). Winter break is compensated with regular school days on <span class="text-zinc-200 font-semibold">Dec 28 – Dec 31</span>.
+                    Diwali break: <span class="text-zinc-200 font-semibold">Nov 05 – Nov 24</span> (reopens Nov 25). School operates <span class="text-zinc-200 font-semibold">Dec 28 – Dec 31</span>.
                   </p>
                 </div>
               </div>
@@ -971,7 +971,7 @@
     let seenItemIds = new Set();
     let currentAlmanacMonthIndex = 6; // Defaults to October (0: April, 1: May, ... 6: October, ... 11: March)
 
-    // DPS Harni Academic Year 2026-27 Almanac Dataset (Digitized from Printed Almanac + Circular 014 Revisions)
+    // DPS Harni Academic Year 2026-27 Almanac Dataset
     const ALMANAC_YEAR_MONTHS = [
       { name: "April 2026", year: 2026, month: 3, days: 30, startDay: 2 }, // Wed Apr 1
       { name: "May 2026", year: 2026, month: 4, days: 31, startDay: 4 },   // Fri May 1
@@ -1034,18 +1034,18 @@
       "2026-10-21": { title: "Dussehra (Vijayadashami)", type: "holiday" },
       "2026-10-31": { title: "Sardar Vallabhbhai Patel Jayanti", type: "holiday" },
 
-      // November 2026 (REVISED PER CIRCULAR 014: Nov 05 to Nov 24)
+      // November 2026
       "2026-11-24": { title: "Guru Nanak Jayanti", type: "holiday" },
-      "2026-11-25": { title: "School Reopens after Diwali Break (Cir 014)", type: "event" },
+      "2026-11-25": { title: "School Reopens after Diwali Break", type: "event" },
 
-      // December 2026 (REVISED PER CIRCULAR 014: Dec 28-31 Regular School)
+      // December 2026
       "2026-12-05": { title: "1st Saturday (Working for Class IX)", type: "working_sat" },
       "2026-12-19": { title: "3rd Saturday (Working for Class IX)", type: "working_sat" },
       "2026-12-25": { title: "Christmas Day", type: "holiday" },
-      "2026-12-28": { title: "Regular School Day (Compensatory per Cir 014)", type: "working_compensatory" },
-      "2026-12-29": { title: "Regular School Day (Compensatory per Cir 014)", type: "working_compensatory" },
-      "2026-12-30": { title: "Regular School Day (Compensatory per Cir 014)", type: "working_compensatory" },
-      "2026-12-31": { title: "Regular School Day (Compensatory per Cir 014)", type: "working_compensatory" },
+      "2026-12-28": { title: "Regular School Day", type: "working_compensatory" },
+      "2026-12-29": { title: "Regular School Day", type: "working_compensatory" },
+      "2026-12-30": { title: "Regular School Day", type: "working_compensatory" },
+      "2026-12-31": { title: "Regular School Day", type: "working_compensatory" },
 
       // January 2027
       "2027-01-01": { title: "New Year Holiday", type: "holiday" },
@@ -1053,7 +1053,7 @@
       "2027-01-14": { title: "Makar Sankranti / Uttarayan", type: "holiday" },
       "2027-01-15": { title: "Vasi Uttarayan", type: "holiday" },
       "2027-01-16": { title: "3rd Saturday (Working for Class IX)", type: "working_sat" },
-      "2027-02-26": { title: "Republic Day (National Holiday)", type: "holiday" },
+      "2027-01-26": { title: "Republic Day (National Holiday)", type: "holiday" },
 
       // February 2027
       "2027-02-06": { title: "1st Saturday (Working for Class IX)", type: "working_sat" },
@@ -1079,14 +1079,14 @@
         return { name: "Summer Vacation", isRevised: false };
       }
 
-      // REVISED Diwali Vacation per Circular 014: Nov 05, 2026 to Nov 24, 2026
+      // Diwali Vacation: Nov 05, 2026 to Nov 24, 2026
       const diwaliStart = new Date(2026, 10, 5);
       const diwaliEnd = new Date(2026, 10, 24);
       if (dt >= diwaliStart && dt <= diwaliEnd) {
-        return { name: "Diwali Vacation (Revised per Cir 014)", isRevised: true };
+        return { name: "Diwali Vacation", isRevised: true };
       }
 
-      // Winter Break per Circular 014: Dec 25–27, Jan 01–03
+      // Winter Break: Dec 25–27, Jan 01–03
       const win1Start = new Date(2026, 11, 25);
       const win1End = new Date(2026, 11, 27);
       if (dt >= win1Start && dt <= win1End) {
@@ -1557,7 +1557,6 @@
       document.getElementById('greetingTitle').innerText = `${timeOfDay}, ${studentFirstName}`;
 
       // Calculate next upcoming vacation/recess dynamically:
-      // Diwali Vacation: 05 Nov 2026 (Revised per Cir 014)
       const diwaliDate = new Date(2026, 10, 5); // Nov 5
       const msPerDay = 1000 * 60 * 60 * 24;
       const diffMs = diwaliDate - today;
@@ -1570,15 +1569,15 @@
       if (daysUntilDiwali > 0) {
         countdownLabel.innerText = "Upcoming Recess";
         countdownValue.innerText = `Diwali Vacation in ${daysUntilDiwali} days`;
-        countdownSub.innerText = "Nov 05 – Nov 24 (Revised per Cir 014)";
+        countdownSub.innerText = "Nov 05 – Nov 24";
       } else if (daysUntilDiwali <= 0 && daysUntilDiwali >= -19) {
         countdownLabel.innerText = "Active Recess";
         countdownValue.innerText = "Diwali Vacation Ongoing";
-        countdownSub.innerText = "School reopens Wednesday 25 Nov";
+        countdownSub.innerText = "School reopens Nov 25";
       } else {
         countdownLabel.innerText = "Upcoming Recess";
         countdownValue.innerText = "Winter Recess: Dec 25 – 27";
-        countdownSub.innerText = "Regular school Dec 28–31 per Cir 014";
+        countdownSub.innerText = "School reopens Dec 28";
       }
     }
 
@@ -1712,13 +1711,10 @@
     function renderFeedCardHtml(item) {
       const isUnread = !seenItemIds.has(item.id);
       const isCircular = item.type === 'circular';
-      const isCir014 = isCircular && (item.title.includes('014') || item.title.toLowerCase().includes('revised') || item.title.toLowerCase().includes('diwali'));
 
-      // Generate AI summary preview snippet
+      // Clean preview snippet
       let aiSummary = item.description;
-      if (isCir014) {
-        aiSummary = "Official schedule change: Diwali Vacation rescheduled to 05 Nov – 24 Nov (reopening 25 Nov). December 28–31 will be working school days.";
-      } else if (aiSummary.length > 150) {
+      if (aiSummary.length > 150) {
         aiSummary = aiSummary.substring(0, 145) + '...';
       }
 
@@ -1734,8 +1730,6 @@
               <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${isCircular ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-brand-500/20 text-brand-300 border border-brand-500/30'}">
                 ${isCircular ? '📢 Circular' : '✉️ Mail'}
               </span>
-
-              ${isCir014 ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">CIR 014 REVISION</span>` : ''}
 
               <!-- Date Badge -->
               <span class="text-xs text-zinc-400 font-mono">${item.date}</span>
@@ -1901,7 +1895,7 @@
         const isSunday = (dayOfWeek === 0);
         const isHoliday = isSunday || isSecondOrFourthSat || (event && event.type === 'holiday') || (vacation !== null);
         const isWorkingSat = isFirstOrThirdSat && (!event || event.type !== 'holiday') && !vacation;
-        const isCir014Revised = (vacation && vacation.isRevised) || (event && event.type === 'working_compensatory');
+        const isVacationPeriod = (vacation && vacation.isRevised) || (event && event.type === 'working_compensatory');
 
         const dayBtn = document.createElement('button');
         dayBtn.type = 'button';
@@ -1910,7 +1904,7 @@
         let cellClasses = 'h-9 rounded-xl flex flex-col items-center justify-center font-medium transition text-xs relative ';
         let dotHtml = '';
 
-        if (isCir014Revised) {
+        if (isVacationPeriod) {
           cellClasses += 'bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25';
           dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 absolute bottom-1"></span>`;
         } else if (isHoliday) {
@@ -2175,7 +2169,7 @@
                   </div>
                   <div>
                     <h4 class="text-sm font-bold text-white">${reportTitle}</h4>
-                    <p class="text-xs text-zinc-400 font-mono Academic Session: ${yr} • Published: ${pubDate}</p>
+                    <p class="text-xs text-zinc-400 font-mono">Academic Session: ${yr} • Published: ${pubDate}</p>
                   </div>
                 </div>
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Official</span>
