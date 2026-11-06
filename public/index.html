@@ -442,6 +442,31 @@
           <!-- LEFT COLUMN (7 cols): Unified Recent Updates Feed -->
           <div class="lg:col-span-7 flex flex-col gap-4">
             
+            <!-- Push Notification Permission Prompt Banner (Visible when permission has not been decided) -->
+            <div id="pushPermissionBanner" class="hidden rounded-2xl bg-gradient-to-r from-brand-950/60 via-surface to-brand-950/40 border border-brand-500/30 p-4 shadow-lg backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0 text-lg shadow-inner">
+                  🔔
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-xs sm:text-sm font-bold text-white tracking-tight">Enable Push Notifications</h4>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Instant Alerts</span>
+                  </div>
+                  <p class="text-[11px] sm:text-xs text-zinc-400 mt-0.5 leading-snug">Get instant phone notifications whenever teachers send new circulars or messages.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
+                <button type="button" onclick="dismissPushBanner()" class="px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-400 hover:text-zinc-200 text-xs font-semibold border border-white/[0.08] transition">
+                  Later
+                </button>
+                <button type="button" onclick="requestPushNotificationPermission()" id="pushBannerActionBtn" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-brand-500/20 active:scale-95">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                  <span>Turn On</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Feed Filter Pills & Search for Mobile -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div class="flex items-center gap-2 flex-wrap">
@@ -1028,7 +1053,7 @@
       "2027-01-14": { title: "Makar Sankranti / Uttarayan", type: "holiday" },
       "2027-01-15": { title: "Vasi Uttarayan", type: "holiday" },
       "2027-01-16": { title: "3rd Saturday (Working for Class IX)", type: "working_sat" },
-      "2027-01-26": { title: "Republic Day (National Holiday)", type: "holiday" },
+      "2027-02-26": { title: "Republic Day (National Holiday)", type: "holiday" },
 
       // February 2027
       "2027-02-06": { title: "1st Saturday (Working for Class IX)", type: "working_sat" },
@@ -1257,6 +1282,7 @@
       updateHeaderIdentity();
       renderAlmanacCalendar();
       fetchDashboardData();
+      syncPushNotificationState();
     }
 
     // 2. Login Handler
@@ -1435,6 +1461,10 @@
         renderQuickResourceCounts();
         renderUnifiedFeed();
         renderAlmanacCalendar();
+
+        if (isManual) {
+          fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/check-now').catch(() => {});
+        }
 
         document.getElementById('dashLoading').classList.add('hidden');
         document.getElementById('dashError').classList.add('hidden');
@@ -2145,7 +2175,7 @@
                   </div>
                   <div>
                     <h4 class="text-sm font-bold text-white">${reportTitle}</h4>
-                    <p class="text-xs text-zinc-400 font-mono">Academic Session: ${yr} • Published: ${pubDate}</p>
+                    <p class="text-xs text-zinc-400 font-mono Academic Session: ${yr} • Published: ${pubDate}</p>
                   </div>
                 </div>
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Official</span>
@@ -2456,6 +2486,7 @@
           }
 
           showToast('Push notifications active on this device!', 'success');
+          document.getElementById('pushPermissionBanner')?.classList.add('hidden');
         }
       } catch (err) {
         showToast(err.message || 'Notification configuration failed.', 'error');
@@ -2496,6 +2527,149 @@
           testBtn.classList.remove('opacity-50');
         }
       }
+    }
+
+    function dismissPushBanner() {
+      const banner = document.getElementById('pushPermissionBanner');
+      if (banner) banner.classList.add('hidden');
+      // Snooze banner for 3 days
+      localStorage.setItem('redunxt_notif_banner_dismissed_at', String(Date.now() + 3 * 24 * 60 * 60 * 1000));
+    }
+
+    async function requestPushNotificationPermission() {
+      const btn = document.getElementById('pushBannerActionBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Activating...';
+      }
+
+      try {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+          throw new Error('Web Push notifications are not supported on this device/browser.');
+        }
+
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') {
+          showToast('Notification permission was not granted.', 'error');
+          dismissPushBanner();
+          updatePushUI();
+          return;
+        }
+
+        const reg = await navigator.serviceWorker.ready;
+        const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
+        const vapidData = await vapidRes.json();
+        if (!vapidData.success || !vapidData.publicKey) {
+          throw new Error('Failed to fetch notification server key.');
+        }
+
+        const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
+        const newSub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey
+        });
+
+        const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+        const deviceToken = localStorage.getItem('redunxt_device_token');
+
+        const subRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            deviceToken,
+            subscription: newSub.toJSON()
+          })
+        });
+
+        const subData = await subRes.json();
+        if (!subData.success) {
+          throw new Error(subData.error || 'Failed to register push subscription on server.');
+        }
+
+        document.getElementById('pushPermissionBanner')?.classList.add('hidden');
+        showToast('Push notifications active! Instant alerts enabled.', 'success');
+        updatePushUI();
+
+        // Dispatch immediate test verification notification to phone
+        setTimeout(() => {
+          sendTestPushNotification();
+        }, 600);
+      } catch (err) {
+        showToast(err.message || 'Notification configuration failed.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span>Turn On</span>`;
+        }
+      }
+    }
+
+    async function syncPushNotificationState() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        updatePushUI();
+        return;
+      }
+
+      const perm = Notification.permission;
+      const banner = document.getElementById('pushPermissionBanner');
+
+      if (perm === 'default') {
+        const snoozeUntil = Number(localStorage.getItem('redunxt_notif_banner_dismissed_at') || '0');
+        if (Date.now() > snoozeUntil) {
+          banner?.classList.remove('hidden');
+        } else {
+          banner?.classList.add('hidden');
+        }
+      } else {
+        banner?.classList.add('hidden');
+      }
+
+      if (perm === 'granted') {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          let sub = await reg.pushManager.getSubscription();
+
+          const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
+          const deviceToken = localStorage.getItem('redunxt_device_token');
+
+          if (!userId || !deviceToken) {
+            updatePushUI();
+            return;
+          }
+
+          if (!sub) {
+            // Browser permission was granted, but device subscription was missing or expired!
+            // Automatically re-subscribe silently
+            const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
+            const vapidData = await vapidRes.json();
+            if (vapidData.success && vapidData.publicKey) {
+              const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
+              sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey
+              });
+            }
+          }
+
+          if (sub) {
+            // Silently keep Cloudflare D1 subscription in sync with active user and device
+            await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/subscribe', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId,
+                deviceToken,
+                subscription: sub.toJSON()
+              })
+            }).catch(() => {});
+          }
+        } catch (err) {
+          console.warn('Auto-sync push subscription notice:', err);
+        }
+      }
+
+      updatePushUI();
     }
 
     // ================= PWA INSTALLATION MANAGER =================
