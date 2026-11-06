@@ -4,10 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Redunxt — Modern Student Command Center</title>
-  <meta name="description" content="Ultra-fast, unified command center and school almanac for DPS students" />
-  <meta name="theme-color" content="#0a0a0c" />
+  <meta name="description" content="Ultra-fast, minimal, elegant command center and school almanac for students" />
+  <meta name="theme-color" content="#07080a" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/favicon.svg" />
+  
+  <!-- Premium Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -15,124 +21,190 @@
       theme: {
         extend: {
           colors: {
-            canvas: '#0a0a0c',
+            canvas: '#07080a',
             surface: {
-              DEFAULT: '#131417',
-              muted: '#18191e',
-              elevated: '#1f2026',
-              highlight: '#272832'
+              DEFAULT: 'rgba(15, 17, 23, 0.72)',
+              solid: '#0f1117',
+              muted: 'rgba(21, 24, 32, 0.65)',
+              elevated: 'rgba(28, 32, 43, 0.8)',
+              highlight: 'rgba(38, 43, 58, 0.9)'
             },
             brand: {
               50: '#eef2ff',
               100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
               400: '#818cf8',
               500: '#6366f1',
               600: '#4f46e5',
               700: '#4338ca',
-            },
-            dark: {
-              950: '#0a0a0c',
-              900: '#131417',
-              850: '#18191e',
-              800: '#202128',
-              750: '#2b2c36',
-              700: '#383a47',
             }
           },
-          borderRadius: {
-            '2xl': '16px',
-            '3xl': '24px',
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          boxShadow: {
+            'glass': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 32px -4px rgba(0, 0, 0, 0.7)',
+            'glass-elevated': '0 0 0 1px rgba(255, 255, 255, 0.12), 0 20px 48px -8px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.15)',
+            'glow-brand': '0 0 35px -5px rgba(99, 102, 241, 0.35)',
+            'glow-amber': '0 0 35px -5px rgba(245, 158, 11, 0.3)',
+            'glow-emerald': '0 0 35px -5px rgba(16, 185, 129, 0.3)',
           }
         }
       }
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #0a0a0c;
+      background-color: #07080a;
+      color: #f4f4f5;
+      overflow-x: hidden;
     }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: 'tnum' on, 'lnum' on;
+    }
+
+    /* Awwwards Glass & Material Aesthetics */
+    .glass-panel {
+      background: rgba(14, 16, 22, 0.75);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+    }
+    .glass-card {
+      background: rgba(18, 21, 29, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 8px 24px -6px rgba(0, 0, 0, 0.5);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 18px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(99, 102, 241, 0.15);
+    }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.065);
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    }
+
+    /* Custom Minimal Scrollbar */
     .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 9999px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6366f1; }
-    
-    /* Modal and HTML sanitizer formatting */
-    #modalBody a, #circModalDesc a { color: #818cf8; text-decoration: underline; word-break: break-all; }
-    #modalBody p, #circModalDesc p { margin-bottom: 0.75rem; line-height: 1.65; color: #e4e4e7; }
+
+    /* Modal HTML formatting */
+    #modalBody a, #circModalDesc a { color: #818cf8; text-decoration: underline; text-underline-offset: 3px; word-break: break-all; transition: color 0.15s; }
+    #modalBody a:hover, #circModalDesc a:hover { color: #a5b4fc; }
+    #modalBody p, #circModalDesc p { margin-bottom: 0.85rem; line-height: 1.7; color: #e4e4e7; }
     #modalBody p:last-child, #circModalDesc p:last-child { margin-bottom: 0; }
-    #modalBody ul, #circModalDesc ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
-    #modalBody ol, #circModalDesc ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
-    #modalBody li, #circModalDesc li { margin-bottom: 0.35rem; line-height: 1.6; }
+    #modalBody ul, #circModalDesc ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 0.85rem; color: #e4e4e7; }
+    #modalBody ol, #circModalDesc ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 0.85rem; color: #e4e4e7; }
+    #modalBody li, #circModalDesc li { margin-bottom: 0.4rem; line-height: 1.65; }
     #modalBody strong, #circModalDesc strong, #modalBody b, #circModalDesc b { font-weight: 700; color: #ffffff; }
-    #modalBody img, #circModalDesc img { max-width: 100%; border-radius: 0.75rem; height: auto; margin: 0.75rem 0; }
-    #modalBody table, #circModalDesc table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.85rem; overflow-x: auto; display: block; }
-    #modalBody th, #circModalDesc th, #modalBody td, #circModalDesc td { border: 1px solid #2b2c36; padding: 0.5rem 0.75rem; }
-    
-    /* Smooth transitions */
-    .drawer-backdrop {
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(8px);
+    #modalBody img, #circModalDesc img { max-width: 100%; border-radius: 1rem; height: auto; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.1); }
+    #modalBody table, #circModalDesc table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; overflow-x: auto; display: block; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.08); }
+    #modalBody th, #circModalDesc th, #modalBody td, #circModalDesc td { border: 1px solid rgba(255,255,255,0.08); padding: 0.6rem 0.85rem; }
+    #modalBody th, #circModalDesc th { background: rgba(255,255,255,0.04); color: #fff; font-weight: 600; }
+
+    /* Dynamic Island Toast & Popover Animations */
+    .ease-spring {
+      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
     }
   </style>
 </head>
-<body class="bg-[#0a0a0c] text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-[#07080a] text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
+
+  <!-- ================= AMBIENT SPACE ATMOSPHERE LIGHTING ================= -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute -top-[250px] left-1/2 -translate-x-1/2 w-[900px] h-[550px] bg-gradient-to-b from-indigo-500/12 via-violet-500/8 to-transparent blur-[140px] rounded-full"></div>
+    <div class="absolute top-[35%] -left-[200px] w-[500px] h-[500px] bg-indigo-600/5 blur-[160px] rounded-full"></div>
+    <div class="absolute top-[50%] -right-[200px] w-[550px] h-[550px] bg-amber-500/5 blur-[160px] rounded-full"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.08),rgba(255,255,255,0))]"></div>
+  </div>
+
+  <!-- ================= TOP DYNAMIC ISLAND TOAST ================= -->
+  <div id="dynamicIslandToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 ease-spring opacity-0 -translate-y-4">
+    <div class="flex items-center gap-2.5 px-4 py-2 rounded-full glass-panel border border-white/15 shadow-2xl text-xs font-semibold text-white pointer-events-auto">
+      <span id="toastIcon">✨</span>
+      <span id="toastMessage">All updates synchronized</span>
+    </div>
+  </div>
 
   <!-- ================= APP INITIAL LAUNCH SPLASH LOADER ================= -->
-  <div id="appSplashLoader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0c] transition-opacity duration-300">
-    <div class="flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-200">
+  <div id="appSplashLoader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#07080a] transition-opacity duration-300">
+    <div class="flex flex-col items-center gap-5 animate-in fade-in zoom-in-95 duration-200">
       <div class="relative">
-        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 p-0.5 shadow-2xl shadow-brand-500/30 flex items-center justify-center animate-pulse">
-          <div class="w-full h-full bg-[#0d0d11] rounded-[22px] flex items-center justify-center text-3xl">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-violet-500 p-0.5 shadow-2xl shadow-brand-500/30 flex items-center justify-center animate-pulse">
+          <div class="w-full h-full bg-[#0b0c10] rounded-[22px] flex items-center justify-center text-3xl">
             🎓
           </div>
         </div>
-        <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0a0a0c] flex items-center justify-center">
+        <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#07080a] flex items-center justify-center">
           <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
         </div>
       </div>
       <div class="text-center">
-        <h1 class="text-base font-bold text-white tracking-tight">Redunxt</h1>
-        <p class="text-xs text-zinc-400 mt-1.5 flex items-center justify-center gap-2">
+        <h1 class="text-lg font-bold text-white tracking-tight">Redunxt</h1>
+        <p class="text-xs text-zinc-400 mt-1 flex items-center justify-center gap-2 font-mono">
           <svg class="w-3.5 h-3.5 animate-spin text-brand-400" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
           </svg>
-          <span id="splashMsg">Connecting to Command Center...</span>
+          <span id="splashMsg">Connecting to student gateway...</span>
         </p>
       </div>
     </div>
   </div>
 
-  <!-- ================= VIEW 1: PUBLIC LOGIN SCREEN ================= -->
-  <div id="loginView" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
+  <!-- ================= VIEW 1: CINEMATIC LOGIN GATEWAY ================= -->
+  <div id="loginView" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto z-10">
+    
     <!-- Hero / Features Pill -->
-    <div class="mb-6 flex flex-wrap items-center justify-center gap-2 max-w-lg text-center">
-      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
-        <span class="text-brand-400">⚡</span> 10x Faster ERP
+    <div class="mb-7 flex flex-wrap items-center justify-center gap-2 max-w-lg text-center">
+      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-panel text-[11px] font-semibold text-zinc-300 shadow-sm border border-white/10">
+        <span class="text-indigo-400">⚡</span> 10x Faster ERP
       </div>
-      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
+      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-panel text-[11px] font-semibold text-zinc-300 shadow-sm border border-white/10">
         <span class="text-emerald-400">🔒</span> Cryptographic Privacy
       </div>
-      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
-        <span class="text-indigo-400">📱</span> PWA & Mobile Ready
+      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-panel text-[11px] font-semibold text-zinc-300 shadow-sm border border-white/10">
+        <span class="text-violet-400">📱</span> PWA & Standalone App
       </div>
     </div>
 
-    <div class="w-full max-w-md bg-surface border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6 relative overflow-hidden">
-      <!-- Glow effect -->
-      <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Login Card -->
+    <div class="w-full max-w-md glass-panel rounded-3xl p-6 sm:p-9 shadow-2xl flex flex-col gap-6 relative overflow-hidden border border-white/10">
+      
+      <!-- Ambient Glow Orbs -->
+      <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-violet-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
       <!-- Brand Header -->
       <div class="flex flex-col items-center text-center gap-2 relative">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 flex items-center justify-center shadow-xl shadow-brand-500/20 mb-1">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-          </svg>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-violet-500 p-0.5 shadow-xl shadow-brand-500/20 mb-1 flex items-center justify-center">
+          <div class="w-full h-full bg-[#0b0c10] rounded-[14px] flex items-center justify-center">
+            <svg class="w-7 h-7 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+            </svg>
+          </div>
         </div>
         <h1 class="text-2xl font-extrabold text-white tracking-tight">Redunxt</h1>
         <p class="text-xs text-zinc-400 font-medium">Unified student command center & school hub</p>
@@ -150,13 +222,13 @@
             <select 
               id="loginSchoolDomain" 
               onchange="onSchoolSelectChange(this.value)"
-              class="w-full bg-surface-muted border border-white/[0.08] rounded-2xl px-4 py-3.5 text-sm text-zinc-100 focus:outline-none focus:border-brand-500 transition appearance-none cursor-pointer"
+              class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm text-zinc-100 focus:outline-none focus:border-brand-500 transition appearance-none cursor-pointer"
             >
-              <option value="dpsharni.edunext2.com">Delhi Public School, Harni</option>
-              <option value="dpssurat.edunext2.com">Delhi Public School, Surat</option>
-              <option value="dpsgrnoida.edunext2.com">Delhi Public School, Greater Noida</option>
-              <option value="dpsgn.edunext2.com">Delhi Public School, Gomti Nagar</option>
-              <option value="custom">Other School (Enter custom domain)...</option>
+              <option value="dpsharni.edunext2.com" class="bg-[#0f1117] text-white">Delhi Public School, Harni</option>
+              <option value="dpssurat.edunext2.com" class="bg-[#0f1117] text-white">Delhi Public School, Surat</option>
+              <option value="dpsgrnoida.edunext2.com" class="bg-[#0f1117] text-white">Delhi Public School, Greater Noida</option>
+              <option value="dpsgn.edunext2.com" class="bg-[#0f1117] text-white">Delhi Public School, Gomti Nagar</option>
+              <option value="custom" class="bg-[#0f1117] text-white">Other School (Enter custom domain)...</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -167,7 +239,7 @@
               type="text" 
               id="customSchoolDomain" 
               placeholder="e.g. yourschool.edunext2.com" 
-              class="w-full bg-surface-elevated border border-white/[0.08] rounded-2xl px-4 py-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500"
+              class="w-full glass-input rounded-2xl px-4 py-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500"
             />
           </div>
         </div>
@@ -181,7 +253,7 @@
             required 
             placeholder="e.g. 1001" 
             autocomplete="username"
-            class="w-full bg-surface-muted border border-white/[0.08] rounded-2xl px-4 py-3.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+            class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition font-mono"
           />
         </div>
 
@@ -195,7 +267,7 @@
               required 
               placeholder="Your Edunext password" 
               autocomplete="current-password"
-              class="w-full bg-surface-muted border border-white/[0.08] rounded-2xl px-4 py-3.5 pr-11 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+              class="w-full glass-input rounded-2xl px-4 py-3.5 pr-11 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
             />
             <button 
               type="button" 
@@ -210,10 +282,11 @@
           </div>
         </div>
 
+        <!-- Submit Button -->
         <button 
           type="submit" 
           id="loginSubmitBtn"
-          class="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-brand-600/20 active:scale-[0.98] flex items-center justify-center gap-2"
+          class="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 via-indigo-600 to-violet-600 hover:from-brand-500 hover:to-violet-500 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-brand-600/25 active:scale-[0.98] flex items-center justify-center gap-2"
         >
           <span id="loginBtnText">Sign In to Command Center</span>
           <svg id="loginSpinner" class="hidden w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
@@ -223,17 +296,17 @@
         </button>
       </form>
 
-      <!-- Security Notice -->
-      <div class="rounded-2xl bg-surface-muted border border-white/[0.05] p-3.5 flex items-start gap-3 text-left">
+      <!-- Security Guarantee Badge -->
+      <div class="rounded-2xl glass-card p-3.5 flex items-start gap-3 text-left border border-white/[0.05]">
         <svg class="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
         <p class="text-[11px] text-zinc-400 leading-relaxed">
-          <span class="font-bold text-zinc-200">Device-Isolated Session:</span> Authenticated via Cloudflare edge tokens with zero credential leakage across devices.
+          <span class="font-bold text-zinc-200">Device-Isolated Session:</span> Authenticated via Cloudflare edge tokens with zero credential leakage across accounts or devices.
         </p>
       </div>
 
-      <!-- Optional PWA Install Action on Login View (Visible when not standalone on phone) -->
+      <!-- Optional PWA Install Action on Login View -->
       <div id="loginInstallBanner" class="hidden md:hidden rounded-2xl bg-brand-500/10 border border-brand-500/20 p-3.5 flex items-center justify-between gap-3 text-left">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 flex-shrink-0">
@@ -253,52 +326,54 @@
           <span>Download</span>
         </button>
       </div>
+
     </div>
   </div>
 
   <!-- ================= VIEW 2: UNIFIED COMMAND CENTER ================= -->
-  <div id="dashboardView" class="hidden flex-1 flex flex-col min-h-screen">
+  <div id="dashboardView" class="hidden flex-1 flex flex-col min-h-screen z-10">
     
-    <!-- Top Sticky Command Bar (Linear style) -->
-    <header class="sticky top-0 z-40 backdrop-blur-xl bg-[#0a0a0c]/90 border-b border-white/[0.08] px-4 py-3 sm:px-8">
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <!-- Floating Luxury Command Header (Dynamic Island / Linear Style) -->
+    <header class="sticky top-3 z-40 px-3 sm:px-6 max-w-7xl mx-auto w-full">
+      <div class="glass-panel rounded-2xl sm:rounded-3xl px-4 py-3 sm:px-6 flex items-center justify-between gap-4 border border-white/[0.09] shadow-2xl">
         
-        <!-- Left: Logo & Identity -->
-        <div class="flex items-center gap-3.5">
-          <div id="headerAvatarContainer" class="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0 bg-surface border border-white/[0.08] flex items-center justify-center">
+        <!-- Left: Logo & Student Identity -->
+        <div class="flex items-center gap-3">
+          <div id="headerAvatarContainer" class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden flex-shrink-0 bg-surface-muted border border-white/10 flex items-center justify-center shadow-md">
             <span id="headerAvatarInitials" class="text-sm font-bold text-white">--</span>
           </div>
           <div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <span id="headerStudentName" class="text-sm sm:text-base font-bold text-white tracking-tight">Student</span>
-              <span id="headerClassBadge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/25">Class IX-B</span>
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Live Edge Sync Active"></span>
+              <span id="headerClassBadge" class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/25">Class IX-B</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" title="Cloudflare Edge Sync Active"></span>
             </div>
-            <p id="headerAdmissionBadge" class="text-[11px] text-zinc-400">DPS Harni • Adm #---</p>
+            <p id="headerAdmissionBadge" class="text-[11px] text-zinc-400 font-mono">DPS Harni • Adm #---</p>
           </div>
         </div>
 
         <!-- Center: Quick Search Trigger (Cmd+K) -->
-        <div class="hidden md:flex items-center flex-1 max-w-md mx-6">
+        <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
           <div class="relative w-full">
             <input 
               type="text" 
               id="topSearchInput" 
               oninput="handleFeedSearch(this.value)" 
               placeholder="Search circulars & mailbox..." 
-              class="w-full bg-surface border border-white/[0.08] rounded-2xl px-4 py-2 pl-10 pr-14 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+              class="w-full glass-input rounded-2xl px-4 py-2.5 pl-10 pr-14 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none transition"
             />
-            <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <span class="absolute right-3 top-2 px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-muted text-zinc-400 border border-white/[0.06]">⌘K</span>
+            <span class="absolute right-3 top-2.5 px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/[0.08] text-zinc-400 border border-white/[0.06]">⌘K</span>
           </div>
         </div>
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-2">
-          <!-- Install App Header Action (Visible when running in browser on phone) -->
-          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Download & Install Redunxt as Web App" class="hidden md:hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600/90 hover:bg-brand-500 border border-brand-400/30 text-xs font-semibold text-white transition active:scale-95 shadow-md shadow-brand-500/20">
+          
+          <!-- Mobile Header Install App Button -->
+          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Download & Install Redunxt as Web App" class="hidden md:hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 border border-brand-400/30 text-xs font-semibold text-white transition active:scale-95 shadow-md shadow-brand-500/20">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -306,57 +381,64 @@
             <span class="sm:hidden">Install</span>
           </button>
 
-          <button onclick="fetchDashboardData(true)" id="refreshBtn" title="Sync Latest Data" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-300 transition active:scale-95 shadow-sm">
+          <!-- Refresh / Sync Button -->
+          <button onclick="fetchDashboardData(true)" id="refreshBtn" title="Sync Latest School Updates" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl glass-card text-xs font-semibold text-zinc-300 hover:text-white transition active:scale-95">
             <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span id="refreshText" class="hidden sm:inline">Sync</span>
+            <span id="refreshText" class="hidden sm:inline font-medium">Sync</span>
           </button>
 
-          <button onclick="openSettingsModal()" title="Preferences & Push Notifications" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-300 transition active:scale-95">
+          <!-- Settings Button -->
+          <button onclick="openSettingsModal()" title="Preferences & Push Notifications" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl glass-card text-xs font-semibold text-zinc-300 hover:text-white transition active:scale-95">
             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span class="hidden sm:inline">Settings</span>
+            <span class="hidden sm:inline font-medium">Settings</span>
           </button>
         </div>
+
       </div>
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col gap-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
 
       <!-- Loading State -->
-      <div id="dashLoading" class="flex flex-col items-center justify-center py-24 text-zinc-400">
-        <svg class="w-10 h-10 animate-spin text-brand-500 mb-3" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-        </svg>
-        <p class="text-sm font-semibold text-white">Connecting to school edge service...</p>
-        <p class="text-xs text-zinc-500 mt-1">Fetching latest circulars, mails & academic calendar</p>
+      <div id="dashLoading" class="flex flex-col items-center justify-center py-28 text-zinc-400">
+        <div class="relative mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center animate-spin">
+            <svg class="w-6 h-6 text-brand-400" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+          </div>
+        </div>
+        <p class="text-sm font-semibold text-white tracking-tight">Connecting to school edge service...</p>
+        <p class="text-xs text-zinc-500 mt-1 font-mono">Fetching latest circulars, mails & academic calendar</p>
       </div>
 
       <!-- Error State -->
-      <div id="dashError" class="hidden flex flex-col items-center justify-center py-12 p-6 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-center">
+      <div id="dashError" class="hidden flex flex-col items-center justify-center py-16 p-6 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-center glass-panel">
         <p class="text-rose-400 font-bold text-sm mb-1" id="dashErrorMessage">Session expired or connection error.</p>
         <p class="text-xs text-zinc-400 max-w-md mb-4">Please log in again with your credentials.</p>
-        <button onclick="handleLogout()" class="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Log In Again</button>
+        <button onclick="handleLogout()" class="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shadow-md shadow-rose-600/20 active:scale-95">Log In Again</button>
       </div>
 
       <!-- Main Dashboard Content (Visible when loaded) -->
       <div id="commandCenterContent" class="hidden flex flex-col gap-6">
 
-        <!-- Dual-Column Main Command Grid (Updates Stream + Almanac Calendar) -->
+        <!-- Dual-Column Command Grid (Updates Stream + Almanac Calendar) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           <!-- LEFT COLUMN (7 cols): Unified Recent Updates Feed -->
           <div class="lg:col-span-7 flex flex-col gap-4">
             
-            <!-- Push Notification Permission Prompt Banner (Visible when permission has not been decided) -->
-            <div id="pushPermissionBanner" class="hidden rounded-2xl bg-gradient-to-r from-brand-950/60 via-surface to-brand-950/40 border border-brand-500/30 p-4 shadow-lg backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-start gap-3">
-                <div class="w-9 h-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0 text-lg shadow-inner">
+            <!-- Push Notification Permission Prompt Banner -->
+            <div id="pushPermissionBanner" class="hidden rounded-3xl glass-panel border border-brand-500/30 p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-2xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0 text-xl shadow-inner">
                   🔔
                 </div>
                 <div>
@@ -364,30 +446,30 @@
                     <h4 class="text-xs sm:text-sm font-bold text-white tracking-tight">Enable Push Notifications</h4>
                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Instant Alerts</span>
                   </div>
-                  <p class="text-[11px] sm:text-xs text-zinc-400 mt-0.5 leading-snug">Get instant phone notifications whenever teachers send new circulars or messages.</p>
+                  <p class="text-[11px] sm:text-xs text-zinc-400 mt-0.5 leading-snug">Receive instantaneous device alerts whenever teachers publish new circulars or messages.</p>
                 </div>
               </div>
               <div class="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
-                <button type="button" onclick="dismissPushBanner()" class="px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-400 hover:text-zinc-200 text-xs font-semibold border border-white/[0.08] transition">
+                <button type="button" onclick="dismissPushBanner()" class="px-3.5 py-2 rounded-xl glass-card text-zinc-400 hover:text-zinc-200 text-xs font-semibold transition">
                   Later
                 </button>
-                <button type="button" onclick="requestPushNotificationPermission()" id="pushBannerActionBtn" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-brand-500/20 active:scale-95">
+                <button type="button" onclick="requestPushNotificationPermission()" id="pushBannerActionBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-brand-500/20 active:scale-95">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                   <span>Turn On</span>
                 </button>
               </div>
             </div>
 
-            <!-- Feed Filter Pills & Search for Mobile -->
+            <!-- Feed Filter Controls & Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-base font-bold text-white">Recent Updates</h3>
-                <span id="unreadTotalBadge" class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-500 text-white">0 NEW</span>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h3 class="text-base font-bold text-white tracking-tight">Recent Updates</h3>
+                <span id="unreadTotalBadge" class="hidden text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500 text-black shadow-sm font-mono animate-pulse">0 NEW</span>
                 <button 
                   id="markAllReadBtn" 
                   onclick="markAllAsRead()" 
                   title="Mark all updates as read"
-                  class="hidden text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 active:scale-95 border border-brand-500/20"
+                  class="hidden text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 active:scale-95 border border-brand-500/20"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7m-14 4l4 4L19 11"/>
@@ -396,25 +478,33 @@
                 </button>
               </div>
 
-              <!-- Filter Pills -->
-              <div class="flex items-center gap-1.5 bg-surface p-1 rounded-xl border border-white/[0.08] self-start sm:self-auto">
-                <button onclick="setFeedFilter('all')" id="filter-all" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-surface-elevated text-white transition">All</button>
-                <button onclick="setFeedFilter('unread')" id="filter-unread" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Unread</button>
-                <button onclick="setFeedFilter('circular')" id="filter-circular" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Circulars</button>
-                <button onclick="setFeedFilter('mail')" id="filter-mail" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Mailbox</button>
+              <!-- Segmented Filter Control -->
+              <div class="flex items-center gap-1 p-1 rounded-2xl glass-panel border border-white/[0.08] self-start sm:self-auto shadow-sm">
+                <button onclick="setFeedFilter('all')" id="filter-all" class="feed-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 text-white shadow-sm transition">
+                  All <span id="count-all" class="text-[10px] font-mono text-zinc-400 ml-0.5"></span>
+                </button>
+                <button onclick="setFeedFilter('unread')" id="filter-unread" class="feed-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+                  Unread <span id="count-unread" class="text-[10px] font-mono text-amber-400 ml-0.5"></span>
+                </button>
+                <button onclick="setFeedFilter('circular')" id="filter-circular" class="feed-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+                  Circulars <span id="count-circular" class="text-[10px] font-mono text-zinc-400 ml-0.5"></span>
+                </button>
+                <button onclick="setFeedFilter('mail')" id="filter-mail" class="feed-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition">
+                  Mailbox <span id="count-mail" class="text-[10px] font-mono text-zinc-400 ml-0.5"></span>
+                </button>
               </div>
             </div>
 
-            <!-- Feed Search (Always visible on mobile, or when typing) -->
+            <!-- Mobile Feed Search Bar -->
             <div class="relative md:hidden">
               <input 
                 type="text" 
                 id="mobileSearchInput" 
                 oninput="handleFeedSearch(this.value)" 
                 placeholder="Filter updates & announcements..." 
-                class="w-full bg-surface border border-white/[0.08] rounded-2xl px-4 py-2.5 pl-10 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+                class="w-full glass-input rounded-2xl px-4 py-3 pl-10 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
               />
-              <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -428,13 +518,13 @@
             <div id="archivedUpdatesSection" class="hidden flex flex-col gap-3 pt-2">
               <div class="flex items-center gap-3 my-2">
                 <div class="h-px bg-white/[0.08] flex-1"></div>
-                <span class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Older School Archive</span>
+                <span class="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest font-mono">Older School Archive</span>
                 <div class="h-px bg-white/[0.08] flex-1"></div>
               </div>
               <div id="archivedFeedContainer" class="flex flex-col gap-3"></div>
             </div>
 
-            <button id="toggleArchiveBtn" onclick="toggleArchiveVisibility()" class="w-full py-3 rounded-2xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition text-center shadow-sm">
+            <button id="toggleArchiveBtn" onclick="toggleArchiveVisibility()" class="w-full py-3.5 rounded-2xl glass-card text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition text-center shadow-sm border border-white/[0.08]">
               Show Earlier History &rarr;
             </button>
           </div>
@@ -442,32 +532,35 @@
           <!-- RIGHT COLUMN (5 cols): School Almanac 2026–27 Calendar -->
           <div class="lg:col-span-5 flex flex-col gap-4">
             
-            <div class="rounded-3xl bg-surface border border-white/[0.08] p-5 sm:p-6 shadow-xl flex flex-col gap-4">
+            <div class="rounded-3xl glass-panel p-5 sm:p-6 shadow-2xl flex flex-col gap-4 border border-white/[0.09]">
               
               <!-- Calendar Header -->
               <div class="flex items-center justify-between">
                 <div>
                   <div class="flex items-center gap-2">
-                    <h3 class="text-sm sm:text-base font-bold text-white">School Almanac</h3>
+                    <h3 class="text-sm sm:text-base font-bold text-white tracking-tight">School Almanac</h3>
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/25">Class IX</span>
                   </div>
-                  <p class="text-[11px] text-zinc-400">Academic Session 2026–27</p>
+                  <p class="text-[11px] text-zinc-400 font-mono mt-0.5">Academic Session 2026–27</p>
                 </div>
 
                 <!-- Month Selector Controls -->
-                <div class="flex items-center gap-1.5 bg-surface-muted p-1 rounded-xl border border-white/[0.06]">
-                  <button onclick="changeAlmanacMonth(-1)" class="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-surface-elevated transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <div class="flex items-center gap-1.5 glass-card p-1 rounded-2xl border border-white/[0.08]">
+                  <button onclick="changeAlmanacMonth(-1)" class="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.08] transition active:scale-95" title="Previous Month">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                   </button>
-                  <span id="calendarCurrentMonthLabel" class="text-xs font-bold text-zinc-200 px-2 min-w-[100px] text-center">October 2026</span>
-                  <button onclick="changeAlmanacMonth(1)" class="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-surface-elevated transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  <span id="calendarCurrentMonthLabel" class="text-xs font-bold text-zinc-100 px-2 min-w-[95px] text-center font-mono">October 2026</span>
+                  <button onclick="changeAlmanacMonth(1)" class="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.08] transition active:scale-95" title="Next Month">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                  <button id="calendarJumpTodayBtn" onclick="jumpToCurrentAlmanacMonth()" title="Jump to Current Month" class="px-2 py-1 rounded-xl text-[10px] font-mono font-semibold bg-white/[0.08] text-zinc-300 hover:text-white hover:bg-white/15 transition ml-0.5">
+                    Today
                   </button>
                 </div>
               </div>
 
               <!-- Day Name Headers (Mon to Sun) -->
-              <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-zinc-500 uppercase tracking-wider py-1 border-b border-white/[0.06]">
+              <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-zinc-500 uppercase tracking-widest py-1 border-b border-white/[0.06] font-mono">
                 <div>Mo</div>
                 <div>Tu</div>
                 <div>We</div>
@@ -478,42 +571,47 @@
               </div>
 
               <!-- Calendar Day Grid -->
-              <div id="almanacCalendarGrid" class="grid grid-cols-7 gap-1 text-xs">
+              <div id="almanacCalendarGrid" class="grid grid-cols-7 gap-1.5 text-xs">
                 <!-- Dynamically generated days -->
               </div>
 
               <!-- Legend -->
-              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/[0.06] text-[10px] text-zinc-400">
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/[0.06] text-[10px] text-zinc-400 font-medium">
                 <div class="flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]"></span>
                   <span>Holiday / Sunday</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
                   <span>1st & 3rd Sat* (Working)</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)]"></span>
                   <span>Vacation / Recess</span>
                 </div>
               </div>
 
-              <!-- Interactive Day Details Popover / Box -->
-              <div id="selectedDayInfoBox" class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-                <div id="selectedDayIcon" class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-sm font-bold text-brand-300 flex-shrink-0">
+              <!-- Dynamic Day Details Briefing Deck -->
+              <div id="selectedDayInfoBox" class="p-4 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3.5">
+                <div id="selectedDayIcon" class="w-9 h-9 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-base font-bold text-brand-300 flex-shrink-0 shadow-inner">
                   📅
                 </div>
                 <div class="flex-1">
-                  <p id="selectedDayDate" class="text-xs font-bold text-white">Select any date</p>
-                  <p id="selectedDayDescription" class="text-[11px] text-zinc-400 mt-0.5">Click any day on the calendar to view school schedule & holidays.</p>
+                  <p id="selectedDayDate" class="text-xs font-bold text-white tracking-tight">Select any date</p>
+                  <p id="selectedDayDescription" class="text-[11px] text-zinc-400 mt-0.5 leading-relaxed">Click any day on the calendar to view school schedule & holidays.</p>
                 </div>
               </div>
 
-              <!-- Vacation Schedule Callout Card -->
-              <div class="rounded-2xl bg-amber-500/10 border border-amber-500/25 p-3.5 flex items-start gap-3">
-                <span class="text-base text-amber-400 flex-shrink-0 mt-0.5">☀️</span>
+              <!-- Vacation Schedule Callout Card (Editorial Itinerary Style) -->
+              <div class="rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/25 p-4 flex items-start gap-3.5 shadow-sm">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-300 text-sm flex-shrink-0 shadow-inner">
+                  ☀️
+                </div>
                 <div class="text-xs text-zinc-300">
-                  <p class="font-bold text-amber-300 mb-0.5">Vacation Schedule</p>
+                  <div class="flex items-center gap-2 mb-1">
+                    <p class="font-bold text-amber-300 text-xs tracking-tight">Vacation Schedule</p>
+                    <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Official</span>
+                  </div>
                   <p class="text-[11px] text-zinc-400 leading-relaxed">
                     Diwali break: <span class="text-zinc-200 font-semibold">Nov 05 – Nov 24</span> (reopens Nov 25). School operates <span class="text-zinc-200 font-semibold">Dec 28 – Dec 31</span>.
                   </p>
@@ -531,8 +629,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-white/[0.08] py-5 px-6 text-center text-xs text-zinc-500">
-      Redunxt • Unified DPS Student Command Center • Ultra-Fast, Responsive & Device-Isolated
+    <footer class="border-t border-white/[0.06] py-6 px-6 text-center text-xs text-zinc-500 mt-auto">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-mono text-[11px]">Redunxt • Unified DPS Student Command Center</p>
+        <p class="text-[11px] text-zinc-600">Device-Isolated Cryptographic Session • Ultra-Fast Edge Sync</p>
+      </div>
     </footer>
 
   </div>
@@ -540,105 +641,106 @@
   <!-- ================= OVERLAYS & MODALS ================= -->
 
   <!-- 1. Circular Detail Modal -->
-  <div id="circularModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-start justify-between p-4 sm:p-6 border-b border-white/[0.08] bg-surface-muted">
+  <div id="circularModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl transition-opacity">
+    <div class="glass-panel border border-white/10 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-start justify-between p-5 sm:p-6 border-b border-white/[0.08] bg-white/[0.02]">
         <div class="flex-1 pr-4">
-          <div class="flex items-center gap-2 mb-1.5">
-            <span id="circModalDate" class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
-            <span id="circModalSchool" class="text-xs text-zinc-400">School Circular</span>
+          <div class="flex items-center gap-2 mb-2">
+            <span id="circModalDate" class="text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono"></span>
+            <span id="circModalSchool" class="text-xs text-zinc-400 font-medium">School Circular</span>
           </div>
-          <h3 id="circModalTitle" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
+          <h3 id="circModalTitle" class="text-base sm:text-lg font-bold text-white leading-snug tracking-tight"></h3>
         </div>
-        <button onclick="closeCircularModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
+        <button onclick="closeCircularModal()" class="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-white/[0.08] transition active:scale-95">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       <div class="p-5 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
         <div id="circModalDesc" class="text-sm sm:text-base text-zinc-200 leading-relaxed"></div>
         <div id="circModalAttachmentBox" class="hidden pt-4 border-t border-white/[0.08]">
-          <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Official Attachment</h5>
-          <a id="circModalPdfLink" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-4 rounded-2xl bg-brand-950/40 border border-brand-500/30 hover:bg-brand-900/40 transition group">
+          <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-widest font-mono mb-2.5">Official Attachment</h5>
+          <a id="circModalPdfLink" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 hover:bg-indigo-900/30 transition group shadow-sm">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-brand-600/20 border border-brand-500/40 flex items-center justify-center text-brand-400">
+              <div class="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
               </div>
               <div>
-                <p class="text-xs font-bold text-white group-hover:text-brand-300 transition">Open Official PDF Document</p>
-                <p class="text-[11px] text-zinc-400">Direct CloudFront CDN download</p>
+                <p class="text-xs font-bold text-white group-hover:text-indigo-300 transition tracking-tight">Open Official PDF Document</p>
+                <p class="text-[11px] text-zinc-400 font-mono">Direct CloudFront CDN download</p>
               </div>
             </div>
-            <span class="px-3.5 py-1.5 rounded-xl bg-brand-600 text-white text-xs font-bold group-hover:bg-brand-500 transition shadow-sm">View &rarr;</span>
+            <span class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold group-hover:bg-indigo-500 transition shadow-sm">View &rarr;</span>
           </a>
         </div>
       </div>
-      <div class="p-4 border-t border-white/[0.08] bg-surface-muted flex justify-end">
-        <button onclick="closeCircularModal()" class="px-4 py-2 rounded-xl bg-surface-elevated hover:bg-surface-highlight text-white text-xs font-semibold transition border border-white/[0.08]">Close</button>
+      <div class="p-4 border-t border-white/[0.08] bg-white/[0.02] flex justify-between items-center text-xs">
+        <span class="text-zinc-500 hidden sm:inline font-mono">Press ESC to dismiss</span>
+        <button onclick="closeCircularModal()" class="ml-auto px-4 py-2 rounded-xl glass-card text-white text-xs font-semibold transition hover:bg-white/[0.08]">Close</button>
       </div>
     </div>
   </div>
 
   <!-- 2. Mailbox Detail Modal -->
-  <div id="mailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-start justify-between p-4 sm:p-6 border-b border-white/[0.08] bg-surface-muted">
-        <div class="flex items-center gap-3">
-          <div id="modalSenderAvatar" class="w-11 h-11 rounded-2xl overflow-hidden flex-shrink-0 bg-surface border border-white/[0.08] flex items-center justify-center text-sm font-bold text-zinc-200"></div>
+  <div id="mailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl transition-opacity">
+    <div class="glass-panel border border-white/10 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-start justify-between p-5 sm:p-6 border-b border-white/[0.08] bg-white/[0.02]">
+        <div class="flex items-center gap-3.5">
+          <div id="modalSenderAvatar" class="w-11 h-11 rounded-2xl overflow-hidden flex-shrink-0 bg-surface-muted border border-white/[0.08] flex items-center justify-center text-sm font-bold text-zinc-200 shadow-inner"></div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <h4 id="modalSenderName" class="text-sm sm:text-base font-bold text-white"></h4>
+              <h4 id="modalSenderName" class="text-sm sm:text-base font-bold text-white tracking-tight"></h4>
               <span id="modalTypeBadge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
             </div>
             <p id="modalDate" class="text-xs text-zinc-400 mt-0.5 font-mono"></p>
           </div>
         </div>
-        <button onclick="closeMailModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
+        <button onclick="closeMailModal()" class="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-white/[0.08] transition active:scale-95">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       <div class="p-5 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
-        <h3 id="modalSubject" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
+        <h3 id="modalSubject" class="text-base sm:text-lg font-bold text-white leading-snug tracking-tight"></h3>
         <div id="modalBody" class="text-sm text-zinc-200 leading-relaxed space-y-3"></div>
         <div id="modalAttachments" class="hidden pt-4 border-t border-white/[0.08]">
-          <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Attachments</h5>
+          <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-widest font-mono mb-2.5">Attachments</h5>
           <div id="modalAttachmentsList" class="flex flex-col gap-2"></div>
         </div>
       </div>
-      <div class="p-4 border-t border-white/[0.08] bg-surface-muted flex justify-between items-center text-xs">
-        <span class="text-zinc-500 hidden sm:inline">Press ESC to close</span>
-        <button onclick="closeMailModal()" class="ml-auto px-4 py-2 rounded-xl bg-surface-elevated hover:bg-surface-highlight text-white text-xs font-semibold transition border border-white/[0.08]">Close</button>
+      <div class="p-4 border-t border-white/[0.08] bg-white/[0.02] flex justify-between items-center text-xs">
+        <span class="text-zinc-500 hidden sm:inline font-mono">Press ESC to dismiss</span>
+        <button onclick="closeMailModal()" class="ml-auto px-4 py-2 rounded-xl glass-card text-white text-xs font-semibold transition hover:bg-white/[0.08]">Close</button>
       </div>
     </div>
   </div>
 
   <!-- 3. Settings & Profile Preferences Modal -->
-  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-center justify-between p-5 border-b border-white/[0.08] bg-surface-muted">
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl transition-opacity">
+    <div class="glass-panel border border-white/10 rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center justify-between p-5 sm:p-6 border-b border-white/[0.08] bg-white/[0.02]">
         <div>
-          <h3 class="text-base font-bold text-white">Redunxt Settings & Devices</h3>
+          <h3 class="text-base font-bold text-white tracking-tight">Redunxt Settings & Devices</h3>
           <p class="text-xs text-zinc-400">Manage device notifications & profile</p>
         </div>
-        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
+        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-white/[0.08] transition active:scale-95">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
-      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-6">
+      <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-5">
         
         <!-- App Installation Card (PWA Standalone) -->
-        <div class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] flex flex-col gap-3">
+        <div class="p-4 rounded-2xl glass-card border border-white/[0.08] flex flex-col gap-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400">
+              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400 shadow-inner">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
               </div>
               <div>
                 <h4 class="text-xs font-bold text-white">App Installation</h4>
-                <p class="text-[11px] text-zinc-400">Standalone Web App (PWA)</p>
+                <p class="text-[11px] text-zinc-400 font-mono">Standalone Web App (PWA)</p>
               </div>
             </div>
-            <span id="pwaInstalledBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]">Checking...</span>
+            <span id="pwaInstalledBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/[0.06] text-zinc-400 border border-white/[0.08]">Checking...</span>
           </div>
 
           <div id="pwaInstallActionRow" class="flex items-center justify-between pt-2 border-t border-white/[0.06]">
@@ -651,10 +753,10 @@
         </div>
 
         <!-- Push Notifications Card -->
-        <div class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] flex flex-col gap-3">
+        <div class="p-4 rounded-2xl glass-card border border-white/[0.08] flex flex-col gap-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400">
+              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400 shadow-inner">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
               </div>
               <div>
@@ -662,31 +764,31 @@
                 <p class="text-[11px] text-zinc-400">Receive alerts when new Circulars arrive</p>
               </div>
             </div>
-            <span id="pushStatusBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]">Checking...</span>
+            <span id="pushStatusBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/[0.06] text-zinc-400 border border-white/[0.08]">Checking...</span>
           </div>
 
           <div class="flex items-center justify-between pt-2 border-t border-white/[0.06]">
             <span id="pushStatusDescription" class="text-[11px] text-zinc-400">Encrypted multi-account Web Push</span>
             <div class="flex items-center gap-2">
-              <button id="pushTestBtn" onclick="sendTestPushNotification()" class="hidden px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-elevated text-brand-300 border border-brand-500/30 text-xs font-semibold transition">Test</button>
-              <button id="pushToggleBtn" onclick="togglePushSubscription()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition">Enable</button>
+              <button id="pushTestBtn" onclick="sendTestPushNotification()" class="hidden px-3 py-1.5 rounded-xl glass-card text-brand-300 border border-brand-500/30 text-xs font-semibold transition active:scale-95">Test</button>
+              <button id="pushToggleBtn" onclick="togglePushSubscription()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition active:scale-95">Enable</button>
             </div>
           </div>
         </div>
 
         <!-- Avatar Preference -->
-        <div class="flex flex-col gap-3">
-          <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Avatar Display</h4>
+        <div class="flex flex-col gap-2.5">
+          <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-widest font-mono">Avatar Display</h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onclick="handleAvatarModeChange('edunext')" class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.08] hover:border-brand-500/50 text-left transition flex items-center gap-3">
-              <span class="text-lg">🏫</span>
+            <button onclick="handleAvatarModeChange('edunext')" class="p-3.5 rounded-2xl glass-card border border-white/[0.08] hover:border-brand-500/50 text-left transition flex items-center gap-3">
+              <span class="text-xl">🏫</span>
               <div>
                 <p class="text-xs font-bold text-white">Official ERP Photo</p>
                 <p class="text-[10px] text-zinc-400">School ID photo</p>
               </div>
             </button>
-            <button onclick="handleAvatarModeChange('initials')" class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.08] hover:border-brand-500/50 text-left transition flex items-center gap-3">
-              <span class="text-lg">🔤</span>
+            <button onclick="handleAvatarModeChange('initials')" class="p-3.5 rounded-2xl glass-card border border-white/[0.08] hover:border-brand-500/50 text-left transition flex items-center gap-3">
+              <span class="text-xl">🔤</span>
               <div>
                 <p class="text-xs font-bold text-white">Initials Badge</p>
                 <p class="text-[10px] text-zinc-400">Clean two-letter icon</p>
@@ -696,20 +798,20 @@
         </div>
 
         <!-- Student Profile Summary -->
-        <div id="settingsProfileBox" class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] text-xs space-y-2">
-          <div class="flex justify-between">
+        <div id="settingsProfileBox" class="p-4 rounded-2xl glass-card border border-white/[0.06] text-xs space-y-2.5">
+          <div class="flex justify-between items-center">
             <span class="text-zinc-500">Student Name:</span>
-            <span id="setStudentName" class="text-zinc-200 font-semibold">-</span>
+            <span id="setStudentName" class="text-zinc-200 font-semibold tracking-tight">-</span>
           </div>
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span class="text-zinc-500">Admission No:</span>
             <span id="setAdmissionNo" class="text-zinc-200 font-mono">-</span>
           </div>
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span class="text-zinc-500">Class & Section:</span>
             <span id="setClassSection" class="text-zinc-200 font-semibold">-</span>
           </div>
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span class="text-zinc-500">Class Teacher:</span>
             <span id="setClassTeacher" class="text-zinc-200 font-semibold">-</span>
           </div>
@@ -717,8 +819,8 @@
 
         <!-- Logout Button -->
         <div class="pt-2 border-t border-white/[0.08] flex justify-between items-center">
-          <span class="text-[11px] text-zinc-500">Active cryptographic device session</span>
-          <button onclick="handleLogout()" class="px-4 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-bold transition">Log Out of This Device</button>
+          <span class="text-[11px] text-zinc-500 font-mono">Isolated device session</span>
+          <button onclick="handleLogout()" class="px-4 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-bold transition active:scale-95">Log Out of This Device</button>
         </div>
 
       </div>
@@ -727,7 +829,7 @@
 
   <!-- ================= FLOATING PWA INSTALL BOTTOM POPUP ================= -->
   <div id="pwaInstallPopup" class="hidden md:hidden fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
-    <div class="relative overflow-hidden rounded-3xl bg-[#131318]/95 border border-brand-500/30 backdrop-blur-2xl shadow-2xl p-4 sm:p-5 flex flex-col gap-3.5 ring-1 ring-white/10">
+    <div class="relative overflow-hidden rounded-3xl glass-panel border border-brand-500/35 shadow-2xl p-4 sm:p-5 flex flex-col gap-3.5 ring-1 ring-white/10">
       <div class="flex items-start justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 p-0.5 shadow-lg shadow-brand-500/25 flex items-center justify-center flex-shrink-0">
@@ -748,55 +850,47 @@
         </button>
       </div>
       <div class="flex items-center gap-2 pt-1">
-        <button onclick="triggerPwaInstall()" class="flex-1 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white text-xs font-bold shadow-lg shadow-brand-500/25 transition flex items-center justify-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          <span>Download App</span>
+        <button onclick="dismissInstallBanner()" class="flex-1 py-2 rounded-xl glass-card text-xs font-semibold text-zinc-400 hover:text-white transition">
+          Not Now
         </button>
-        <button onclick="dismissInstallBanner()" class="px-4 py-2.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-400 hover:text-zinc-200 text-xs font-semibold border border-white/[0.08] transition">
-          Later
+        <button onclick="triggerPwaInstall()" class="flex-1 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-md shadow-brand-500/20 flex items-center justify-center gap-1.5 active:scale-95">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Install Now</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= PWA MANUAL INSTALL GUIDE MODAL ================= -->
-  <div id="pwaGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-md w-full p-6 flex flex-col gap-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 p-0.5 flex items-center justify-center shadow-lg shadow-brand-500/25 flex-shrink-0">
-            <div class="w-full h-full bg-[#0d0d11] rounded-[14px] flex items-center justify-center text-lg">🎓</div>
-          </div>
-          <div>
-            <h3 class="text-base font-bold text-white">Install Redunxt</h3>
-            <p class="text-xs text-zinc-400">Add to your device home screen</p>
-          </div>
+  <!-- 4. PWA Installation Visual Guide Modal -->
+  <div id="pwaGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl transition-opacity">
+    <div class="glass-panel border border-white/10 rounded-3xl max-w-md w-full flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center justify-between p-5 border-b border-white/[0.08] bg-white/[0.02]">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center text-sm">📱</div>
+          <h3 class="text-sm font-bold text-white tracking-tight">How to Install Redunxt</h3>
         </div>
-        <button onclick="closePwaGuideModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
+        <button onclick="closePwaGuideModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-white/[0.08] transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-
-      <div id="pwaGuideContent" class="flex flex-col gap-3 text-xs text-zinc-300">
-        <!-- Dynamically populated based on device (iOS vs Android vs Desktop) -->
+      <div id="pwaGuideContent" class="p-5 flex flex-col gap-3">
+        <!-- Dynamically injected instructions based on iOS / Android / Desktop -->
       </div>
-
-      <button onclick="closePwaGuideModal()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition">
-        Got It
-      </button>
+      <div class="p-4 border-t border-white/[0.08] bg-white/[0.02] flex justify-end">
+        <button onclick="closePwaGuideModal()" class="px-4 py-2 rounded-xl glass-card text-white text-xs font-semibold transition hover:bg-white/[0.08]">Done</button>
+      </div>
     </div>
   </div>
 
-  <!-- ================= LOGIC SCRIPT ================= -->
+  <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
   <script>
-    // Global State
+    // State Management
     let session = { token: null, student: null, account: null };
     let bundleData = null;
     let currentFeedFilter = 'all';
+    let currentAlmanacMonthIndex = 6; // Starts on October 2026
     let seenItemIds = new Set();
-    let currentAlmanacMonthIndex = 6; // Defaults to October (0: April, 1: May, ... 6: October, ... 11: March)
+    let toastTimeout = null;
 
     // DPS Harni Academic Year 2026-27 Almanac Dataset
     const ALMANAC_YEAR_MONTHS = [
@@ -968,7 +1062,7 @@
           } catch {}
         }
 
-        // Token missing or expired: Perform silent background auto-login using D1 database
+        // Silent background auto-login using D1 database
         const storedDeviceToken = localStorage.getItem('redunxt_device_token');
         if (storedUserId && storedDeviceToken) {
           const splashMsg = document.getElementById('splashMsg');
@@ -1160,6 +1254,7 @@
         localStorage.setItem('redunxt_school_domain', schoolDomain);
         localStorage.setItem('redunxt_session', JSON.stringify(session));
 
+        showToast('Signed in securely!', 'success');
         showDashboard();
       } catch (err) {
         errBox.innerText = err.message || 'Login failed. Please check your credentials.';
@@ -1198,6 +1293,7 @@
       bundleData = null;
       document.getElementById('loginPassword').value = '';
       closeSettingsModal();
+      showToast('Logged out of this device', 'info');
       showLogin();
     }
 
@@ -1214,7 +1310,7 @@
         const uId = session.account?.userId || localStorage.getItem('redunxt_user_id') || '';
         const dToken = localStorage.getItem('redunxt_device_token') || '';
 
-        // If active session token is expired or missing, auto-refresh via D1 first
+        // Auto-refresh via D1 first if token expired
         if (!session.token || isTokenExpired(session.token)) {
           if (uId && dToken) {
             try {
@@ -1250,7 +1346,6 @@
 
         let json = res ? await res.json().catch(() => null) : null;
 
-        // If unauthorized or token was silently rejected (empty data with no profile)
         const isSilentlyRejected = json && json.success && (!json.circulars || json.circulars.length === 0) && (!json.mailbox || json.mailbox.length === 0) && !json.profile;
         if (!res || res.status === 401 || isSilentlyRejected) {
           const storedUserId = localStorage.getItem('redunxt_user_id');
@@ -1289,6 +1384,7 @@
 
         if (isManual) {
           fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/check-now').catch(() => {});
+          showToast('Synchronized latest school updates!', 'success');
         }
 
         document.getElementById('dashLoading').classList.add('hidden');
@@ -1357,7 +1453,7 @@
       if (mode === 'edunext' && edunextPhoto) {
         container.innerHTML = `<img src="${edunextPhoto}" alt="${name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'text-sm font-bold text-white\\'>${initials}</span>';" />`;
       } else {
-        container.innerHTML = `<span class="text-sm font-bold text-white">${initials}</span>`;
+        container.innerHTML = `<span class="text-sm font-bold text-white tracking-wider">${initials}</span>`;
       }
     }
 
@@ -1392,11 +1488,25 @@
       // Combine and sort chronologically (most recent first)
       let combined = [...circs, ...mails].sort((a, b) => b.rawDate - a.rawDate);
 
-      // Calculate unread count
+      // Counts per tab
       let unreadCount = 0;
+      let circCount = circs.length;
+      let mailCount = mails.length;
+      let totalCount = combined.length;
+
       combined.forEach(item => {
         if (!seenItemIds.has(item.id)) unreadCount++;
       });
+
+      // Update Tab Pill Counters
+      const countAll = document.getElementById('count-all');
+      if (countAll) countAll.innerText = totalCount > 0 ? `(${totalCount})` : '';
+      const countUnread = document.getElementById('count-unread');
+      if (countUnread) countUnread.innerText = unreadCount > 0 ? `(${unreadCount})` : '';
+      const countCirc = document.getElementById('count-circular');
+      if (countCirc) countCirc.innerText = circCount > 0 ? `(${circCount})` : '';
+      const countMail = document.getElementById('count-mail');
+      if (countMail) countMail.innerText = mailCount > 0 ? `(${mailCount})` : '';
 
       const unreadBadge = document.getElementById('unreadTotalBadge');
       if (unreadBadge) {
@@ -1441,17 +1551,17 @@
 
       if (combined.length === 0) {
         feedContainer.innerHTML = `
-          <div class="text-center py-16 p-6 rounded-3xl bg-surface border border-white/[0.08] text-zinc-400">
-            <span class="text-2xl mb-2 block">✨</span>
-            <p class="text-sm font-semibold text-white">All caught up!</p>
-            <p class="text-xs text-zinc-500 mt-1">No updates matching your filter.</p>
+          <div class="text-center py-16 p-6 rounded-3xl glass-panel text-zinc-400 border border-white/[0.08]">
+            <span class="text-3xl mb-2 block animate-pulse">✨</span>
+            <p class="text-sm font-semibold text-white tracking-tight">All caught up!</p>
+            <p class="text-xs text-zinc-500 mt-1 font-mono">No updates matching your filter.</p>
           </div>
         `;
         document.getElementById('toggleArchiveBtn').classList.add('hidden');
         return;
       }
 
-      // Show top 6 items in the primary stream, remaining in archive section
+      // Show top 6 items in primary stream, rest in collapsible archive
       const primaryItems = combined.slice(0, 6);
       const archivedItems = combined.slice(6);
 
@@ -1477,15 +1587,15 @@
       }
 
       return `
-        <div onclick="handleFeedCardClick('${item.id}')" class="cursor-pointer group rounded-2xl bg-surface border ${isUnread ? 'border-brand-500/35 hover:border-brand-500/60' : 'border-white/[0.08] hover:border-white/[0.2]'} p-4 sm:p-5 flex flex-col gap-3 hover:bg-surface-muted transition shadow-sm relative overflow-hidden">
+        <div onclick="handleFeedCardClick('${item.id}')" class="cursor-pointer group rounded-2xl glass-card ${isUnread ? 'border-brand-500/40 hover:border-brand-500/70 shadow-[0_0_15px_-3px_rgba(99,102,241,0.2)]' : 'border-white/[0.07] hover:border-white/[0.18]'} p-4 sm:p-5 flex flex-col gap-3 relative overflow-hidden">
           
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-center gap-2 flex-wrap">
-              <!-- Unread Dot Indicator -->
-              <span class="w-2 h-2 rounded-full ${isUnread ? 'bg-amber-400' : 'bg-transparent border border-white/[0.15]'}" title="${isUnread ? 'Unread Update' : 'Seen'}"></span>
+              <!-- Glowing Unread Indicator -->
+              <span class="w-2 h-2 rounded-full ${isUnread ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)] animate-pulse' : 'bg-transparent border border-white/20'}" title="${isUnread ? 'Unread Update' : 'Read'}"></span>
               
               <!-- Category Badge -->
-              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${isCircular ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-brand-500/20 text-brand-300 border border-brand-500/30'}">
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-lg font-mono ${isCircular ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30' : 'bg-violet-500/15 text-violet-300 border border-violet-500/30'}">
                 ${isCircular ? '📢 Circular' : '✉️ Mail'}
               </span>
 
@@ -1493,24 +1603,24 @@
               <span class="text-xs text-zinc-400 font-mono">${item.date}</span>
             </div>
 
-            <!-- PDF / Quick Action -->
+            <!-- PDF Quick Download Button -->
             ${item.pdfUrl ? `
-              <a href="${item.pdfUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation(); markItemAsRead('${item.id}');" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-sm active:scale-95">
+              <a href="${item.pdfUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation(); markItemAsRead('${item.id}');" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-indigo-600/90 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-sm active:scale-95 border border-indigo-400/30">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>PDF</span>
               </a>
             ` : ''}
           </div>
 
-          <!-- Title and AI summary -->
+          <!-- Title and Snippet -->
           <div>
-            <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-brand-300 transition-colors leading-snug">${item.title}</h4>
-            <p class="text-xs text-zinc-400 mt-1 leading-relaxed line-clamp-2">${aiSummary || 'Tap to view full official announcement.'}</p>
+            <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-brand-300 transition-colors leading-snug tracking-tight">${item.title}</h4>
+            <p class="text-xs text-zinc-400 mt-1 leading-relaxed line-clamp-2">${aiSummary || 'Tap to view official announcement.'}</p>
           </div>
 
-          <div class="flex items-center justify-between pt-2 border-t border-white/[0.04] text-[11px] text-zinc-500">
+          <div class="flex items-center justify-between pt-2.5 border-t border-white/[0.04] text-[11px] text-zinc-500 font-medium">
             <span>By ${item.author}</span>
-            <span class="group-hover:text-zinc-300 transition flex items-center gap-1">Open Details &rarr;</span>
+            <span class="group-hover:text-zinc-200 transition-transform group-hover:translate-x-0.5 flex items-center gap-1">Open Details &rarr;</span>
           </div>
 
         </div>
@@ -1548,7 +1658,6 @@
           added++;
         }
       });
-
       mails.forEach(m => {
         const id = `mail_${m.id}`;
         if (!seenItemIds.has(id)) {
@@ -1560,25 +1669,28 @@
       if (added > 0) {
         localStorage.setItem('redunxt_seen_items', JSON.stringify(Array.from(seenItemIds)));
         renderUnifiedFeed();
-        showToast(`Marked ${added} ${added === 1 ? 'update' : 'updates'} as read.`, 'success');
-      } else {
-        showToast('All updates are already marked as read.', 'info');
+        showToast(`Marked ${added} updates as read`, 'success');
       }
     }
 
     function setFeedFilter(filter) {
       currentFeedFilter = filter;
       document.querySelectorAll('.feed-filter-btn').forEach(b => {
-        b.className = 'feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition';
+        b.className = 'feed-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white transition';
       });
       const activeBtn = document.getElementById(`filter-${filter}`);
       if (activeBtn) {
-        activeBtn.className = 'feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-surface-elevated text-white transition';
+        activeBtn.className = 'feed-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 text-white shadow-sm transition';
       }
       renderUnifiedFeed();
     }
 
     function handleFeedSearch(val) {
+      // Sync top and mobile search inputs
+      const topIn = document.getElementById('topSearchInput');
+      const mobIn = document.getElementById('mobileSearchInput');
+      if (topIn && topIn.value !== val) topIn.value = val;
+      if (mobIn && mobIn.value !== val) mobIn.value = val;
       renderUnifiedFeed();
     }
 
@@ -1587,16 +1699,15 @@
       const btn = document.getElementById('toggleArchiveBtn');
       if (sec.classList.contains('hidden')) {
         sec.classList.remove('hidden');
-        btn.innerText = 'Collapse Archive History &uarr;';
+        btn.innerText = 'Collapse Archive ↑';
       } else {
         sec.classList.add('hidden');
-        btn.innerText = 'Show Earlier History &rarr;';
+        renderUnifiedFeed();
       }
     }
 
     function parseFeedDate(str) {
       if (!str) return 0;
-      if (typeof str === 'number') return str;
       str = String(str).trim();
 
       // Handle DD-MM-YYYY HH:mm or DD-MM-YYYY format from Edunext mailbox
@@ -1610,7 +1721,6 @@
         return new Date(year, month, day, hour, min).getTime();
       }
 
-      // Standard ISO YYYY-MM-DD or other standard formats
       const parsed = Date.parse(str);
       return isNaN(parsed) ? 0 : parsed;
     }
@@ -1627,9 +1737,14 @@
       // Leading blank days
       for (let i = 0; i < monthObj.startDay; i++) {
         const emptyDiv = document.createElement('div');
-        emptyDiv.className = 'h-9 rounded-xl opacity-10 pointer-events-none';
+        emptyDiv.className = 'aspect-square rounded-xl opacity-10 pointer-events-none';
         grid.appendChild(emptyDiv);
       }
+
+      // Check current day for halo
+      const now = new Date();
+      const isCurrentYearMonth = (now.getFullYear() === monthObj.year && now.getMonth() === monthObj.month);
+      const currentDayNumber = now.getDate();
 
       // Render days 1 to monthObj.days
       for (let d = 1; d <= monthObj.days; d++) {
@@ -1641,7 +1756,6 @@
         const vacation = getVacationInfo(monthObj.year, monthObj.month, d);
 
         // Saturday logic for Class IX:
-        // Calculate which Saturday of the month it is (1st, 2nd, 3rd, 4th, 5th)
         let isFirstOrThirdSat = false;
         let isSecondOrFourthSat = false;
         if (dayOfWeek === 6) {
@@ -1654,25 +1768,30 @@
         const isHoliday = isSunday || isSecondOrFourthSat || (event && event.type === 'holiday') || (vacation !== null);
         const isWorkingSat = isFirstOrThirdSat && (!event || event.type !== 'holiday') && !vacation;
         const isVacationPeriod = (vacation && vacation.isRevised) || (event && event.type === 'working_compensatory');
+        const isToday = isCurrentYearMonth && (d === currentDayNumber);
 
         const dayBtn = document.createElement('button');
         dayBtn.type = 'button';
         dayBtn.onclick = () => selectAlmanacDay(monthObj.year, monthObj.month, d, event, vacation, isWorkingSat, isHoliday);
 
-        let cellClasses = 'h-9 rounded-xl flex flex-col items-center justify-center font-medium transition text-xs relative ';
+        let cellClasses = 'aspect-square rounded-xl flex flex-col items-center justify-center font-mono font-medium transition-all duration-150 text-xs relative ';
         let dotHtml = '';
+
+        if (isToday) {
+          cellClasses += 'ring-2 ring-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)] ';
+        }
 
         if (isVacationPeriod) {
           cellClasses += 'bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25';
-          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 absolute bottom-1"></span>`;
+          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)] absolute bottom-1"></span>`;
         } else if (isHoliday) {
           cellClasses += 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20';
-          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 absolute bottom-1"></span>`;
+          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)] absolute bottom-1"></span>`;
         } else if (isWorkingSat) {
-          cellClasses += 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/20';
-          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 absolute bottom-1"></span>`;
+          cellClasses += 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25';
+          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] absolute bottom-1"></span>`;
         } else {
-          cellClasses += 'bg-surface-muted/60 text-zinc-300 hover:bg-surface-elevated';
+          cellClasses += 'glass-card text-zinc-300 hover:text-white hover:border-white/20';
         }
 
         dayBtn.className = cellClasses;
@@ -1688,6 +1807,15 @@
       renderAlmanacCalendar();
     }
 
+    function jumpToCurrentAlmanacMonth() {
+      // Find current month or default to October 2026
+      const now = new Date();
+      const foundIdx = ALMANAC_YEAR_MONTHS.findIndex(m => m.year === now.getFullYear() && m.month === now.getMonth());
+      currentAlmanacMonthIndex = foundIdx !== -1 ? foundIdx : 6;
+      renderAlmanacCalendar();
+      showToast(`Showing ${ALMANAC_YEAR_MONTHS[currentAlmanacMonthIndex].name}`, 'info');
+    }
+
     function selectAlmanacDay(year, month, day, event, vacation, isWorkingSat, isHoliday) {
       const dt = new Date(year, month, day);
       const dateString = dt.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -1700,33 +1828,33 @@
 
       if (vacation) {
         iconEl.innerHTML = '☀️';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-sm font-bold text-amber-300 flex-shrink-0';
+        iconEl.className = 'w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-base font-bold text-amber-300 flex-shrink-0 shadow-inner';
         descEl.innerHTML = `<span class="text-amber-300 font-bold">${vacation.name}:</span> School closed for all classes.`;
       } else if (event) {
         if (event.type === 'holiday') {
           iconEl.innerHTML = '🏖️';
-          iconEl.className = 'w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-sm font-bold text-rose-300 flex-shrink-0';
+          iconEl.className = 'w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-base font-bold text-rose-300 flex-shrink-0 shadow-inner';
           descEl.innerHTML = `<span class="text-rose-300 font-bold">${event.title}</span> (School Holiday)`;
         } else if (event.type === 'working_sat' || event.type === 'working_compensatory') {
           iconEl.innerHTML = '🎒';
-          iconEl.className = 'w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-sm font-bold text-emerald-300 flex-shrink-0';
+          iconEl.className = 'w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-base font-bold text-emerald-300 flex-shrink-0 shadow-inner';
           descEl.innerHTML = `<span class="text-emerald-300 font-bold">${event.title}</span> (Regular school timings apply)`;
         } else {
           iconEl.innerHTML = '📌';
-          iconEl.className = 'w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-sm font-bold text-brand-300 flex-shrink-0';
+          iconEl.className = 'w-9 h-9 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-base font-bold text-brand-300 flex-shrink-0 shadow-inner';
           descEl.innerText = event.title;
         }
       } else if (isWorkingSat) {
         iconEl.innerHTML = '🎒';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-sm font-bold text-emerald-300 flex-shrink-0';
+        iconEl.className = 'w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-base font-bold text-emerald-300 flex-shrink-0 shadow-inner';
         descEl.innerText = "Working Saturday for Class IX as per DPS Harni Academic Planner.";
       } else if (isHoliday) {
         iconEl.innerHTML = '🏠';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-sm font-bold text-rose-300 flex-shrink-0';
+        iconEl.className = 'w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-base font-bold text-rose-300 flex-shrink-0 shadow-inner';
         descEl.innerText = dt.getDay() === 0 ? "Sunday (Weekly Holiday)" : "Second/Fourth Saturday (School Closed)";
       } else {
         iconEl.innerHTML = '📚';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-surface-elevated border border-white/[0.08] flex items-center justify-center text-sm font-bold text-zinc-300 flex-shrink-0';
+        iconEl.className = 'w-9 h-9 rounded-xl glass-card border border-white/[0.08] flex items-center justify-center text-base font-bold text-zinc-300 flex-shrink-0 shadow-inner';
         descEl.innerText = "Regular School Working Day for Class IX.";
       }
     }
@@ -1803,7 +1931,7 @@
         attachList.innerHTML = mail.image_array.map(att => {
           const fileUrl = att.cloud_front_serving_url || att.servingUrl || att.download_file_path;
           return `
-            <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-2xl bg-surface-elevated border border-white/[0.08] hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
+            <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-2xl glass-card border border-white/[0.08] hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
               <span class="truncate">${att.filename || 'Document'}</span>
               <span class="ml-3 flex-shrink-0 text-brand-400">Download &rarr;</span>
             </a>
@@ -1862,24 +1990,28 @@
       }
     }
 
+    // Dynamic Island Toast Notification Function
     function showToast(message, type = 'info') {
-      let toastContainer = document.getElementById('toastContainer');
-      if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toastContainer';
-        toastContainer.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none';
-        document.body.appendChild(toastContainer);
-      }
-      const toast = document.createElement('div');
-      const bg = type === 'error' ? 'bg-rose-600' : (type === 'success' ? 'bg-emerald-600' : 'bg-brand-600');
-      toast.className = `${bg} text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto`;
-      toast.innerHTML = `<span>${message}</span>`;
-      toastContainer.appendChild(toast);
-      requestAnimationFrame(() => toast.classList.remove('translate-y-4', 'opacity-0'));
-      setTimeout(() => {
-        toast.classList.add('translate-y-4', 'opacity-0');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+      const toast = document.getElementById('dynamicIslandToast');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+
+      if (!toast || !msgEl || !iconEl) return;
+
+      if (type === 'success') iconEl.innerText = '✅';
+      else if (type === 'error') iconEl.innerText = '⚠️';
+      else iconEl.innerText = '✨';
+
+      msgEl.innerText = message;
+
+      toast.classList.remove('opacity-0', '-translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', '-translate-y-4');
+      }, 3200);
     }
 
     function urlBase64ToUint8Array(base64String) {
@@ -1927,14 +2059,14 @@
 
         if (sub) {
           badge.innerText = 'Active (This Device)';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono';
           desc.innerText = 'Active. You will receive push alerts when new circulars arrive.';
           toggleBtn.innerText = 'Disable';
           toggleBtn.disabled = false;
           if (testBtn) testBtn.classList.remove('hidden');
         } else {
           badge.innerText = 'Disabled';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/[0.06] text-zinc-400 border border-white/[0.08]';
           desc.innerText = 'Enable push notifications to receive real-time circular alerts.';
           toggleBtn.innerText = 'Enable';
           toggleBtn.disabled = false;
@@ -2039,7 +2171,7 @@
           throw new Error(json.error || 'Test notification failed to dispatch.');
         }
 
-        showToast('Test notification sent! Check your device notification shade.', 'success');
+        showToast('Test notification dispatched to your phone!', 'success');
       } catch (err) {
         showToast(err.message || 'Failed to send test notification.', 'error');
       } finally {
@@ -2161,7 +2293,7 @@
 
           if (!sub) {
             // Browser permission was granted, but device subscription was missing or expired!
-            // Automatically re-subscribe silently
+            // Re-subscribe silently
             const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
             const vapidData = await vapidRes.json();
             if (vapidData.success && vapidData.publicKey) {
@@ -2174,7 +2306,6 @@
           }
 
           if (sub) {
-            // Silently keep Cloudflare D1 subscription in sync with active user and device
             await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/subscribe', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -2223,7 +2354,6 @@
     }
 
     function initPwaInstallManager() {
-      // 1. Capture direct beforeinstallprompt event (Chrome, Edge, Android WebAPK)
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
@@ -2233,19 +2363,16 @@
         }
       });
 
-      // 2. Listen for successful installation
       window.addEventListener('appinstalled', () => {
         deferredInstallPrompt = null;
         dismissInstallBanner(true);
         updatePwaInstallUi();
-        showToast('Redunxt installed successfully! Launch it directly from your home screen.', 'success');
+        showToast('Redunxt installed! Launch it directly from home screen.', 'success');
       });
 
-      // 3. Update UI on startup and on window resize
       updatePwaInstallUi();
       window.addEventListener('resize', () => updatePwaInstallUi());
 
-      // 4. If on mobile phone, not installed, and not recently dismissed, schedule bottom popup
       if (!isPwaInstalled() && isMobilePhone()) {
         checkAndShowInstallBanner();
       }
@@ -2269,19 +2396,18 @@
         if (popup) popup.classList.add('hidden');
         if (badge) {
           badge.innerText = 'Installed (Standalone)';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono';
         }
         if (actionRow) {
           actionRow.innerHTML = `
             <span class="text-[11px] text-zinc-400">Running as native standalone Web App with system notifications</span>
-            <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+            <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 font-mono">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
               Active
             </span>
           `;
         }
       } else if (!isPhone) {
-        // Desktop browser - hide install popup and header/login buttons
         if (headerBtn) {
           headerBtn.classList.add('hidden');
           headerBtn.classList.remove('flex');
@@ -2290,7 +2416,7 @@
         if (popup) popup.classList.add('hidden');
         if (badge) {
           badge.innerText = 'Desktop Web';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]';
+          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/[0.06] text-zinc-400 border border-white/[0.08]';
         }
         if (actionRow) {
           actionRow.innerHTML = `
@@ -2298,7 +2424,6 @@
           `;
         }
       } else {
-        // Phone browser - show header button and login banner if not installed
         if (headerBtn) {
           headerBtn.classList.remove('hidden');
           headerBtn.classList.add('flex');
@@ -2323,14 +2448,12 @@
     function checkAndShowInstallBanner() {
       if (isPwaInstalled() || !isMobilePhone()) return;
 
-      // Don't show if user dismissed it within the last 24 hours
       const dismissedTime = localStorage.getItem('redunxt_pwa_dismissed_at');
       if (dismissedTime) {
         const elapsed = Date.now() - parseInt(dismissedTime, 10);
         if (elapsed < 24 * 60 * 60 * 1000) return;
       }
 
-      // Smooth delay so the prompt glides in gracefully
       setTimeout(() => {
         if (isPwaInstalled() || !isMobilePhone()) return;
         const popup = document.getElementById('pwaInstallPopup');
@@ -2349,7 +2472,6 @@
     }
 
     async function triggerPwaInstall() {
-      // If native browser prompt is captured (Chrome on Android / Chromium desktop)
       if (deferredInstallPrompt) {
         try {
           deferredInstallPrompt.prompt();
@@ -2365,7 +2487,6 @@
           openPwaGuideModal();
         }
       } else {
-        // Fallback: Show visual step-by-step guide tailored to OS/Browser
         openPwaGuideModal();
       }
     }
@@ -2379,46 +2500,46 @@
 
       if (platform === 'ios') {
         content.innerHTML = `
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">1</div>
             <div>
               <p class="font-bold text-white text-xs">Tap the Share Button</p>
               <p class="text-[11px] text-zinc-400 mt-0.5">At the bottom of Safari, tap the <strong>Share</strong> icon (square with arrow pointing up).</p>
             </div>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">2</div>
             <div>
               <p class="font-bold text-white text-xs">Select "Add to Home Screen"</p>
               <p class="text-[11px] text-zinc-400 mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen"</strong>.</p>
             </div>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">3</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">3</div>
             <div>
               <p class="font-bold text-white text-xs">Tap "Add"</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Tap <strong>Add</strong> in the top-right corner. Redunxt will appear on your home screen!</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Tap <strong>Add</strong> in top-right corner. Redunxt will appear on your home screen!</p>
             </div>
           </div>
         `;
       } else if (platform === 'android') {
         content.innerHTML = `
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">1</div>
             <div>
               <p class="font-bold text-white text-xs">Open Chrome Menu</p>
               <p class="text-[11px] text-zinc-400 mt-0.5">Tap the <strong>three dots (⋮)</strong> in the top-right corner of Chrome.</p>
             </div>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">2</div>
             <div>
               <p class="font-bold text-white text-xs">Tap "Install app" or "Add to Home screen"</p>
               <p class="text-[11px] text-zinc-400 mt-0.5">Select <strong>"Install app"</strong> (or <strong>"Add to Home screen"</strong>).</p>
             </div>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">3</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">3</div>
             <div>
               <p class="font-bold text-white text-xs">Confirm Install</p>
               <p class="text-[11px] text-zinc-400 mt-0.5">Confirm installation. Android will automatically download and install the WebAPK on your phone with native notification support.</p>
@@ -2427,18 +2548,18 @@
         `;
       } else {
         content.innerHTML = `
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">1</div>
             <div>
               <p class="font-bold text-white text-xs">Address Bar Install Icon</p>
               <p class="text-[11px] text-zinc-400 mt-0.5">Click the <strong>Install (⊕)</strong> icon on the right side of Chrome's address bar.</p>
             </div>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
+          <div class="p-3.5 rounded-2xl glass-card border border-white/[0.08] flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs font-mono">2</div>
             <div>
               <p class="font-bold text-white text-xs">Click Install</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Redunxt will install and launch in its own dedicated, clean window.</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Redunxt will install and launch in its own dedicated, clean desktop window.</p>
             </div>
           </div>
         `;
