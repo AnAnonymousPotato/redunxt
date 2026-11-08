@@ -3,11 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Redunxt — Modern Student Command Center</title>
-  <meta name="description" content="Ultra-fast, unified command center and school almanac for DPS students" />
-  <meta name="theme-color" content="#0a0a0c" />
+  <title>Redunxt — Academic Dispatches & Almanac</title>
+  <meta name="description" content="Swiss editorial student dispatch terminal and academic calendar" />
+  <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/favicon.svg" />
+  
+  <!-- Typography: Instrument Serif (Editorial Display) + Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -15,151 +21,147 @@
       theme: {
         extend: {
           colors: {
-            canvas: '#0a0a0c',
-            surface: {
-              DEFAULT: '#131417',
-              muted: '#18191e',
-              elevated: '#1f2026',
-              highlight: '#272832'
+            stark: {
+              black: '#000000',
+              pitch: '#050505',
+              card: '#0a0a0a',
+              elevated: '#111111',
+              rule: '#1c1c1c',
+              border: '#27272a',
+              muted: '#71717a',
+              light: '#f4f4f5',
+              white: '#ffffff',
             },
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-            },
-            dark: {
-              950: '#0a0a0c',
-              900: '#131417',
-              850: '#18191e',
-              800: '#202128',
-              750: '#2b2c36',
-              700: '#383a47',
+            signal: {
+              amber: '#f59e0b',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+              cobalt: '#3b82f6',
             }
           },
-          borderRadius: {
-            '2xl': '16px',
-            '3xl': '24px',
+          fontFamily: {
+            serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+            sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
           }
         }
       }
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #0a0a0c;
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 9999px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6366f1; }
-    
-    /* Modal and HTML sanitizer formatting */
-    #modalBody a, #circModalDesc a { color: #818cf8; text-decoration: underline; word-break: break-all; }
-    #modalBody p, #circModalDesc p { margin-bottom: 0.75rem; line-height: 1.65; color: #e4e4e7; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #000000;
+      color: #f4f4f5;
+      overflow-x: hidden;
+    }
+    .font-serif {
+      font-family: 'Instrument Serif', Georgia, serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: 'tnum' on, 'lnum' on;
+    }
+
+    /* Swiss Stark Ruled Lines & Hairlines */
+    .hairline-b { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .hairline-t { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    .hairline-l { border-left: 1px solid rgba(255, 255, 255, 0.08); }
+    .hairline-r { border-right: 1px solid rgba(255, 255, 255, 0.08); }
+    .hairline-box { border: 1px solid rgba(255, 255, 255, 0.1); }
+
+    /* Minimal stark scrollbar */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #ffffff; }
+
+    /* Editorial Reading Typography */
+    #modalBody a, #circModalDesc a { color: #ffffff; text-decoration: underline; text-underline-offset: 4px; font-weight: 500; }
+    #modalBody a:hover, #circModalDesc a:hover { color: #f59e0b; }
+    #modalBody p, #circModalDesc p { margin-bottom: 1.15rem; line-height: 1.8; color: #d4d4d8; font-size: 0.95rem; }
     #modalBody p:last-child, #circModalDesc p:last-child { margin-bottom: 0; }
-    #modalBody ul, #circModalDesc ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
-    #modalBody ol, #circModalDesc ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
-    #modalBody li, #circModalDesc li { margin-bottom: 0.35rem; line-height: 1.6; }
-    #modalBody strong, #circModalDesc strong, #modalBody b, #circModalDesc b { font-weight: 700; color: #ffffff; }
-    #modalBody img, #circModalDesc img { max-width: 100%; border-radius: 0.75rem; height: auto; margin: 0.75rem 0; }
-    #modalBody table, #circModalDesc table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.85rem; overflow-x: auto; display: block; }
-    #modalBody th, #circModalDesc th, #modalBody td, #circModalDesc td { border: 1px solid #2b2c36; padding: 0.5rem 0.75rem; }
-    
-    /* Smooth transitions */
-    .drawer-backdrop {
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(8px);
+    #modalBody ul, #circModalDesc ul { list-style-type: square; margin-left: 1.5rem; margin-bottom: 1.15rem; color: #d4d4d8; }
+    #modalBody ol, #circModalDesc ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 1.15rem; color: #d4d4d8; }
+    #modalBody li, #circModalDesc li { margin-bottom: 0.5rem; line-height: 1.7; }
+    #modalBody strong, #circModalDesc strong, #modalBody b, #circModalDesc b { font-weight: 600; color: #ffffff; }
+    #modalBody img, #circModalDesc img { max-width: 100%; border: 1px solid #27272a; margin: 1.5rem 0; }
+    #modalBody table, #circModalDesc table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.85rem; overflow-x: auto; display: block; border: 1px solid #27272a; font-family: 'JetBrains Mono', monospace; }
+    #modalBody th, #circModalDesc th, #modalBody td, #circModalDesc td { border: 1px solid #27272a; padding: 0.65rem 0.9rem; }
+    #modalBody th, #circModalDesc th { background: #111111; color: #ffffff; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+
+    /* Snappy Swiss transitions */
+    .snappy {
+      transition: all 0.15s cubic-bezier(0, 0, 0.2, 1);
     }
   </style>
 </head>
-<body class="bg-[#0a0a0c] text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-[#000000] text-zinc-100 min-h-screen flex flex-col antialiased selection:bg-white selection:text-black relative">
 
-  <!-- ================= APP INITIAL LAUNCH SPLASH LOADER ================= -->
-  <div id="appSplashLoader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0c] transition-opacity duration-300">
-    <div class="flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-200">
-      <div class="relative">
-        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 p-0.5 shadow-2xl shadow-brand-500/30 flex items-center justify-center animate-pulse">
-          <div class="w-full h-full bg-[#0d0d11] rounded-[22px] flex items-center justify-center text-3xl">
-            🎓
-          </div>
-        </div>
-        <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0a0a0c] flex items-center justify-center">
-          <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-        </div>
-      </div>
-      <div class="text-center">
-        <h1 class="text-base font-bold text-white tracking-tight">Redunxt</h1>
-        <p class="text-xs text-zinc-400 mt-1.5 flex items-center justify-center gap-2">
-          <svg class="w-3.5 h-3.5 animate-spin text-brand-400" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-          </svg>
-          <span id="splashMsg">Connecting to Command Center...</span>
-        </p>
+  <!-- ================= TOP SWISS STATUS TICKER (TOAST) ================= -->
+  <div id="dynamicIslandToast" class="fixed top-4 right-4 z-50 pointer-events-none transition-all duration-200 opacity-0 -translate-y-2">
+    <div class="px-3.5 py-2 bg-white text-black font-mono text-xs font-semibold tracking-wider uppercase border border-white shadow-2xl flex items-center gap-2 pointer-events-auto">
+      <span id="toastIcon">●</span>
+      <span id="toastMessage">SYNCHRONIZED</span>
+    </div>
+  </div>
+
+  <!-- ================= INITIAL APP SPLASH LOADER ================= -->
+  <div id="appSplashLoader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-200">
+    <div class="flex flex-col items-center gap-4 text-center animate-in fade-in duration-150">
+      <div class="font-serif italic text-4xl text-white tracking-tight">Redunxt</div>
+      <div class="font-mono text-xs uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+        <span class="inline-block w-2 h-2 bg-emerald-400 animate-pulse"></span>
+        <span id="splashMsg">INITIALIZING ACADEMIC GATEWAY...</span>
       </div>
     </div>
   </div>
 
-  <!-- ================= VIEW 1: PUBLIC LOGIN SCREEN ================= -->
-  <div id="loginView" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
-    <!-- Hero / Features Pill -->
-    <div class="mb-6 flex flex-wrap items-center justify-center gap-2 max-w-lg text-center">
-      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
-        <span class="text-brand-400">⚡</span> 10x Faster ERP
-      </div>
-      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
-        <span class="text-emerald-400">🔒</span> Cryptographic Privacy
-      </div>
-      <div class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface border border-white/[0.08] text-[11px] font-semibold text-zinc-300 shadow-sm">
-        <span class="text-indigo-400">📱</span> PWA & Mobile Ready
-      </div>
+  <!-- ================= VIEW 1: SWISS EDITORIAL LOGIN ================= -->
+  <div id="loginView" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-8 my-auto z-10 w-full max-w-lg mx-auto">
+    
+    <!-- Top Index Marker -->
+    <div class="w-full flex items-center justify-between pb-3 hairline-b font-mono text-[11px] text-zinc-400 uppercase tracking-widest mb-8">
+      <span>AUTH // PORTAL 01</span>
+      <span>SECURE EDGE TERMINAL</span>
     </div>
 
-    <div class="w-full max-w-md bg-surface border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6 relative overflow-hidden">
-      <!-- Glow effect -->
-      <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <!-- Brand Header -->
-      <div class="flex flex-col items-center text-center gap-2 relative">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-violet-500 flex items-center justify-center shadow-xl shadow-brand-500/20 mb-1">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l9-5-9-5-9 5 9 5z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-          </svg>
-        </div>
-        <h1 class="text-2xl font-extrabold text-white tracking-tight">Redunxt</h1>
-        <p class="text-xs text-zinc-400 font-medium">Unified student command center & school hub</p>
+    <!-- Login Container -->
+    <div class="w-full border border-zinc-800 p-6 sm:p-10 bg-[#050505] flex flex-col gap-6">
+      
+      <!-- Masthead -->
+      <div class="flex flex-col gap-1">
+        <h1 class="font-serif italic text-3xl sm:text-4xl text-white tracking-tight">Redunxt Dispatches</h1>
+        <p class="font-mono text-xs text-zinc-400 tracking-wider uppercase mt-1">High-Speed Student Information Protocol</p>
       </div>
 
       <!-- Error Alert -->
-      <div id="loginError" class="hidden p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center font-medium"></div>
+      <div id="loginError" class="hidden p-3 bg-rose-950/40 border border-rose-500 text-rose-300 font-mono text-xs tracking-wide"></div>
 
-      <!-- Login Form -->
-      <form id="loginForm" onsubmit="handleLogin(event)" class="flex flex-col gap-4 relative">
+      <!-- Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="flex flex-col gap-5">
+        
         <!-- School Selector -->
         <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginSchoolDomain">School Portal</label>
+          <label class="block font-mono text-[11px] uppercase tracking-wider text-zinc-400 mb-1.5" for="loginSchoolDomain">01. School Registry</label>
           <div class="relative">
             <select 
               id="loginSchoolDomain" 
               onchange="onSchoolSelectChange(this.value)"
-              class="w-full bg-surface-muted border border-white/[0.08] rounded-2xl px-4 py-3.5 text-sm text-zinc-100 focus:outline-none focus:border-brand-500 transition appearance-none cursor-pointer"
+              class="w-full bg-black border border-zinc-700 px-3.5 py-3 text-sm text-zinc-100 font-sans focus:outline-none focus:border-white transition appearance-none cursor-pointer"
             >
               <option value="dpsharni.edunext2.com">Delhi Public School, Harni</option>
               <option value="dpssurat.edunext2.com">Delhi Public School, Surat</option>
               <option value="dpsgrnoida.edunext2.com">Delhi Public School, Greater Noida</option>
               <option value="dpsgn.edunext2.com">Delhi Public School, Gomti Nagar</option>
-              <option value="custom">Other School (Enter custom domain)...</option>
+              <option value="custom">Other School (Custom Domain)...</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-zinc-500 font-mono text-xs">
+              ▼
             </div>
           </div>
           <div id="customSchoolInputContainer" class="hidden mt-2">
@@ -167,359 +169,357 @@
               type="text" 
               id="customSchoolDomain" 
               placeholder="e.g. yourschool.edunext2.com" 
-              class="w-full bg-surface-elevated border border-white/[0.08] rounded-2xl px-4 py-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500"
+              class="w-full bg-black border border-zinc-700 px-3.5 py-2.5 text-xs text-zinc-100 font-mono focus:outline-none focus:border-white"
             />
           </div>
         </div>
 
         <!-- User ID -->
         <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginUserId">User ID (Admission Number)</label>
+          <label class="block font-mono text-[11px] uppercase tracking-wider text-zinc-400 mb-1.5" for="loginUserId">02. Admission No. / User ID</label>
           <input 
             type="text" 
             id="loginUserId" 
             required 
             placeholder="e.g. 1001" 
             autocomplete="username"
-            class="w-full bg-surface-muted border border-white/[0.08] rounded-2xl px-4 py-3.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+            class="w-full bg-black border border-zinc-700 px-3.5 py-3 text-sm text-zinc-100 font-mono focus:outline-none focus:border-white transition"
           />
         </div>
 
         <!-- Password -->
         <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1.5" for="loginPassword">Password</label>
+          <label class="block font-mono text-[11px] uppercase tracking-wider text-zinc-400 mb-1.5" for="loginPassword">03. Security Password</label>
           <div class="relative">
             <input 
               type="password" 
               id="loginPassword" 
               required 
-              placeholder="Your Edunext password" 
+              placeholder="••••••••••••" 
               autocomplete="current-password"
-              class="w-full bg-surface-muted border border-white/[0.08] rounded-2xl px-4 py-3.5 pr-11 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+              class="w-full bg-black border border-zinc-700 px-3.5 py-3 pr-11 text-sm text-zinc-100 font-mono focus:outline-none focus:border-white transition"
             />
             <button 
               type="button" 
               onclick="togglePasswordVisibility()" 
-              class="absolute right-3.5 top-3.5 text-zinc-400 hover:text-zinc-200 text-xs p-1"
+              class="absolute right-3 top-3 text-zinc-400 hover:text-white font-mono text-xs uppercase px-1 py-0.5"
             >
-              <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
+              <span id="eyeIcon">SHOW</span>
             </button>
           </div>
         </div>
 
+        <!-- Submit Button -->
         <button 
           type="submit" 
           id="loginSubmitBtn"
-          class="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-brand-600/20 active:scale-[0.98] flex items-center justify-center gap-2"
+          class="w-full mt-2 py-3.5 bg-white hover:bg-zinc-200 text-black font-mono font-bold text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 active:bg-zinc-300"
         >
-          <span id="loginBtnText">Sign In to Command Center</span>
-          <svg id="loginSpinner" class="hidden w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+          <span id="loginBtnText">AUTHENTICATE & ENTER →</span>
+          <svg id="loginSpinner" class="hidden w-4 h-4 animate-spin text-black" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
           </svg>
         </button>
+
       </form>
 
-      <!-- Security Notice -->
-      <div class="rounded-2xl bg-surface-muted border border-white/[0.05] p-3.5 flex items-start gap-3 text-left">
-        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <p class="text-[11px] text-zinc-400 leading-relaxed">
-          <span class="font-bold text-zinc-200">Device-Isolated Session:</span> Authenticated via Cloudflare edge tokens with zero credential leakage across devices.
-        </p>
+      <!-- Cryptographic Disclosure -->
+      <div class="hairline-t pt-4 font-mono text-[11px] text-zinc-400 leading-relaxed flex items-start gap-2">
+        <span class="text-emerald-400">●</span>
+        <span>DEVICE ISOLATION: Zero credential broadcast. Authenticated sessions operate locally on edge tokens.</span>
       </div>
 
-      <!-- Optional PWA Install Action on Login View (Visible when not standalone on phone) -->
-      <div id="loginInstallBanner" class="hidden md:hidden rounded-2xl bg-brand-500/10 border border-brand-500/20 p-3.5 flex items-center justify-between gap-3 text-left">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 flex-shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-            </svg>
-          </div>
-          <div>
-            <p class="text-xs font-bold text-white">Install Redunxt App</p>
-            <p class="text-[10px] text-zinc-400">Download to home screen for instant school alerts</p>
-          </div>
+      <!-- Optional PWA Install Action on Login View -->
+      <div id="loginInstallBanner" class="hidden md:hidden border border-zinc-800 p-3.5 flex items-center justify-between gap-3 bg-black">
+        <div class="font-mono text-xs text-zinc-300">
+          <p class="font-bold text-white">STANDALONE WEB APP</p>
+          <p class="text-[10px] text-zinc-400">Install to home screen for instant school alerts</p>
         </div>
-        <button type="button" onclick="triggerPwaInstall()" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 flex-shrink-0">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          <span>Download</span>
+        <button type="button" onclick="triggerPwaInstall()" class="px-3 py-1.5 bg-white text-black font-mono text-xs font-bold uppercase tracking-wider">
+          INSTALL
         </button>
       </div>
+
     </div>
+
+    <!-- Colophon footer -->
+    <div class="w-full text-center mt-6 font-mono text-[10px] text-zinc-400 uppercase tracking-widest">
+      DPS HARNI // ACADEMIC YEAR 2026–27 // EDITION IX-B
+    </div>
+
   </div>
 
-  <!-- ================= VIEW 2: UNIFIED COMMAND CENTER ================= -->
-  <div id="dashboardView" class="hidden flex-1 flex flex-col min-h-screen">
+  <!-- ================= VIEW 2: SWISS EDITORIAL COMMAND CENTER ================= -->
+  <div id="dashboardView" class="hidden flex-1 flex flex-col min-h-screen z-10 w-full">
     
-    <!-- Top Sticky Command Bar (Linear style) -->
-    <header class="sticky top-0 z-40 backdrop-blur-xl bg-[#0a0a0c]/90 border-b border-white/[0.08] px-4 py-3 sm:px-8">
+    <!-- Editorial Masthead (Top Bar) -->
+    <header class="sticky top-0 z-40 bg-black hairline-b px-4 sm:px-8 py-3.5">
       <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
         
-        <!-- Left: Logo & Identity -->
+        <!-- Left: Branding & Student Identity -->
         <div class="flex items-center gap-3.5">
-          <div id="headerAvatarContainer" class="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0 bg-surface border border-white/[0.08] flex items-center justify-center">
-            <span id="headerAvatarInitials" class="text-sm font-bold text-white">--</span>
+          <div id="headerAvatarContainer" class="w-9 h-9 border border-zinc-700 bg-zinc-900 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <span id="headerAvatarInitials" class="font-mono text-xs font-bold text-white tracking-widest">--</span>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <span id="headerStudentName" class="text-sm sm:text-base font-bold text-white tracking-tight">Student</span>
-              <span id="headerClassBadge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/25">Class IX-B</span>
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Live Edge Sync Active"></span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="headerStudentName" class="font-serif italic text-lg sm:text-xl text-white tracking-tight leading-none">Student</span>
+              <span id="headerClassBadge" class="font-mono text-[10px] font-semibold px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-300">CLASS IX-B</span>
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Cloudflare Edge Sync Active"></span>
             </div>
-            <p id="headerAdmissionBadge" class="text-[11px] text-zinc-400">DPS Harni • Adm #---</p>
+            <p id="headerAdmissionBadge" class="font-mono text-[11px] text-zinc-400 tracking-wider uppercase mt-0.5">DPS HARNI // ADM #---</p>
           </div>
         </div>
 
-        <!-- Center: Quick Search Trigger (Cmd+K) -->
-        <div class="hidden md:flex items-center flex-1 max-w-md mx-6">
+        <!-- Center: Search Command Bar -->
+        <div class="hidden md:flex items-center flex-1 max-w-sm mx-6">
           <div class="relative w-full">
             <input 
               type="text" 
               id="topSearchInput" 
               oninput="handleFeedSearch(this.value)" 
-              placeholder="Search circulars & mailbox..." 
-              class="w-full bg-surface border border-white/[0.08] rounded-2xl px-4 py-2 pl-10 pr-14 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+              placeholder="SEARCH DISPATCHES..." 
+              class="w-full bg-black border border-zinc-800 focus:border-white px-3.5 py-1.5 pr-14 font-mono text-xs text-white placeholder-zinc-600 focus:outline-none transition uppercase"
             />
-            <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span class="absolute right-3 top-2 px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-muted text-zinc-400 border border-white/[0.06]">⌘K</span>
+            <span class="absolute right-2.5 top-1.5 font-mono text-[10px] text-zinc-500 uppercase tracking-wider">⌘K</span>
           </div>
         </div>
 
-        <!-- Right: Actions -->
-        <div class="flex items-center gap-2">
-          <!-- Install App Header Action (Visible when running in browser on phone) -->
-          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Download & Install Redunxt as Web App" class="hidden md:hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600/90 hover:bg-brand-500 border border-brand-400/30 text-xs font-semibold text-white transition active:scale-95 shadow-md shadow-brand-500/20">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span class="hidden sm:inline">Install App</span>
-            <span class="sm:hidden">Install</span>
+        <!-- Right: Swiss Action Buttons -->
+        <div class="flex items-center gap-2 font-mono text-xs">
+          
+          <!-- Mobile Install Button -->
+          <button id="headerInstallBtn" onclick="triggerPwaInstall()" title="Install App" class="hidden md:hidden px-2.5 py-1.5 bg-white text-black font-bold uppercase tracking-wider">
+            INSTALL
           </button>
 
-          <button onclick="fetchDashboardData(true)" id="refreshBtn" title="Sync Latest Data" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-300 transition active:scale-95 shadow-sm">
-            <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <!-- Refresh Sync Button -->
+          <button onclick="fetchDashboardData(true)" id="refreshBtn" title="Synchronize Data" class="px-3 py-1.5 border border-zinc-700 hover:border-white text-zinc-300 hover:text-white transition flex items-center gap-1.5 uppercase font-medium">
+            <svg id="refreshIcon" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span id="refreshText" class="hidden sm:inline">Sync</span>
+            <span id="refreshText" class="hidden sm:inline">SYNC</span>
           </button>
 
-          <button onclick="openSettingsModal()" title="Preferences & Push Notifications" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-300 transition active:scale-95">
-            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span class="hidden sm:inline">Settings</span>
+          <!-- Settings Button -->
+          <button onclick="openSettingsModal()" title="Preferences & Push Notifications" class="px-3 py-1.5 border border-zinc-700 hover:border-white text-zinc-300 hover:text-white transition uppercase font-medium">
+            SETTINGS
           </button>
+
         </div>
+
       </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col gap-6">
+    <!-- Sub-Masthead Status Ribbon -->
+    <div class="hairline-b bg-[#050505] px-4 sm:px-8 py-2">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+        <div>VOL. 2026–27 // ACADEMIC DOSSIER // DPS HARNI</div>
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-400">● REAL-TIME EDGE LINK</span>
+          <span>SESSION: ACTIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 flex flex-col gap-8">
 
       <!-- Loading State -->
-      <div id="dashLoading" class="flex flex-col items-center justify-center py-24 text-zinc-400">
-        <svg class="w-10 h-10 animate-spin text-brand-500 mb-3" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-        </svg>
-        <p class="text-sm font-semibold text-white">Connecting to school edge service...</p>
-        <p class="text-xs text-zinc-500 mt-1">Fetching latest circulars, mails & academic calendar</p>
+      <div id="dashLoading" class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="w-6 h-6 border-2 border-white border-t-transparent animate-spin mb-4"></div>
+        <p class="font-serif italic text-2xl text-white">Accessing School Dispatches...</p>
+        <p class="font-mono text-xs text-zinc-400 uppercase tracking-widest mt-1">Retrieving official circulars, mailbox & calendar registry</p>
       </div>
 
       <!-- Error State -->
-      <div id="dashError" class="hidden flex flex-col items-center justify-center py-12 p-6 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-center">
-        <p class="text-rose-400 font-bold text-sm mb-1" id="dashErrorMessage">Session expired or connection error.</p>
-        <p class="text-xs text-zinc-400 max-w-md mb-4">Please log in again with your credentials.</p>
-        <button onclick="handleLogout()" class="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Log In Again</button>
+      <div id="dashError" class="hidden flex flex-col items-center justify-center py-16 p-6 border border-rose-500/50 bg-rose-950/20 text-center">
+        <p class="font-mono text-sm text-rose-300 font-bold uppercase tracking-wider mb-1" id="dashErrorMessage">Session Disconnected</p>
+        <p class="font-mono text-xs text-zinc-400 mb-4">Please re-authenticate your academic credentials.</p>
+        <button onclick="handleLogout()" class="px-4 py-2 bg-rose-600 text-white font-mono text-xs uppercase tracking-widest font-bold">RE-AUTHENTICATE</button>
       </div>
 
-      <!-- Main Dashboard Content (Visible when loaded) -->
-      <div id="commandCenterContent" class="hidden flex flex-col gap-6">
+      <!-- Main Dashboard Grid -->
+      <div id="commandCenterContent" class="hidden flex flex-col gap-8">
 
-        <!-- Dual-Column Main Command Grid (Updates Stream + Almanac Calendar) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          <!-- LEFT COLUMN (7 cols): Unified Recent Updates Feed -->
-          <div class="lg:col-span-7 flex flex-col gap-4">
-            
-            <!-- Push Notification Permission Prompt Banner (Visible when permission has not been decided) -->
-            <div id="pushPermissionBanner" class="hidden rounded-2xl bg-gradient-to-r from-brand-950/60 via-surface to-brand-950/40 border border-brand-500/30 p-4 shadow-lg backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-start gap-3">
-                <div class="w-9 h-9 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0 text-lg shadow-inner">
-                  🔔
-                </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h4 class="text-xs sm:text-sm font-bold text-white tracking-tight">Enable Push Notifications</h4>
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Instant Alerts</span>
-                  </div>
-                  <p class="text-[11px] sm:text-xs text-zinc-400 mt-0.5 leading-snug">Get instant phone notifications whenever teachers send new circulars or messages.</p>
-                </div>
+        <!-- Push Permission Banner -->
+        <div id="pushPermissionBanner" class="hidden border border-zinc-700 bg-[#080808] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <span class="font-mono text-base text-amber-400 mt-0.5">🔔</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-mono text-xs font-bold text-white uppercase tracking-wider">ENABLE INSTANT PUSH DISPATCHES</h4>
+                <span class="font-mono text-[10px] px-1.5 py-0.2 border border-amber-500/40 text-amber-300 uppercase">TELEMETRY</span>
               </div>
-              <div class="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
-                <button type="button" onclick="dismissPushBanner()" class="px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-400 hover:text-zinc-200 text-xs font-semibold border border-white/[0.08] transition">
-                  Later
-                </button>
-                <button type="button" onclick="requestPushNotificationPermission()" id="pushBannerActionBtn" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-brand-500/20 active:scale-95">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                  <span>Turn On</span>
-                </button>
-              </div>
+              <p class="font-sans text-xs text-zinc-400 mt-1 leading-snug">Receive device-level notices immediately when circulars or teacher communications are issued.</p>
             </div>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs uppercase self-end sm:self-auto flex-shrink-0">
+            <button type="button" onclick="dismissPushBanner()" class="px-3 py-1.5 border border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-white transition">
+              DISMISS
+            </button>
+            <button type="button" onclick="requestPushNotificationPermission()" id="pushBannerActionBtn" class="px-3.5 py-1.5 bg-white text-black font-bold hover:bg-zinc-200 transition">
+              ACTIVATE →
+            </button>
+          </div>
+        </div>
 
-            <!-- Feed Filter Pills & Search for Mobile -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-base font-bold text-white">Recent Updates</h3>
-                <span id="unreadTotalBadge" class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-500 text-white">0 NEW</span>
+        <!-- 2-COLUMN SWISS EDITORIAL GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
+          <!-- LEFT COLUMN (7 cols): Dispatches & Communications Stream -->
+          <div class="lg:col-span-7 flex flex-col gap-6">
+            
+            <!-- Section Header & Filter Controls -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 hairline-b">
+              
+              <div class="flex items-center gap-3">
+                <h2 class="font-serif italic text-2xl text-white tracking-tight">Dispatches</h2>
+                <span id="unreadTotalBadge" class="hidden font-mono text-[10px] font-bold px-2 py-0.5 bg-white text-black uppercase tracking-wider">0 NEW</span>
                 <button 
                   id="markAllReadBtn" 
                   onclick="markAllAsRead()" 
                   title="Mark all updates as read"
-                  class="hidden text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 active:scale-95 border border-brand-500/20"
+                  class="hidden font-mono text-[11px] text-zinc-400 hover:text-white uppercase tracking-wider transition underline underline-offset-4"
                 >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7m-14 4l4 4L19 11"/>
-                  </svg>
-                  <span>Mark all read</span>
+                  [ Mark all read ]
                 </button>
               </div>
 
-              <!-- Filter Pills -->
-              <div class="flex items-center gap-1.5 bg-surface p-1 rounded-xl border border-white/[0.08] self-start sm:self-auto">
-                <button onclick="setFeedFilter('all')" id="filter-all" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-surface-elevated text-white transition">All</button>
-                <button onclick="setFeedFilter('unread')" id="filter-unread" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Unread</button>
-                <button onclick="setFeedFilter('circular')" id="filter-circular" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Circulars</button>
-                <button onclick="setFeedFilter('mail')" id="filter-mail" class="feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Mailbox</button>
+              <!-- Filter Pills (Swiss Minimalist Text Tabs) -->
+              <div class="flex items-center gap-1 font-mono text-xs">
+                <button onclick="setFeedFilter('all')" id="filter-all" class="feed-filter-btn px-2.5 py-1 bg-white text-black font-bold uppercase">
+                  All <span id="count-all" class="text-[10px]"></span>
+                </button>
+                <button onclick="setFeedFilter('unread')" id="filter-unread" class="feed-filter-btn px-2.5 py-1 text-zinc-400 hover:text-white uppercase transition">
+                  Unread <span id="count-unread" class="text-[10px] text-amber-400"></span>
+                </button>
+                <button onclick="setFeedFilter('circular')" id="filter-circular" class="feed-filter-btn px-2.5 py-1 text-zinc-400 hover:text-white uppercase transition">
+                  Circulars <span id="count-circular" class="text-[10px]"></span>
+                </button>
+                <button onclick="setFeedFilter('mail')" id="filter-mail" class="feed-filter-btn px-2.5 py-1 text-zinc-400 hover:text-white uppercase transition">
+                  Mailbox <span id="count-mail" class="text-[10px]"></span>
+                </button>
               </div>
+
             </div>
 
-            <!-- Feed Search (Always visible on mobile, or when typing) -->
+            <!-- Mobile Search Bar -->
             <div class="relative md:hidden">
               <input 
                 type="text" 
                 id="mobileSearchInput" 
                 oninput="handleFeedSearch(this.value)" 
-                placeholder="Filter updates & announcements..." 
-                class="w-full bg-surface border border-white/[0.08] rounded-2xl px-4 py-2.5 pl-10 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition"
+                placeholder="SEARCH DISPATCHES..." 
+                class="w-full bg-black border border-zinc-800 px-3 py-2 font-mono text-xs text-white uppercase placeholder-zinc-600 focus:outline-none focus:border-white transition"
               />
-              <svg class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
             </div>
 
-            <!-- Feed Items Container -->
-            <div id="unifiedFeedContainer" class="flex flex-col gap-3">
-              <!-- Dynamically rendered feed cards -->
+            <!-- Dispatches Ruled List Container -->
+            <div id="unifiedFeedContainer" class="flex flex-col divide-y divide-zinc-900 border-t border-b border-zinc-900">
+              <!-- Dynamically populated editorial rows -->
             </div>
 
-            <!-- Expand / Collapse Older History -->
-            <div id="archivedUpdatesSection" class="hidden flex flex-col gap-3 pt-2">
-              <div class="flex items-center gap-3 my-2">
-                <div class="h-px bg-white/[0.08] flex-1"></div>
-                <span class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Older School Archive</span>
-                <div class="h-px bg-white/[0.08] flex-1"></div>
+            <!-- Older Archive Expansion -->
+            <div id="archivedUpdatesSection" class="hidden flex flex-col divide-y divide-zinc-900 border-t border-b border-zinc-900">
+              <div class="py-2 text-center font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+                — PREVIOUS ARCHIVED DISPATCHES —
               </div>
-              <div id="archivedFeedContainer" class="flex flex-col gap-3"></div>
+              <div id="archivedFeedContainer" class="flex flex-col divide-y divide-zinc-900"></div>
             </div>
 
-            <button id="toggleArchiveBtn" onclick="toggleArchiveVisibility()" class="w-full py-3 rounded-2xl bg-surface hover:bg-surface-muted border border-white/[0.08] text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition text-center shadow-sm">
-              Show Earlier History &rarr;
+            <button id="toggleArchiveBtn" onclick="toggleArchiveVisibility()" class="w-full py-3 border border-zinc-800 hover:border-zinc-500 font-mono text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition text-center">
+              REVEAL ARCHIVED DISPATCHES ↓
             </button>
+
           </div>
 
-          <!-- RIGHT COLUMN (5 cols): School Almanac 2026–27 Calendar -->
-          <div class="lg:col-span-5 flex flex-col gap-4">
+          <!-- RIGHT COLUMN (5 cols): Academic Almanac & Registry -->
+          <div class="lg:col-span-5 flex flex-col gap-6 lg:hairline-l lg:pl-8">
             
-            <div class="rounded-3xl bg-surface border border-white/[0.08] p-5 sm:p-6 shadow-xl flex flex-col gap-4">
+            <!-- Calendar Section Header -->
+            <div class="flex items-center justify-between pb-3 hairline-b">
+              <div>
+                <h2 class="font-serif italic text-2xl text-white tracking-tight">Almanac</h2>
+                <p class="font-mono text-[11px] text-zinc-400 uppercase tracking-wider mt-0.5">ACADEMIC PROTOCOL // CLASS IX</p>
+              </div>
+
+              <!-- Month Navigator -->
+              <div class="flex items-center gap-1 font-mono text-xs">
+                <button onclick="changeAlmanacMonth(-1)" class="px-2 py-1 border border-zinc-800 hover:border-white text-zinc-300 hover:text-white transition" title="Previous Month">
+                  ←
+                </button>
+                <span id="calendarCurrentMonthLabel" class="font-bold text-white px-2 uppercase min-w-[95px] text-center">
+                  October 2026
+                </span>
+                <button onclick="changeAlmanacMonth(1)" class="px-2 py-1 border border-zinc-800 hover:border-white text-zinc-300 hover:text-white transition" title="Next Month">
+                  →
+                </button>
+                <button id="calendarJumpTodayBtn" onclick="jumpToCurrentAlmanacMonth()" title="Current Month" class="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400 hover:text-white uppercase transition ml-1">
+                  TODAY
+                </button>
+              </div>
+            </div>
+
+            <!-- Swiss Hairline Calendar Matrix -->
+            <div class="border border-zinc-800 bg-[#050505]">
               
-              <!-- Calendar Header -->
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h3 class="text-sm sm:text-base font-bold text-white">School Almanac</h3>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/25">Class IX</span>
-                  </div>
-                  <p class="text-[11px] text-zinc-400">Academic Session 2026–27</p>
-                </div>
-
-                <!-- Month Selector Controls -->
-                <div class="flex items-center gap-1.5 bg-surface-muted p-1 rounded-xl border border-white/[0.06]">
-                  <button onclick="changeAlmanacMonth(-1)" class="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-surface-elevated transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                  </button>
-                  <span id="calendarCurrentMonthLabel" class="text-xs font-bold text-zinc-200 px-2 min-w-[100px] text-center">October 2026</span>
-                  <button onclick="changeAlmanacMonth(1)" class="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-surface-elevated transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                  </button>
-                </div>
+              <!-- Weekday Header Row -->
+              <div class="grid grid-cols-7 border-b border-zinc-800 text-center font-mono text-[10px] font-bold text-zinc-400 uppercase tracking-widest py-2 bg-black">
+                <div>MO</div>
+                <div>TU</div>
+                <div>WE</div>
+                <div>TH</div>
+                <div>FR</div>
+                <div>SA</div>
+                <div class="text-rose-400">SU</div>
               </div>
 
-              <!-- Day Name Headers (Mon to Sun) -->
-              <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-zinc-500 uppercase tracking-wider py-1 border-b border-white/[0.06]">
-                <div>Mo</div>
-                <div>Tu</div>
-                <div>We</div>
-                <div>Th</div>
-                <div>Fr</div>
-                <div>Sa</div>
-                <div class="text-rose-400">Su</div>
-              </div>
-
-              <!-- Calendar Day Grid -->
-              <div id="almanacCalendarGrid" class="grid grid-cols-7 gap-1 text-xs">
+              <!-- Day Grid -->
+              <div id="almanacCalendarGrid" class="grid grid-cols-7 divide-x divide-y divide-zinc-900 font-mono text-xs">
                 <!-- Dynamically generated days -->
               </div>
 
-              <!-- Legend -->
-              <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/[0.06] text-[10px] text-zinc-400">
-                <div class="flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                  <span>Holiday / Sunday</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span>1st & 3rd Sat* (Working)</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                  <span>Vacation / Recess</span>
-                </div>
-              </div>
+            </div>
 
-              <!-- Interactive Day Details Popover / Box -->
-              <div id="selectedDayInfoBox" class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-                <div id="selectedDayIcon" class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-sm font-bold text-brand-300 flex-shrink-0">
-                  📅
-                </div>
-                <div class="flex-1">
-                  <p id="selectedDayDate" class="text-xs font-bold text-white">Select any date</p>
-                  <p id="selectedDayDescription" class="text-[11px] text-zinc-400 mt-0.5">Click any day on the calendar to view school schedule & holidays.</p>
-                </div>
+            <!-- Legend Key -->
+            <div class="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-zinc-400 uppercase tracking-wider pt-1">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 bg-rose-500 inline-block"></span>
+                <span>HOLIDAY / SUNDAY</span>
               </div>
-
-              <!-- Vacation Schedule Callout Card -->
-              <div class="rounded-2xl bg-amber-500/10 border border-amber-500/25 p-3.5 flex items-start gap-3">
-                <span class="text-base text-amber-400 flex-shrink-0 mt-0.5">☀️</span>
-                <div class="text-xs text-zinc-300">
-                  <p class="font-bold text-amber-300 mb-0.5">Vacation Schedule</p>
-                  <p class="text-[11px] text-zinc-400 leading-relaxed">
-                    Diwali break: <span class="text-zinc-200 font-semibold">Nov 05 – Nov 24</span> (reopens Nov 25). School operates <span class="text-zinc-200 font-semibold">Dec 28 – Dec 31</span>.
-                  </p>
-                </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 bg-emerald-400 inline-block"></span>
+                <span>1ST & 3RD SAT (CLASS IX)</span>
               </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 bg-amber-400 inline-block"></span>
+                <span>RECESS</span>
+              </div>
+            </div>
 
+            <!-- Selected Day Dossier Briefing -->
+            <div id="selectedDayInfoBox" class="border border-zinc-800 p-4 bg-[#050505] flex items-start gap-3.5">
+              <div id="selectedDayIcon" class="w-7 h-7 border border-zinc-700 bg-black flex items-center justify-center font-mono text-xs text-zinc-300 flex-shrink-0">
+                📅
+              </div>
+              <div class="flex-1">
+                <p id="selectedDayDate" class="font-serif italic text-base text-white">Select Any Calendar Date</p>
+                <p id="selectedDayDescription" class="font-sans text-xs text-zinc-400 mt-0.5 leading-relaxed">Click any date cell on the matrix to inspect academic schedule, working days and holidays.</p>
+              </div>
+            </div>
+
+            <!-- Vacation Itinerary Dossier -->
+            <div class="border border-zinc-800 p-4 bg-black flex flex-col gap-2">
+              <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-amber-400 hairline-b pb-2">
+                <span>SCHEDULED RECESS SCHEDULE</span>
+                <span>ACADEMIC 2026–27</span>
+              </div>
+              <div class="font-sans text-xs text-zinc-300 leading-relaxed pt-1">
+                <p class="mb-1"><strong class="text-white font-mono uppercase">Diwali Break:</strong> Nov 05 – Nov 24 <span class="text-zinc-500 font-mono">(reopens Nov 25)</span></p>
+                <p><strong class="text-white font-mono uppercase">Winter Session:</strong> Dec 28 – Dec 31 <span class="text-zinc-500 font-mono">(regular class schedule)</span></p>
+              </div>
             </div>
 
           </div>
@@ -530,291 +530,268 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-white/[0.08] py-5 px-6 text-center text-xs text-zinc-500">
-      Redunxt • Unified DPS Student Command Center • Ultra-Fast, Responsive & Device-Isolated
+    <!-- Swiss Minimalist Colophon Footer -->
+    <footer class="hairline-t py-6 px-4 sm:px-8 bg-black mt-auto">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-[11px] text-zinc-400 uppercase tracking-widest">
+        <div>REDUNXT // SWISS EDITORIAL EDITION // DPS HARNI</div>
+        <div>CRYPTOGRAPHIC DEVICE ISOLATION // VER 2.4</div>
+      </div>
     </footer>
 
   </div>
 
-  <!-- ================= OVERLAYS & MODALS ================= -->
+  <!-- ================= MODALS & OVERLAYS ================= -->
 
-  <!-- 1. Circular Detail Modal -->
-  <div id="circularModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-start justify-between p-4 sm:p-6 border-b border-white/[0.08] bg-surface-muted">
+  <!-- 1. Circular Detail Modal (Editorial Reading Sheet) -->
+  <div id="circularModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity">
+    <div class="bg-black border border-zinc-700 max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-150">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between p-5 sm:p-6 hairline-b bg-[#050505]">
         <div class="flex-1 pr-4">
-          <div class="flex items-center gap-2 mb-1.5">
-            <span id="circModalDate" class="text-xs font-semibold px-2 py-0.5 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
-            <span id="circModalSchool" class="text-xs text-zinc-400">School Circular</span>
+          <div class="flex items-center gap-2 mb-2 font-mono text-[11px] uppercase tracking-wider text-zinc-400">
+            <span id="circModalDate" class="px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-200"></span>
+            <span id="circModalSchool">OFFICIAL CIRCULAR</span>
           </div>
-          <h3 id="circModalTitle" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
+          <h3 id="circModalTitle" class="font-serif italic text-2xl sm:text-3xl text-white leading-tight"></h3>
         </div>
-        <button onclick="closeCircularModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button onclick="closeCircularModal()" class="text-zinc-400 hover:text-white font-mono text-xs uppercase px-2 py-1 border border-zinc-800 hover:border-white transition">
+          ESC [×]
         </button>
       </div>
-      <div class="p-5 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
-        <div id="circModalDesc" class="text-sm sm:text-base text-zinc-200 leading-relaxed"></div>
-        <div id="circModalAttachmentBox" class="hidden pt-4 border-t border-white/[0.08]">
-          <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Official Attachment</h5>
-          <a id="circModalPdfLink" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-4 rounded-2xl bg-brand-950/40 border border-brand-500/30 hover:bg-brand-900/40 transition group">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-brand-600/20 border border-brand-500/40 flex items-center justify-center text-brand-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              </div>
-              <div>
-                <p class="text-xs font-bold text-white group-hover:text-brand-300 transition">Open Official PDF Document</p>
-                <p class="text-[11px] text-zinc-400">Direct CloudFront CDN download</p>
-              </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 sm:p-8 overflow-y-auto space-y-4 custom-scrollbar flex-1 bg-black">
+        <div id="circModalDesc" class="leading-relaxed"></div>
+        <div id="circModalAttachmentBox" class="hidden pt-6 hairline-t">
+          <h5 class="font-mono text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">OFFICIAL ATTACHMENT</h5>
+          <a id="circModalPdfLink" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 border border-zinc-700 hover:border-white transition group bg-[#050505]">
+            <div class="font-mono text-xs text-white">
+              <span class="text-amber-400 mr-2">↓</span>
+              <span>DOWNLOAD OFFICIAL PDF DOCUMENT</span>
             </div>
-            <span class="px-3.5 py-1.5 rounded-xl bg-brand-600 text-white text-xs font-bold group-hover:bg-brand-500 transition shadow-sm">View &rarr;</span>
+            <span class="font-mono text-xs text-zinc-400 group-hover:text-white uppercase tracking-wider">OPEN →</span>
           </a>
         </div>
       </div>
-      <div class="p-4 border-t border-white/[0.08] bg-surface-muted flex justify-end">
-        <button onclick="closeCircularModal()" class="px-4 py-2 rounded-xl bg-surface-elevated hover:bg-surface-highlight text-white text-xs font-semibold transition border border-white/[0.08]">Close</button>
+
+      <!-- Modal Footer -->
+      <div class="p-4 hairline-t bg-[#050505] flex justify-between items-center font-mono text-xs">
+        <span class="text-zinc-400 hidden sm:inline uppercase">[ PRESS ESCAPE TO DISMISS ]</span>
+        <button onclick="closeCircularModal()" class="ml-auto px-4 py-1.5 bg-white text-black font-bold uppercase tracking-wider hover:bg-zinc-200 transition">
+          CLOSE
+        </button>
       </div>
+
     </div>
   </div>
 
   <!-- 2. Mailbox Detail Modal -->
-  <div id="mailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-start justify-between p-4 sm:p-6 border-b border-white/[0.08] bg-surface-muted">
-        <div class="flex items-center gap-3">
-          <div id="modalSenderAvatar" class="w-11 h-11 rounded-2xl overflow-hidden flex-shrink-0 bg-surface border border-white/[0.08] flex items-center justify-center text-sm font-bold text-zinc-200"></div>
+  <div id="mailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity">
+    <div class="bg-black border border-zinc-700 max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-150">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between p-5 sm:p-6 hairline-b bg-[#050505]">
+        <div class="flex items-center gap-3.5">
+          <div id="modalSenderAvatar" class="w-10 h-10 border border-zinc-700 bg-zinc-900 flex items-center justify-center font-mono text-sm font-bold text-white flex-shrink-0"></div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <h4 id="modalSenderName" class="text-sm sm:text-base font-bold text-white"></h4>
-              <span id="modalTypeBadge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/30"></span>
+              <h4 id="modalSenderName" class="font-serif italic text-xl text-white"></h4>
+              <span id="modalTypeBadge" class="font-mono text-[10px] font-bold uppercase px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-300"></span>
             </div>
-            <p id="modalDate" class="text-xs text-zinc-400 mt-0.5 font-mono"></p>
+            <p id="modalDate" class="font-mono text-xs text-zinc-400 mt-0.5"></p>
           </div>
         </div>
-        <button onclick="closeMailModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button onclick="closeMailModal()" class="text-zinc-400 hover:text-white font-mono text-xs uppercase px-2 py-1 border border-zinc-800 hover:border-white transition">
+          ESC [×]
         </button>
       </div>
-      <div class="p-5 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
-        <h3 id="modalSubject" class="text-base sm:text-lg font-bold text-white leading-snug"></h3>
-        <div id="modalBody" class="text-sm text-zinc-200 leading-relaxed space-y-3"></div>
-        <div id="modalAttachments" class="hidden pt-4 border-t border-white/[0.08]">
-          <h5 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5">Attachments</h5>
-          <div id="modalAttachmentsList" class="flex flex-col gap-2"></div>
+
+      <!-- Modal Body -->
+      <div class="p-6 sm:p-8 overflow-y-auto space-y-4 custom-scrollbar flex-1 bg-black">
+        <h3 id="modalSubject" class="font-sans text-lg font-bold text-white leading-snug"></h3>
+        <div id="modalBody" class="leading-relaxed space-y-3"></div>
+        <div id="modalAttachments" class="hidden pt-6 hairline-t">
+          <h5 class="font-mono text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">ATTACHED DOCUMENTS</h5>
+          <div id="modalAttachmentsList" class="flex flex-col gap-2 font-mono text-xs"></div>
         </div>
       </div>
-      <div class="p-4 border-t border-white/[0.08] bg-surface-muted flex justify-between items-center text-xs">
-        <span class="text-zinc-500 hidden sm:inline">Press ESC to close</span>
-        <button onclick="closeMailModal()" class="ml-auto px-4 py-2 rounded-xl bg-surface-elevated hover:bg-surface-highlight text-white text-xs font-semibold transition border border-white/[0.08]">Close</button>
+
+      <!-- Modal Footer -->
+      <div class="p-4 hairline-t bg-[#050505] flex justify-between items-center font-mono text-xs">
+        <span class="text-zinc-400 hidden sm:inline uppercase">[ PRESS ESCAPE TO DISMISS ]</span>
+        <button onclick="closeMailModal()" class="ml-auto px-4 py-1.5 bg-white text-black font-bold uppercase tracking-wider hover:bg-zinc-200 transition">
+          CLOSE
+        </button>
       </div>
+
     </div>
   </div>
 
-  <!-- 3. Settings & Profile Preferences Modal -->
-  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-center justify-between p-5 border-b border-white/[0.08] bg-surface-muted">
+  <!-- 3. Settings Modal (Swiss Dossier Style) -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity">
+    <div class="bg-black border border-zinc-700 max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-150">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between p-5 hairline-b bg-[#050505]">
         <div>
-          <h3 class="text-base font-bold text-white">Redunxt Settings & Devices</h3>
-          <p class="text-xs text-zinc-400">Manage device notifications & profile</p>
+          <h3 class="font-serif italic text-2xl text-white">System Settings</h3>
+          <p class="font-mono text-xs text-zinc-400 uppercase tracking-wider">Device telemetry & student preferences</p>
         </div>
-        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-white font-mono text-xs uppercase px-2 py-1 border border-zinc-800 hover:border-white transition">
+          ESC [×]
         </button>
       </div>
 
-      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-6">
+      <!-- Body -->
+      <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-6 bg-black">
         
-        <!-- App Installation Card (PWA Standalone) -->
-        <div class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] flex flex-col gap-3">
+        <!-- PWA Installation Box -->
+        <div class="border border-zinc-800 p-4 bg-[#050505] flex flex-col gap-3 font-mono text-xs">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-white">App Installation</h4>
-                <p class="text-[11px] text-zinc-400">Standalone Web App (PWA)</p>
-              </div>
+            <div>
+              <h4 class="font-bold text-white uppercase tracking-wider">STANDALONE APP (PWA)</h4>
+              <p class="text-[11px] text-zinc-400">Home screen installation status</p>
             </div>
-            <span id="pwaInstalledBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]">Checking...</span>
+            <span id="pwaInstalledBadge" class="px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-300 uppercase text-[10px]">CHECKING...</span>
           </div>
-
-          <div id="pwaInstallActionRow" class="flex items-center justify-between pt-2 border-t border-white/[0.06]">
-            <span id="pwaInstallDesc" class="text-[11px] text-zinc-400">Run Redunxt natively from your home screen</span>
-            <button id="settingsInstallBtn" onclick="triggerPwaInstall()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              <span>Install App</span>
+          <div id="pwaInstallActionRow" class="flex items-center justify-between pt-2 hairline-t">
+            <span id="pwaInstallDesc" class="text-[11px] text-zinc-400">Install Redunxt natively on device</span>
+            <button id="settingsInstallBtn" onclick="triggerPwaInstall()" class="px-3 py-1 bg-white text-black font-bold uppercase text-xs hover:bg-zinc-200 transition">
+              INSTALL NOW
             </button>
           </div>
         </div>
 
-        <!-- Push Notifications Card -->
-        <div class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] flex flex-col gap-3">
+        <!-- Push Notifications Box -->
+        <div class="border border-zinc-800 p-4 bg-[#050505] flex flex-col gap-3 font-mono text-xs">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-brand-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-white">Push Notifications</h4>
-                <p class="text-[11px] text-zinc-400">Receive alerts when new Circulars arrive</p>
-              </div>
+            <div>
+              <h4 class="font-bold text-white uppercase tracking-wider">PUSH TELEMETRY</h4>
+              <p class="text-[11px] text-zinc-400">Instant device alerts on new circulars</p>
             </div>
-            <span id="pushStatusBadge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]">Checking...</span>
+            <span id="pushStatusBadge" class="px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-300 uppercase text-[10px]">CHECKING...</span>
           </div>
-
-          <div class="flex items-center justify-between pt-2 border-t border-white/[0.06]">
+          <div class="flex items-center justify-between pt-2 hairline-t">
             <span id="pushStatusDescription" class="text-[11px] text-zinc-400">Encrypted multi-account Web Push</span>
             <div class="flex items-center gap-2">
-              <button id="pushTestBtn" onclick="sendTestPushNotification()" class="hidden px-3 py-1.5 rounded-xl bg-surface hover:bg-surface-elevated text-brand-300 border border-brand-500/30 text-xs font-semibold transition">Test</button>
-              <button id="pushToggleBtn" onclick="togglePushSubscription()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition">Enable</button>
+              <button id="pushTestBtn" onclick="sendTestPushNotification()" class="hidden px-2.5 py-1 border border-zinc-700 hover:border-white text-zinc-300 uppercase text-xs">TEST</button>
+              <button id="pushToggleBtn" onclick="togglePushSubscription()" class="px-3 py-1 bg-white text-black font-bold uppercase text-xs hover:bg-zinc-200 transition">ENABLE</button>
             </div>
           </div>
         </div>
 
         <!-- Avatar Preference -->
-        <div class="flex flex-col gap-3">
-          <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Avatar Display</h4>
+        <div class="flex flex-col gap-2 font-mono text-xs">
+          <h4 class="text-zinc-400 uppercase tracking-widest text-[10px]">AVATAR PROFILE MODE</h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onclick="handleAvatarModeChange('edunext')" class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.08] hover:border-brand-500/50 text-left transition flex items-center gap-3">
+            <button onclick="handleAvatarModeChange('edunext')" class="p-3 border border-zinc-800 hover:border-white text-left transition flex items-center gap-3 bg-[#050505]">
               <span class="text-lg">🏫</span>
               <div>
-                <p class="text-xs font-bold text-white">Official ERP Photo</p>
-                <p class="text-[10px] text-zinc-400">School ID photo</p>
+                <p class="font-bold text-white uppercase text-xs">OFFICIAL ERP PHOTO</p>
+                <p class="text-[10px] text-zinc-400">School ID photographic badge</p>
               </div>
             </button>
-            <button onclick="handleAvatarModeChange('initials')" class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.08] hover:border-brand-500/50 text-left transition flex items-center gap-3">
+            <button onclick="handleAvatarModeChange('initials')" class="p-3 border border-zinc-800 hover:border-white text-left transition flex items-center gap-3 bg-[#050505]">
               <span class="text-lg">🔤</span>
               <div>
-                <p class="text-xs font-bold text-white">Initials Badge</p>
-                <p class="text-[10px] text-zinc-400">Clean two-letter icon</p>
+                <p class="font-bold text-white uppercase text-xs">MONOGRAM INITIALS</p>
+                <p class="text-[10px] text-zinc-400">Typographic 2-letter badge</p>
               </div>
             </button>
           </div>
         </div>
 
-        <!-- Student Profile Summary -->
-        <div id="settingsProfileBox" class="p-4 rounded-2xl bg-surface-muted border border-white/[0.06] text-xs space-y-2">
-          <div class="flex justify-between">
-            <span class="text-zinc-500">Student Name:</span>
-            <span id="setStudentName" class="text-zinc-200 font-semibold">-</span>
+        <!-- Student Profile Dossier -->
+        <div id="settingsProfileBox" class="border border-zinc-800 p-4 bg-[#050505] font-mono text-xs space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400 uppercase">STUDENT NAME:</span>
+            <span id="setStudentName" class="text-white font-bold font-sans">-</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-zinc-500">Admission No:</span>
-            <span id="setAdmissionNo" class="text-zinc-200 font-mono">-</span>
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400 uppercase">ADMISSION NO:</span>
+            <span id="setAdmissionNo" class="text-zinc-200">-</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-zinc-500">Class & Section:</span>
-            <span id="setClassSection" class="text-zinc-200 font-semibold">-</span>
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400 uppercase">CLASS & SECTION:</span>
+            <span id="setClassSection" class="text-zinc-200">-</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-zinc-500">Class Teacher:</span>
-            <span id="setClassTeacher" class="text-zinc-200 font-semibold">-</span>
+          <div class="flex justify-between items-center">
+            <span class="text-zinc-400 uppercase">CLASS TEACHER:</span>
+            <span id="setClassTeacher" class="text-zinc-200">-</span>
           </div>
         </div>
 
-        <!-- Logout Button -->
-        <div class="pt-2 border-t border-white/[0.08] flex justify-between items-center">
-          <span class="text-[11px] text-zinc-500">Active cryptographic device session</span>
-          <button onclick="handleLogout()" class="px-4 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-bold transition">Log Out of This Device</button>
+        <!-- Logout Action -->
+        <div class="hairline-t pt-4 flex justify-between items-center font-mono text-xs">
+          <span class="text-zinc-400 uppercase">SESSION ENCRYPTION ACTIVE</span>
+          <button onclick="handleLogout()" class="px-4 py-2 border border-rose-600 bg-rose-950/40 text-rose-300 hover:bg-rose-900/40 uppercase tracking-widest font-bold transition">
+            LOG OUT DEVICE
+          </button>
         </div>
 
       </div>
+
     </div>
   </div>
 
-  <!-- ================= FLOATING PWA INSTALL BOTTOM POPUP ================= -->
-  <div id="pwaInstallPopup" class="hidden md:hidden fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
-    <div class="relative overflow-hidden rounded-3xl bg-[#131318]/95 border border-brand-500/30 backdrop-blur-2xl shadow-2xl p-4 sm:p-5 flex flex-col gap-3.5 ring-1 ring-white/10">
+  <!-- 4. Floating PWA Prompt (Mobile Only) -->
+  <div id="pwaInstallPopup" class="hidden md:hidden fixed bottom-4 inset-x-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+    <div class="border border-zinc-700 bg-black p-4 shadow-2xl flex flex-col gap-3 font-mono text-xs">
       <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 p-0.5 shadow-lg shadow-brand-500/25 flex items-center justify-center flex-shrink-0">
-            <div class="w-full h-full bg-[#0d0d11] rounded-[14px] flex items-center justify-center text-xl">
-              🎓
-            </div>
-          </div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <h4 class="text-sm font-bold text-white tracking-tight">Install Redunxt</h4>
-              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Web App</span>
-            </div>
-            <p class="text-xs text-zinc-400 mt-0.5 leading-snug">Download to your home screen for instant school alerts and a native standalone app experience.</p>
-          </div>
+        <div>
+          <p class="font-bold text-white uppercase tracking-wider">INSTALL REDUNXT DISPATCHES</p>
+          <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Add to home screen for instant school alerts and a standalone experience.</p>
         </div>
-        <button onclick="dismissInstallBanner()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition -mr-1 -mt-1" title="Dismiss">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <button onclick="dismissInstallBanner()" class="text-zinc-400 hover:text-white font-mono p-1" title="Dismiss">×</button>
       </div>
       <div class="flex items-center gap-2 pt-1">
-        <button onclick="triggerPwaInstall()" class="flex-1 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white text-xs font-bold shadow-lg shadow-brand-500/25 transition flex items-center justify-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          <span>Download App</span>
-        </button>
-        <button onclick="dismissInstallBanner()" class="px-4 py-2.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-400 hover:text-zinc-200 text-xs font-semibold border border-white/[0.08] transition">
-          Later
-        </button>
+        <button onclick="dismissInstallBanner()" class="flex-1 py-1.5 border border-zinc-800 text-zinc-400 uppercase">NOT NOW</button>
+        <button onclick="triggerPwaInstall()" class="flex-1 py-1.5 bg-white text-black font-bold uppercase tracking-wider">INSTALL</button>
       </div>
     </div>
   </div>
 
-  <!-- ================= PWA MANUAL INSTALL GUIDE MODAL ================= -->
-  <div id="pwaGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-surface border border-white/[0.08] rounded-3xl max-w-md w-full p-6 flex flex-col gap-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 p-0.5 flex items-center justify-center shadow-lg shadow-brand-500/25 flex-shrink-0">
-            <div class="w-full h-full bg-[#0d0d11] rounded-[14px] flex items-center justify-center text-lg">🎓</div>
-          </div>
-          <div>
-            <h3 class="text-base font-bold text-white">Install Redunxt</h3>
-            <p class="text-xs text-zinc-400">Add to your device home screen</p>
-          </div>
-        </div>
-        <button onclick="closePwaGuideModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-surface-elevated transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+  <!-- 5. PWA Guide Modal -->
+  <div id="pwaGuideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity">
+    <div class="bg-black border border-zinc-700 max-w-md w-full flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-150">
+      <div class="flex items-center justify-between p-4 hairline-b bg-[#050505]">
+        <h3 class="font-mono text-xs font-bold text-white uppercase tracking-wider">INSTALLATION GUIDE</h3>
+        <button onclick="closePwaGuideModal()" class="text-zinc-400 hover:text-white font-mono text-xs">×</button>
       </div>
-
-      <div id="pwaGuideContent" class="flex flex-col gap-3 text-xs text-zinc-300">
-        <!-- Dynamically populated based on device (iOS vs Android vs Desktop) -->
+      <div id="pwaGuideContent" class="p-5 flex flex-col gap-3 font-mono text-xs"></div>
+      <div class="p-3 hairline-t bg-[#050505] flex justify-end">
+        <button onclick="closePwaGuideModal()" class="px-4 py-1.5 bg-white text-black font-bold uppercase text-xs">DONE</button>
       </div>
-
-      <button onclick="closePwaGuideModal()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition">
-        Got It
-      </button>
     </div>
   </div>
 
-  <!-- ================= LOGIC SCRIPT ================= -->
+  <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
   <script>
     // Global State
     let session = { token: null, student: null, account: null };
     let bundleData = null;
     let currentFeedFilter = 'all';
+    let currentAlmanacMonthIndex = 6; // October 2026 default
     let seenItemIds = new Set();
-    let currentAlmanacMonthIndex = 6; // Defaults to October (0: April, 1: May, ... 6: October, ... 11: March)
+    let toastTimeout = null;
 
     // DPS Harni Academic Year 2026-27 Almanac Dataset
     const ALMANAC_YEAR_MONTHS = [
-      { name: "April 2026", year: 2026, month: 3, days: 30, startDay: 2 }, // Wed Apr 1
-      { name: "May 2026", year: 2026, month: 4, days: 31, startDay: 4 },   // Fri May 1
-      { name: "June 2026", year: 2026, month: 5, days: 30, startDay: 0 },  // Mon Jun 1
-      { name: "July 2026", year: 2026, month: 6, days: 31, startDay: 2 },  // Wed Jul 1
-      { name: "August 2026", year: 2026, month: 7, days: 31, startDay: 5 },// Sat Aug 1
-      { name: "September 2026", year: 2026, month: 8, days: 30, startDay: 1 }, // Tue Sep 1
-      { name: "October 2026", year: 2026, month: 9, days: 31, startDay: 3 },   // Thu Oct 1
-      { name: "November 2026", year: 2026, month: 10, days: 30, startDay: 6 }, // Sun Nov 1
-      { name: "December 2026", year: 2026, month: 11, days: 31, startDay: 1 }, // Tue Dec 1
-      { name: "January 2027", year: 2027, month: 0, days: 31, startDay: 4 },   // Fri Jan 1
-      { name: "February 2027", year: 2027, month: 1, days: 28, startDay: 0 },  // Mon Feb 1
-      { name: "March 2027", year: 2027, month: 2, days: 31, startDay: 0 },     // Mon Mar 1
+      { name: "April 2026", year: 2026, month: 3, days: 30, startDay: 2 },
+      { name: "May 2026", year: 2026, month: 4, days: 31, startDay: 4 },
+      { name: "June 2026", year: 2026, month: 5, days: 30, startDay: 0 },
+      { name: "July 2026", year: 2026, month: 6, days: 31, startDay: 2 },
+      { name: "August 2026", year: 2026, month: 7, days: 31, startDay: 5 },
+      { name: "September 2026", year: 2026, month: 8, days: 30, startDay: 1 },
+      { name: "October 2026", year: 2026, month: 9, days: 31, startDay: 3 },
+      { name: "November 2026", year: 2026, month: 10, days: 30, startDay: 6 },
+      { name: "December 2026", year: 2026, month: 11, days: 31, startDay: 1 },
+      { name: "January 2027", year: 2027, month: 0, days: 31, startDay: 4 },
+      { name: "February 2027", year: 2027, month: 1, days: 28, startDay: 0 },
+      { name: "March 2027", year: 2027, month: 2, days: 31, startDay: 0 },
     ];
 
-    // Almanac Specific Holiday and Event Registry
     const ALMANAC_EVENTS = {
       // April 2026
       "2026-04-01": { title: "School Opens (Session 2026-27)", type: "event" },
@@ -825,7 +802,7 @@
       "2026-04-19": { title: "Parshuram Jayanti", type: "holiday" },
       "2026-04-24": { title: "DPS Foundation Day", type: "event" },
 
-      // May 2026 (Summer Vacation begins May 4)
+      // May 2026
       "2026-05-01": { title: "Buddha Purnima", type: "holiday" },
       "2026-05-02": { title: "1st Saturday (Working for Class IX)", type: "working_sat" },
       "2026-05-27": { title: "Id-ul-Zuha (Bakrid)*", type: "holiday" },
@@ -895,25 +872,24 @@
       "2027-03-22": { title: "Dhuleti (Holi Festival)", type: "holiday" }
     };
 
-    // Helper: Check if date falls in vacation range
     function getVacationInfo(year, month, day) {
       const dt = new Date(year, month, day);
 
-      // Summer Vacation: May 4, 2026 to June 3, 2026
+      // Summer Vacation
       const sumStart = new Date(2026, 4, 4);
       const sumEnd = new Date(2026, 5, 3);
       if (dt >= sumStart && dt <= sumEnd) {
         return { name: "Summer Vacation", isRevised: false };
       }
 
-      // Diwali Vacation: Nov 05, 2026 to Nov 24, 2026
+      // Diwali Vacation
       const diwaliStart = new Date(2026, 10, 5);
       const diwaliEnd = new Date(2026, 10, 24);
       if (dt >= diwaliStart && dt <= diwaliEnd) {
         return { name: "Diwali Vacation", isRevised: true };
       }
 
-      // Winter Break: Dec 25–27, Jan 01–03
+      // Winter Break
       const win1Start = new Date(2026, 11, 25);
       const win1End = new Date(2026, 11, 27);
       if (dt >= win1Start && dt <= win1End) {
@@ -929,12 +905,10 @@
       return null;
     }
 
-    // 1. App Startup: Check Local Storage & Auto-Login
+    // App Startup
     window.addEventListener('DOMContentLoaded', async () => {
-      // Initialize PWA Web App Install Prompt & State
       initPwaInstallManager();
 
-      // Load seen items from localStorage
       try {
         const storedSeen = JSON.parse(localStorage.getItem('redunxt_seen_items') || '[]');
         seenItemIds = new Set(storedSeen);
@@ -942,7 +916,7 @@
         seenItemIds = new Set();
       }
 
-      // Shortcut key listener: ⌘K or Ctrl+K triggers quick search
+      // Quick Search Shortcut (⌘K or Ctrl+K)
       window.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
           e.preventDefault();
@@ -968,11 +942,10 @@
           } catch {}
         }
 
-        // Token missing or expired: Perform silent background auto-login using D1 database
         const storedDeviceToken = localStorage.getItem('redunxt_device_token');
         if (storedUserId && storedDeviceToken) {
           const splashMsg = document.getElementById('splashMsg');
-          if (splashMsg) splashMsg.innerText = 'Refreshing student session...';
+          if (splashMsg) splashMsg.innerText = 'RECONNECTING TELEMETRY...';
           try {
             const autoRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/auto-login', {
               method: 'POST',
@@ -996,7 +969,6 @@
         }
       }
 
-      // Restore previously selected school domain if saved
       const savedSchool = localStorage.getItem('redunxt_school_domain');
       if (savedSchool) {
         const sel = document.getElementById('loginSchoolDomain');
@@ -1020,9 +992,7 @@
       const splash = document.getElementById('appSplashLoader');
       if (splash && !splash.classList.contains('hidden')) {
         splash.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          splash.classList.add('hidden');
-        }, 300);
+        setTimeout(() => splash.classList.add('hidden'), 200);
       }
     }
 
@@ -1082,7 +1052,14 @@
 
     function togglePasswordVisibility() {
       const pass = document.getElementById('loginPassword');
-      pass.type = pass.type === 'password' ? 'text' : 'password';
+      const icon = document.getElementById('eyeIcon');
+      if (pass.type === 'password') {
+        pass.type = 'text';
+        if (icon) icon.innerText = 'HIDE';
+      } else {
+        pass.type = 'password';
+        if (icon) icon.innerText = 'SHOW';
+      }
     }
 
     function showLogin(customMsg) {
@@ -1112,7 +1089,7 @@
       syncPushNotificationState();
     }
 
-    // 2. Login Handler
+    // Login Handler
     async function handleLogin(e) {
       e.preventDefault();
       const userId = document.getElementById('loginUserId').value.trim();
@@ -1123,7 +1100,7 @@
       const spinner = document.getElementById('loginSpinner');
       const errBox = document.getElementById('loginError');
 
-      btnText.innerText = 'Connecting...';
+      btnText.innerText = 'AUTHENTICATING...';
       spinner.classList.remove('hidden');
       errBox.classList.add('hidden');
 
@@ -1144,7 +1121,7 @@
 
         const json = await res.json();
         if (!res.ok || !json.success) {
-          throw new Error(json.error || 'Invalid User ID or Password.');
+          throw new Error(json.error || 'Authentication denied. Verify credentials.');
         }
 
         session = {
@@ -1160,17 +1137,18 @@
         localStorage.setItem('redunxt_school_domain', schoolDomain);
         localStorage.setItem('redunxt_session', JSON.stringify(session));
 
+        showToast('SESSION ESTABLISHED', 'success');
         showDashboard();
       } catch (err) {
-        errBox.innerText = err.message || 'Login failed. Please check your credentials.';
+        errBox.innerText = err.message || 'Authentication failed.';
         errBox.classList.remove('hidden');
       } finally {
-        btnText.innerText = 'Sign In to Command Center';
+        btnText.innerText = 'AUTHENTICATE & ENTER →';
         spinner.classList.add('hidden');
       }
     }
 
-    // 3. Logout Handler
+    // Logout Handler
     async function handleLogout() {
       const storedUserId = localStorage.getItem('redunxt_user_id');
       const storedDeviceToken = localStorage.getItem('redunxt_device_token');
@@ -1198,15 +1176,16 @@
       bundleData = null;
       document.getElementById('loginPassword').value = '';
       closeSettingsModal();
+      showToast('DEVICE LOGGED OUT', 'info');
       showLogin();
     }
 
-    // 4. Fetch Full Student Data Bundle
+    // Fetch Student Bundle
     async function fetchDashboardData(isManual = false) {
       const btnText = document.getElementById('refreshText');
       const icon = document.getElementById('refreshIcon');
       if (isManual) {
-        btnText.innerText = 'Syncing...';
+        btnText.innerText = 'SYNCING';
         icon.classList.add('animate-spin');
       }
 
@@ -1214,7 +1193,6 @@
         const uId = session.account?.userId || localStorage.getItem('redunxt_user_id') || '';
         const dToken = localStorage.getItem('redunxt_device_token') || '';
 
-        // If active session token is expired or missing, auto-refresh via D1 first
         if (!session.token || isTokenExpired(session.token)) {
           if (uId && dToken) {
             try {
@@ -1250,7 +1228,6 @@
 
         let json = res ? await res.json().catch(() => null) : null;
 
-        // If unauthorized or token was silently rejected (empty data with no profile)
         const isSilentlyRejected = json && json.success && (!json.circulars || json.circulars.length === 0) && (!json.mailbox || json.mailbox.length === 0) && !json.profile;
         if (!res || res.status === 401 || isSilentlyRejected) {
           const storedUserId = localStorage.getItem('redunxt_user_id');
@@ -1274,21 +1251,21 @@
             }
           }
           if (res?.status === 401) {
-            throw new Error('Your session expired. Please sign in again.');
+            throw new Error('Session Expired. Please Re-authenticate.');
           }
         }
 
-        if (!json || !json.success) throw new Error(json?.error || 'Failed to fetch student data');
+        if (!json || !json.success) throw new Error(json?.error || 'Failed to retrieve dispatches');
 
         bundleData = json;
         
-        // Render Unified Command Center
         updateHeaderIdentity();
         renderUnifiedFeed();
         renderAlmanacCalendar();
 
         if (isManual) {
           fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/check-now').catch(() => {});
+          showToast('DISPATCHES SYNCHRONIZED', 'success');
         }
 
         document.getElementById('dashLoading').classList.add('hidden');
@@ -1300,13 +1277,13 @@
         document.getElementById('dashErrorMessage').innerText = err.message;
       } finally {
         if (isManual) {
-          btnText.innerText = 'Sync';
+          btnText.innerText = 'SYNC';
           icon.classList.remove('animate-spin');
         }
       }
     }
 
-    // 5. Header Profile Identity & Avatar
+    // Header Profile & Identity
     function updateHeaderIdentity() {
       const acc = session.account || {};
       const prof = bundleData?.profile || {};
@@ -1324,11 +1301,10 @@
       } else {
         classBadge.classList.add('hidden');
       }
-      document.getElementById('headerAdmissionBadge').innerText = `${schoolName} • Adm #${admission}`;
+      document.getElementById('headerAdmissionBadge').innerText = `${schoolName} // ADM #${admission}`;
 
       renderAvatar('headerAvatarContainer', name, acc.profilePhoto || prof.studentImage, acc.avatarMode, acc.customAvatarUrl);
       
-      // Update Settings Profile Info
       const sName = document.getElementById('setStudentName');
       if (sName) sName.innerText = name;
       const sAdm = document.getElementById('setAdmissionNo');
@@ -1355,13 +1331,13 @@
       }
 
       if (mode === 'edunext' && edunextPhoto) {
-        container.innerHTML = `<img src="${edunextPhoto}" alt="${name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'text-sm font-bold text-white\\'>${initials}</span>';" />`;
+        container.innerHTML = `<img src="${edunextPhoto}" alt="${name}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=\\'font-mono text-xs font-bold text-white\\'>${initials}</span>';" />`;
       } else {
-        container.innerHTML = `<span class="text-sm font-bold text-white">${initials}</span>`;
+        container.innerHTML = `<span class="font-mono text-xs font-bold text-white tracking-widest">${initials}</span>`;
       }
     }
 
-    // 6. Section (Left): Unified Chronological Feed (Circulars + Mailbox)
+    // Unified Chronological Dispatches Stream
     function renderUnifiedFeed() {
       const circs = (Array.isArray(bundleData?.circulars) ? bundleData.circulars : (bundleData?.circulars?.circular_list || bundleData?.circulars?.circularlist || [])).map(c => ({
         id: `circ_${c.id}`,
@@ -1389,14 +1365,25 @@
         rawItem: m
       }));
 
-      // Combine and sort chronologically (most recent first)
       let combined = [...circs, ...mails].sort((a, b) => b.rawDate - a.rawDate);
 
-      // Calculate unread count
       let unreadCount = 0;
+      let circCount = circs.length;
+      let mailCount = mails.length;
+      let totalCount = combined.length;
+
       combined.forEach(item => {
         if (!seenItemIds.has(item.id)) unreadCount++;
       });
+
+      const countAll = document.getElementById('count-all');
+      if (countAll) countAll.innerText = totalCount > 0 ? `(${totalCount})` : '';
+      const countUnread = document.getElementById('count-unread');
+      if (countUnread) countUnread.innerText = unreadCount > 0 ? `(${unreadCount})` : '';
+      const countCirc = document.getElementById('count-circular');
+      if (countCirc) countCirc.innerText = circCount > 0 ? `(${circCount})` : '';
+      const countMail = document.getElementById('count-mail');
+      if (countMail) countMail.innerText = mailCount > 0 ? `(${mailCount})` : '';
 
       const unreadBadge = document.getElementById('unreadTotalBadge');
       if (unreadBadge) {
@@ -1417,7 +1404,6 @@
         }
       }
 
-      // Filter by current tab
       if (currentFeedFilter === 'unread') {
         combined = combined.filter(i => !seenItemIds.has(i.id));
       } else if (currentFeedFilter === 'circular') {
@@ -1426,7 +1412,6 @@
         combined = combined.filter(i => i.type === 'mail');
       }
 
-      // Check search query
       const searchVal = (document.getElementById('topSearchInput')?.value || document.getElementById('mobileSearchInput')?.value || '').toLowerCase().trim();
       if (searchVal) {
         combined = combined.filter(i => 
@@ -1441,17 +1426,16 @@
 
       if (combined.length === 0) {
         feedContainer.innerHTML = `
-          <div class="text-center py-16 p-6 rounded-3xl bg-surface border border-white/[0.08] text-zinc-400">
-            <span class="text-2xl mb-2 block">✨</span>
-            <p class="text-sm font-semibold text-white">All caught up!</p>
-            <p class="text-xs text-zinc-500 mt-1">No updates matching your filter.</p>
+          <div class="py-16 text-center font-mono text-xs text-zinc-400 uppercase tracking-widest">
+            <span class="text-xl mb-2 block">◻</span>
+            <p class="text-white font-bold">DISPATCH QUEUE CLEAR</p>
+            <p class="mt-1">No items match the active query.</p>
           </div>
         `;
         document.getElementById('toggleArchiveBtn').classList.add('hidden');
         return;
       }
 
-      // Show top 6 items in the primary stream, remaining in archive section
       const primaryItems = combined.slice(0, 6);
       const archivedItems = combined.slice(6);
 
@@ -1460,60 +1444,62 @@
       if (archivedItems.length > 0) {
         archiveContainer.innerHTML = archivedItems.map(item => renderFeedCardHtml(item)).join('');
         document.getElementById('toggleArchiveBtn').classList.remove('hidden');
-        document.getElementById('toggleArchiveBtn').innerText = `Show ${archivedItems.length} Earlier Updates &rarr;`;
+        document.getElementById('toggleArchiveBtn').innerText = `REVEAL ${archivedItems.length} ARCHIVED DISPATCHES ↓`;
       } else {
         document.getElementById('toggleArchiveBtn').classList.add('hidden');
       }
     }
 
+    // Swiss Ruled Editorial Card
     function renderFeedCardHtml(item) {
       const isUnread = !seenItemIds.has(item.id);
       const isCircular = item.type === 'circular';
 
-      // Clean preview snippet
       let aiSummary = item.description;
       if (aiSummary.length > 150) {
         aiSummary = aiSummary.substring(0, 145) + '...';
       }
 
       return `
-        <div onclick="handleFeedCardClick('${item.id}')" class="cursor-pointer group rounded-2xl bg-surface border ${isUnread ? 'border-brand-500/35 hover:border-brand-500/60' : 'border-white/[0.08] hover:border-white/[0.2]'} p-4 sm:p-5 flex flex-col gap-3 hover:bg-surface-muted transition shadow-sm relative overflow-hidden">
+        <article onclick="handleFeedCardClick('${item.id}')" class="cursor-pointer group py-5 sm:py-6 flex flex-col gap-2.5 transition-colors hover:bg-[#070707] px-2 -mx-2">
           
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex items-center gap-2 flex-wrap">
-              <!-- Unread Dot Indicator -->
-              <span class="w-2 h-2 rounded-full ${isUnread ? 'bg-amber-400' : 'bg-transparent border border-white/[0.15]'}" title="${isUnread ? 'Unread Update' : 'Seen'}"></span>
-              
-              <!-- Category Badge -->
-              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${isCircular ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-brand-500/20 text-brand-300 border border-brand-500/30'}">
-                ${isCircular ? '📢 Circular' : '✉️ Mail'}
+          <!-- Metadata Bar -->
+          <div class="flex items-center justify-between gap-3 font-mono text-[11px] uppercase tracking-wider">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="inline-block w-2 h-2 ${isUnread ? 'bg-amber-400' : 'bg-zinc-800'}" title="${isUnread ? 'Unread' : 'Archived'}"></span>
+              <span class="${isCircular ? 'text-zinc-300 font-semibold' : 'text-zinc-400'}">
+                ${isCircular ? 'CIRCULAR' : 'FACULTY DISPATCH'}
               </span>
-
-              <!-- Date Badge -->
-              <span class="text-xs text-zinc-400 font-mono">${item.date}</span>
+              <span class="text-zinc-400">//</span>
+              <span class="text-zinc-400">${item.date}</span>
+              ${isUnread ? '<span class="text-[10px] font-bold px-1.5 py-0.2 bg-amber-400 text-black">NEW</span>' : ''}
             </div>
 
-            <!-- PDF / Quick Action -->
+            <!-- PDF Download Action -->
             ${item.pdfUrl ? `
-              <a href="${item.pdfUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation(); markItemAsRead('${item.id}');" class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-sm active:scale-95">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>PDF</span>
+              <a href="${item.pdfUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation(); markItemAsRead('${item.id}');" class="px-2 py-0.5 border border-zinc-700 hover:border-white text-zinc-300 hover:text-white transition active:bg-white active:text-black">
+                [ PDF ↓ ]
               </a>
             ` : ''}
           </div>
 
-          <!-- Title and AI summary -->
+          <!-- Editorial Title -->
           <div>
-            <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-brand-300 transition-colors leading-snug">${item.title}</h4>
-            <p class="text-xs text-zinc-400 mt-1 leading-relaxed line-clamp-2">${aiSummary || 'Tap to view full official announcement.'}</p>
+            <h3 class="font-serif italic text-xl sm:text-2xl text-zinc-100 group-hover:text-white transition-colors leading-tight tracking-tight">
+              ${item.title}
+            </h3>
+            <p class="font-sans text-xs text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
+              ${aiSummary || 'Tap to inspect official announcement details.'}
+            </p>
           </div>
 
-          <div class="flex items-center justify-between pt-2 border-t border-white/[0.04] text-[11px] text-zinc-500">
-            <span>By ${item.author}</span>
-            <span class="group-hover:text-zinc-300 transition flex items-center gap-1">Open Details &rarr;</span>
+          <!-- Card Footnote -->
+          <div class="flex items-center justify-between pt-1 font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+            <span>BY ${item.author}</span>
+            <span class="group-hover:text-white transition underline underline-offset-4">READ DISPATCH →</span>
           </div>
 
-        </div>
+        </article>
       `;
     }
 
@@ -1548,7 +1534,6 @@
           added++;
         }
       });
-
       mails.forEach(m => {
         const id = `mail_${m.id}`;
         if (!seenItemIds.has(id)) {
@@ -1560,25 +1545,27 @@
       if (added > 0) {
         localStorage.setItem('redunxt_seen_items', JSON.stringify(Array.from(seenItemIds)));
         renderUnifiedFeed();
-        showToast(`Marked ${added} ${added === 1 ? 'update' : 'updates'} as read.`, 'success');
-      } else {
-        showToast('All updates are already marked as read.', 'info');
+        showToast(`MARKED ${added} DISPATCHES AS READ`, 'success');
       }
     }
 
     function setFeedFilter(filter) {
       currentFeedFilter = filter;
       document.querySelectorAll('.feed-filter-btn').forEach(b => {
-        b.className = 'feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition';
+        b.className = 'feed-filter-btn px-2.5 py-1 text-zinc-400 hover:text-white uppercase transition';
       });
       const activeBtn = document.getElementById(`filter-${filter}`);
       if (activeBtn) {
-        activeBtn.className = 'feed-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-surface-elevated text-white transition';
+        activeBtn.className = 'feed-filter-btn px-2.5 py-1 bg-white text-black font-bold uppercase';
       }
       renderUnifiedFeed();
     }
 
     function handleFeedSearch(val) {
+      const topIn = document.getElementById('topSearchInput');
+      const mobIn = document.getElementById('mobileSearchInput');
+      if (topIn && topIn.value !== val) topIn.value = val;
+      if (mobIn && mobIn.value !== val) mobIn.value = val;
       renderUnifiedFeed();
     }
 
@@ -1587,19 +1574,17 @@
       const btn = document.getElementById('toggleArchiveBtn');
       if (sec.classList.contains('hidden')) {
         sec.classList.remove('hidden');
-        btn.innerText = 'Collapse Archive History &uarr;';
+        btn.innerText = 'CONCEAL ARCHIVED DISPATCHES ↑';
       } else {
         sec.classList.add('hidden');
-        btn.innerText = 'Show Earlier History &rarr;';
+        renderUnifiedFeed();
       }
     }
 
     function parseFeedDate(str) {
       if (!str) return 0;
-      if (typeof str === 'number') return str;
       str = String(str).trim();
 
-      // Handle DD-MM-YYYY HH:mm or DD-MM-YYYY format from Edunext mailbox
       const dmyMatch = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+(\d{1,2}):(\d{1,2}))?/);
       if (dmyMatch) {
         const day = parseInt(dmyMatch[1], 10);
@@ -1610,12 +1595,11 @@
         return new Date(year, month, day, hour, min).getTime();
       }
 
-      // Standard ISO YYYY-MM-DD or other standard formats
       const parsed = Date.parse(str);
       return isNaN(parsed) ? 0 : parsed;
     }
 
-    // 9. Section 3 (Right): Interactive School Almanac 2026–27 Calendar Engine
+    // Swiss Architectural Almanac Calendar Engine
     function renderAlmanacCalendar() {
       const monthObj = ALMANAC_YEAR_MONTHS[currentAlmanacMonthIndex];
       if (!monthObj) return;
@@ -1624,24 +1608,25 @@
       const grid = document.getElementById('almanacCalendarGrid');
       grid.innerHTML = '';
 
-      // Leading blank days
+      // Blank offset days
       for (let i = 0; i < monthObj.startDay; i++) {
         const emptyDiv = document.createElement('div');
-        emptyDiv.className = 'h-9 rounded-xl opacity-10 pointer-events-none';
+        emptyDiv.className = 'aspect-square opacity-10 pointer-events-none bg-[#020202]';
         grid.appendChild(emptyDiv);
       }
 
-      // Render days 1 to monthObj.days
+      const now = new Date();
+      const isCurrentYearMonth = (now.getFullYear() === monthObj.year && now.getMonth() === monthObj.month);
+      const currentDayNumber = now.getDate();
+
       for (let d = 1; d <= monthObj.days; d++) {
         const dayDate = new Date(monthObj.year, monthObj.month, d);
-        const dayOfWeek = dayDate.getDay(); // 0 is Sunday, 6 is Saturday
+        const dayOfWeek = dayDate.getDay();
         const dateKey = `${monthObj.year}-${String(monthObj.month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         
         const event = ALMANAC_EVENTS[dateKey];
         const vacation = getVacationInfo(monthObj.year, monthObj.month, d);
 
-        // Saturday logic for Class IX:
-        // Calculate which Saturday of the month it is (1st, 2nd, 3rd, 4th, 5th)
         let isFirstOrThirdSat = false;
         let isSecondOrFourthSat = false;
         if (dayOfWeek === 6) {
@@ -1654,29 +1639,36 @@
         const isHoliday = isSunday || isSecondOrFourthSat || (event && event.type === 'holiday') || (vacation !== null);
         const isWorkingSat = isFirstOrThirdSat && (!event || event.type !== 'holiday') && !vacation;
         const isVacationPeriod = (vacation && vacation.isRevised) || (event && event.type === 'working_compensatory');
+        const isToday = isCurrentYearMonth && (d === currentDayNumber);
 
         const dayBtn = document.createElement('button');
         dayBtn.type = 'button';
         dayBtn.onclick = () => selectAlmanacDay(monthObj.year, monthObj.month, d, event, vacation, isWorkingSat, isHoliday);
 
-        let cellClasses = 'h-9 rounded-xl flex flex-col items-center justify-center font-medium transition text-xs relative ';
-        let dotHtml = '';
+        let cellClasses = 'aspect-square flex flex-col items-center justify-between p-1.5 transition text-xs font-mono relative ';
+        let indicatorHtml = '';
 
-        if (isVacationPeriod) {
-          cellClasses += 'bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25';
-          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 absolute bottom-1"></span>`;
+        if (isToday) {
+          cellClasses += 'bg-white text-black font-bold ';
+        } else if (isVacationPeriod) {
+          cellClasses += 'bg-amber-950/20 text-amber-200 hover:bg-amber-950/40 ';
+          indicatorHtml = `<span class="w-1.5 h-1.5 bg-amber-400"></span>`;
         } else if (isHoliday) {
-          cellClasses += 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20';
-          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500 absolute bottom-1"></span>`;
+          cellClasses += 'bg-rose-950/20 text-rose-300 hover:bg-rose-950/40 ';
+          indicatorHtml = `<span class="w-1.5 h-1.5 bg-rose-500"></span>`;
         } else if (isWorkingSat) {
-          cellClasses += 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/20';
-          dotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 absolute bottom-1"></span>`;
+          cellClasses += 'bg-emerald-950/20 text-emerald-300 hover:bg-emerald-950/40 ';
+          indicatorHtml = `<span class="w-1.5 h-1.5 bg-emerald-400"></span>`;
         } else {
-          cellClasses += 'bg-surface-muted/60 text-zinc-300 hover:bg-surface-elevated';
+          cellClasses += 'text-zinc-300 hover:bg-[#141414] hover:text-white ';
         }
 
+        const formattedDay = String(d).padStart(2, '0');
         dayBtn.className = cellClasses;
-        dayBtn.innerHTML = `<span>${d}</span>${dotHtml}`;
+        dayBtn.innerHTML = `
+          <span class="self-start text-[11px]">${formattedDay}</span>
+          <span class="self-end">${indicatorHtml}</span>
+        `;
         grid.appendChild(dayBtn);
       }
     }
@@ -1686,6 +1678,14 @@
       if (currentAlmanacMonthIndex < 0) currentAlmanacMonthIndex = 0;
       if (currentAlmanacMonthIndex >= ALMANAC_YEAR_MONTHS.length) currentAlmanacMonthIndex = ALMANAC_YEAR_MONTHS.length - 1;
       renderAlmanacCalendar();
+    }
+
+    function jumpToCurrentAlmanacMonth() {
+      const now = new Date();
+      const foundIdx = ALMANAC_YEAR_MONTHS.findIndex(m => m.year === now.getFullYear() && m.month === now.getMonth());
+      currentAlmanacMonthIndex = foundIdx !== -1 ? foundIdx : 6;
+      renderAlmanacCalendar();
+      showToast(`DISPLAYING ${ALMANAC_YEAR_MONTHS[currentAlmanacMonthIndex].name.toUpperCase()}`, 'info');
     }
 
     function selectAlmanacDay(year, month, day, event, vacation, isWorkingSat, isHoliday) {
@@ -1700,38 +1700,31 @@
 
       if (vacation) {
         iconEl.innerHTML = '☀️';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-sm font-bold text-amber-300 flex-shrink-0';
-        descEl.innerHTML = `<span class="text-amber-300 font-bold">${vacation.name}:</span> School closed for all classes.`;
+        descEl.innerHTML = `<span class="font-mono text-amber-300 font-bold uppercase">[ ${vacation.name} ]:</span> School closed for all classes.`;
       } else if (event) {
         if (event.type === 'holiday') {
           iconEl.innerHTML = '🏖️';
-          iconEl.className = 'w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-sm font-bold text-rose-300 flex-shrink-0';
-          descEl.innerHTML = `<span class="text-rose-300 font-bold">${event.title}</span> (School Holiday)`;
+          descEl.innerHTML = `<span class="font-mono text-rose-300 font-bold uppercase">[ HOLIDAY: ${event.title} ]</span> School closed.`;
         } else if (event.type === 'working_sat' || event.type === 'working_compensatory') {
           iconEl.innerHTML = '🎒';
-          iconEl.className = 'w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-sm font-bold text-emerald-300 flex-shrink-0';
-          descEl.innerHTML = `<span class="text-emerald-300 font-bold">${event.title}</span> (Regular school timings apply)`;
+          descEl.innerHTML = `<span class="font-mono text-emerald-300 font-bold uppercase">[ WORKING DAY: ${event.title} ]</span> Regular timings apply.`;
         } else {
           iconEl.innerHTML = '📌';
-          iconEl.className = 'w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center text-sm font-bold text-brand-300 flex-shrink-0';
           descEl.innerText = event.title;
         }
       } else if (isWorkingSat) {
         iconEl.innerHTML = '🎒';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-sm font-bold text-emerald-300 flex-shrink-0';
-        descEl.innerText = "Working Saturday for Class IX as per DPS Harni Academic Planner.";
+        descEl.innerText = "WORKING SATURDAY for Class IX as per DPS Harni Academic Planner.";
       } else if (isHoliday) {
         iconEl.innerHTML = '🏠';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-sm font-bold text-rose-300 flex-shrink-0';
-        descEl.innerText = dt.getDay() === 0 ? "Sunday (Weekly Holiday)" : "Second/Fourth Saturday (School Closed)";
+        descEl.innerText = dt.getDay() === 0 ? "SUNDAY (Weekly Holiday)" : "SECOND/FOURTH SATURDAY (School Closed)";
       } else {
         iconEl.innerHTML = '📚';
-        iconEl.className = 'w-8 h-8 rounded-xl bg-surface-elevated border border-white/[0.08] flex items-center justify-center text-sm font-bold text-zinc-300 flex-shrink-0';
-        descEl.innerText = "Regular School Working Day for Class IX.";
+        descEl.innerText = "REGULAR SCHOOL WORKING DAY for Class IX.";
       }
     }
 
-    // 8. Modal Controllers (Settings, Circulars, Mail)
+    // Modal Handlers
     function openSettingsModal() {
       document.getElementById('settingsModal').classList.remove('hidden');
       document.body.classList.add('overflow-hidden');
@@ -1750,13 +1743,13 @@
       if (!circ) return;
 
       const rawDomain = session.account?.schoolDomain || localStorage.getItem('redunxt_school_domain') || '';
-      const schoolLabel = rawDomain ? rawDomain.split('.')[0].toUpperCase() : 'Official';
+      const schoolLabel = rawDomain ? rawDomain.split('.')[0].toUpperCase() : 'OFFICIAL';
       const schoolBadge = document.getElementById('circModalSchool');
-      if (schoolBadge) schoolBadge.innerText = `${schoolLabel} Circular`;
+      if (schoolBadge) schoolBadge.innerText = `${schoolLabel} CIRCULAR`;
 
       document.getElementById('circModalDate').innerText = circ.date;
       document.getElementById('circModalTitle').innerText = circ.name;
-      document.getElementById('circModalDesc').innerHTML = sanitizeHtml(circ.discription) || '<p class="text-zinc-400 italic">No description provided. Please see the PDF attachment.</p>';
+      document.getElementById('circModalDesc').innerHTML = sanitizeHtml(circ.discription) || '<p class="font-mono text-zinc-400 italic">No text body provided. See attachment document.</p>';
 
       const pdfUrl = circ.attachment?.image_array?.[0]?.cloud_front_serving_url || circ.attachment?.image_array?.[0]?.servingUrl;
       const pdfBox = document.getElementById('circModalAttachmentBox');
@@ -1790,11 +1783,11 @@
         avatarEl.innerHTML = `<span>${(mail.employeename || mail.from || 'T').charAt(0)}</span>`;
       }
 
-      document.getElementById('modalSenderName').innerText = mail.employeename || mail.from || 'Teacher';
-      document.getElementById('modalTypeBadge').innerText = mail.communicationtype || 'Message';
+      document.getElementById('modalSenderName').innerText = mail.employeename || mail.from || 'Faculty';
+      document.getElementById('modalTypeBadge').innerText = mail.communicationtype || 'DISPATCH';
       document.getElementById('modalDate').innerText = mail.date;
       document.getElementById('modalSubject').innerText = mail.subject;
-      document.getElementById('modalBody').innerHTML = sanitizeHtml(mail.message_html) || '<p class="text-zinc-400 italic">No message body.</p>';
+      document.getElementById('modalBody').innerHTML = sanitizeHtml(mail.message_html) || '<p class="font-mono text-zinc-400 italic">No message contents.</p>';
 
       const attachBox = document.getElementById('modalAttachments');
       const attachList = document.getElementById('modalAttachmentsList');
@@ -1803,9 +1796,9 @@
         attachList.innerHTML = mail.image_array.map(att => {
           const fileUrl = att.cloud_front_serving_url || att.servingUrl || att.download_file_path;
           return `
-            <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-2xl bg-surface-elevated border border-white/[0.08] hover:border-brand-500/40 text-xs font-semibold text-brand-300 hover:text-white transition">
-              <span class="truncate">${att.filename || 'Document'}</span>
-              <span class="ml-3 flex-shrink-0 text-brand-400">Download &rarr;</span>
+            <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 border border-zinc-700 hover:border-white transition bg-[#050505]">
+              <span class="truncate">${att.filename || 'DOCUMENT'}</span>
+              <span class="ml-3 flex-shrink-0 text-white">DOWNLOAD ↓</span>
             </a>
           `;
         }).join('');
@@ -1822,7 +1815,7 @@
       document.body.classList.remove('overflow-hidden');
     }
 
-    // Backdrop click & Escape Key listeners
+    // Modal Escape and Backdrop Listeners
     ['mailModal', 'circularModal', 'settingsModal', 'pwaGuideModal'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', (e) => {
         if (e.target.id === id) {
@@ -1843,13 +1836,13 @@
       }
     });
 
-    // 12. Settings Preferences (Avatar Mode & Web Push)
+    // Settings Profile Mode
     async function handleAvatarModeChange(newMode) {
       if (!session.account) session.account = {};
       session.account.avatarMode = newMode;
       localStorage.setItem('redunxt_session', JSON.stringify(session));
       updateHeaderIdentity();
-      showToast(`Avatar set to ${newMode === 'edunext' ? 'Official ERP Photo' : 'Initials'}`, 'success');
+      showToast(`AVATAR SET TO ${newMode.toUpperCase()}`, 'success');
 
       const userId = session.account?.userId || localStorage.getItem('redunxt_user_id');
       const deviceToken = localStorage.getItem('redunxt_device_token');
@@ -1862,24 +1855,28 @@
       }
     }
 
+    // Swiss Minimalist Status Ticker (Toast)
     function showToast(message, type = 'info') {
-      let toastContainer = document.getElementById('toastContainer');
-      if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toastContainer';
-        toastContainer.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none';
-        document.body.appendChild(toastContainer);
-      }
-      const toast = document.createElement('div');
-      const bg = type === 'error' ? 'bg-rose-600' : (type === 'success' ? 'bg-emerald-600' : 'bg-brand-600');
-      toast.className = `${bg} text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto`;
-      toast.innerHTML = `<span>${message}</span>`;
-      toastContainer.appendChild(toast);
-      requestAnimationFrame(() => toast.classList.remove('translate-y-4', 'opacity-0'));
-      setTimeout(() => {
-        toast.classList.add('translate-y-4', 'opacity-0');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+      const toast = document.getElementById('dynamicIslandToast');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+
+      if (!toast || !msgEl || !iconEl) return;
+
+      if (type === 'success') iconEl.className = 'text-emerald-500';
+      else if (type === 'error') iconEl.className = 'text-rose-500';
+      else iconEl.className = 'text-amber-500';
+
+      msgEl.innerText = message;
+
+      toast.classList.remove('opacity-0', '-translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', '-translate-y-2');
+      }, 3000);
     }
 
     function urlBase64ToUint8Array(base64String) {
@@ -1902,20 +1899,20 @@
       if (!badge || !toggleBtn) return;
 
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        badge.innerText = 'Not Supported';
-        badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700';
-        desc.innerText = 'Web Push is not supported on this browser or environment.';
-        toggleBtn.innerText = 'Not Supported';
+        badge.innerText = 'NOT SUPPORTED';
+        badge.className = 'px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-500 uppercase text-[10px]';
+        desc.innerText = 'Web Push is unsupported on this browser.';
+        toggleBtn.innerText = 'UNAVAILABLE';
         toggleBtn.disabled = true;
         if (testBtn) testBtn.classList.add('hidden');
         return;
       }
 
       if (Notification.permission === 'denied') {
-        badge.innerText = 'Blocked';
-        badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30';
+        badge.innerText = 'BLOCKED';
+        badge.className = 'px-2 py-0.5 border border-rose-500 bg-rose-950/40 text-rose-300 uppercase text-[10px]';
         desc.innerText = 'Notification permission is blocked in browser settings.';
-        toggleBtn.innerText = 'Permission Blocked';
+        toggleBtn.innerText = 'BLOCKED';
         toggleBtn.disabled = true;
         if (testBtn) testBtn.classList.add('hidden');
         return;
@@ -1926,22 +1923,22 @@
         const sub = await reg.pushManager.getSubscription();
 
         if (sub) {
-          badge.innerText = 'Active (This Device)';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-          desc.innerText = 'Active. You will receive push alerts when new circulars arrive.';
-          toggleBtn.innerText = 'Disable';
+          badge.innerText = 'ACTIVE (DEVICE)';
+          badge.className = 'px-2 py-0.5 border border-emerald-500 bg-emerald-950/40 text-emerald-300 uppercase text-[10px]';
+          desc.innerText = 'Active. New dispatches arrive directly to your notification shade.';
+          toggleBtn.innerText = 'DISABLE';
           toggleBtn.disabled = false;
           if (testBtn) testBtn.classList.remove('hidden');
         } else {
-          badge.innerText = 'Disabled';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]';
-          desc.innerText = 'Enable push notifications to receive real-time circular alerts.';
-          toggleBtn.innerText = 'Enable';
+          badge.innerText = 'DISABLED';
+          badge.className = 'px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-400 uppercase text-[10px]';
+          desc.innerText = 'Enable push notifications for real-time dispatch alerts.';
+          toggleBtn.innerText = 'ENABLE';
           toggleBtn.disabled = false;
           if (testBtn) testBtn.classList.add('hidden');
         }
       } catch {
-        badge.innerText = 'Unavailable';
+        badge.innerText = 'UNAVAILABLE';
       }
     }
 
@@ -1949,7 +1946,7 @@
       const toggleBtn = document.getElementById('pushToggleBtn');
       if (toggleBtn) {
         toggleBtn.disabled = true;
-        toggleBtn.innerText = 'Working...';
+        toggleBtn.innerText = 'WORKING...';
       }
 
       try {
@@ -1967,11 +1964,11 @@
             body: JSON.stringify({ userId, deviceToken, endpoint: existingSub.endpoint })
           }).catch(() => {});
 
-          showToast('Notifications disabled on this device.', 'info');
+          showToast('NOTIFICATIONS DISABLED', 'info');
         } else {
           const perm = await Notification.requestPermission();
           if (perm !== 'granted') {
-            showToast('Notification permission was not granted.', 'error');
+            showToast('PERMISSION DENIED', 'error');
             updatePushUI();
             return;
           }
@@ -1979,7 +1976,7 @@
           const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
           const vapidData = await vapidRes.json();
           if (!vapidData.success || !vapidData.publicKey) {
-            throw new Error('Failed to fetch notification server key.');
+            throw new Error('Failed to retrieve notification server key.');
           }
 
           const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
@@ -2003,14 +2000,14 @@
 
           const subData = await subRes.json();
           if (!subData.success) {
-            throw new Error(subData.error || 'Failed to register push subscription on server.');
+            throw new Error(subData.error || 'Server rejected push registration.');
           }
 
-          showToast('Push notifications active on this device!', 'success');
+          showToast('PUSH ALERTS ACTIVE', 'success');
           document.getElementById('pushPermissionBanner')?.classList.add('hidden');
         }
       } catch (err) {
-        showToast(err.message || 'Notification configuration failed.', 'error');
+        showToast(err.message || 'Notification setup failed', 'error');
       } finally {
         if (toggleBtn) toggleBtn.disabled = false;
         updatePushUI();
@@ -2036,12 +2033,12 @@
 
         const json = await res.json();
         if (!json.success) {
-          throw new Error(json.error || 'Test notification failed to dispatch.');
+          throw new Error(json.error || 'Test notification failed.');
         }
 
-        showToast('Test notification sent! Check your device notification shade.', 'success');
+        showToast('TEST NOTICE SENT', 'success');
       } catch (err) {
-        showToast(err.message || 'Failed to send test notification.', 'error');
+        showToast(err.message || 'Test dispatch failed', 'error');
       } finally {
         if (testBtn) {
           testBtn.disabled = false;
@@ -2053,7 +2050,6 @@
     function dismissPushBanner() {
       const banner = document.getElementById('pushPermissionBanner');
       if (banner) banner.classList.add('hidden');
-      // Snooze banner for 3 days
       localStorage.setItem('redunxt_notif_banner_dismissed_at', String(Date.now() + 3 * 24 * 60 * 60 * 1000));
     }
 
@@ -2061,17 +2057,17 @@
       const btn = document.getElementById('pushBannerActionBtn');
       if (btn) {
         btn.disabled = true;
-        btn.innerText = 'Activating...';
+        btn.innerText = 'ACTIVATING...';
       }
 
       try {
         if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
-          throw new Error('Web Push notifications are not supported on this device/browser.');
+          throw new Error('Web Push not supported.');
         }
 
         const perm = await Notification.requestPermission();
         if (perm !== 'granted') {
-          showToast('Notification permission was not granted.', 'error');
+          showToast('PERMISSION DENIED', 'error');
           dismissPushBanner();
           updatePushUI();
           return;
@@ -2081,7 +2077,7 @@
         const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
         const vapidData = await vapidRes.json();
         if (!vapidData.success || !vapidData.publicKey) {
-          throw new Error('Failed to fetch notification server key.');
+          throw new Error('Notification key error.');
         }
 
         const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
@@ -2105,23 +2101,20 @@
 
         const subData = await subRes.json();
         if (!subData.success) {
-          throw new Error(subData.error || 'Failed to register push subscription on server.');
+          throw new Error(subData.error || 'Server registration failed.');
         }
 
         document.getElementById('pushPermissionBanner')?.classList.add('hidden');
-        showToast('Push notifications active! Instant alerts enabled.', 'success');
+        showToast('INSTANT PUSH ACTIVE', 'success');
         updatePushUI();
 
-        // Dispatch immediate test verification notification to phone
-        setTimeout(() => {
-          sendTestPushNotification();
-        }, 600);
+        setTimeout(() => sendTestPushNotification(), 500);
       } catch (err) {
-        showToast(err.message || 'Notification configuration failed.', 'error');
+        showToast(err.message || 'Activation failed', 'error');
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span>Turn On</span>`;
+          btn.innerText = 'ACTIVATE →';
         }
       }
     }
@@ -2160,8 +2153,6 @@
           }
 
           if (!sub) {
-            // Browser permission was granted, but device subscription was missing or expired!
-            // Automatically re-subscribe silently
             const vapidRes = await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/vapid-public-key');
             const vapidData = await vapidRes.json();
             if (vapidData.success && vapidData.publicKey) {
@@ -2174,7 +2165,6 @@
           }
 
           if (sub) {
-            // Silently keep Cloudflare D1 subscription in sync with active user and device
             await fetch('https://redunxt-d1-service.anonymouspotato.workers.dev/accounts/push/subscribe', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -2186,14 +2176,14 @@
             }).catch(() => {});
           }
         } catch (err) {
-          console.warn('Auto-sync push subscription notice:', err);
+          console.warn('Auto-sync notice:', err);
         }
       }
 
       updatePushUI();
     }
 
-    // ================= PWA INSTALLATION MANAGER =================
+    // PWA Installation Core
     let deferredInstallPrompt = null;
 
     function isPwaInstalled() {
@@ -2209,9 +2199,7 @@
       const isMobileUA = /Android.*Mobile|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
       const isSmallScreenTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) && window.matchMedia('(max-width: 768px)').matches;
       const isDesktopUA = /Macintosh|Windows NT|Linux x86_64/i.test(ua) && !/Mobile/i.test(ua);
-      if (isDesktopUA && window.matchMedia('(min-width: 768px)').matches) {
-        return false;
-      }
+      if (isDesktopUA && window.matchMedia('(min-width: 768px)').matches) return false;
       return isMobileUA || isSmallScreenTouch;
     }
 
@@ -2223,29 +2211,23 @@
     }
 
     function initPwaInstallManager() {
-      // 1. Capture direct beforeinstallprompt event (Chrome, Edge, Android WebAPK)
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
         updatePwaInstallUi();
-        if (isMobilePhone()) {
-          checkAndShowInstallBanner();
-        }
+        if (isMobilePhone()) checkAndShowInstallBanner();
       });
 
-      // 2. Listen for successful installation
       window.addEventListener('appinstalled', () => {
         deferredInstallPrompt = null;
         dismissInstallBanner(true);
         updatePwaInstallUi();
-        showToast('Redunxt installed successfully! Launch it directly from your home screen.', 'success');
+        showToast('REDUNXT INSTALLED TO HOME SCREEN', 'success');
       });
 
-      // 3. Update UI on startup and on window resize
       updatePwaInstallUi();
       window.addEventListener('resize', () => updatePwaInstallUi());
 
-      // 4. If on mobile phone, not installed, and not recently dismissed, schedule bottom popup
       if (!isPwaInstalled() && isMobilePhone()) {
         checkAndShowInstallBanner();
       }
@@ -2261,59 +2243,44 @@
       const actionRow = document.getElementById('pwaInstallActionRow');
 
       if (installed) {
-        if (headerBtn) {
-          headerBtn.classList.add('hidden');
-          headerBtn.classList.remove('flex');
-        }
+        if (headerBtn) headerBtn.classList.add('hidden');
         if (loginBanner) loginBanner.classList.add('hidden');
         if (popup) popup.classList.add('hidden');
         if (badge) {
-          badge.innerText = 'Installed (Standalone)';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          badge.innerText = 'INSTALLED (ACTIVE)';
+          badge.className = 'px-2 py-0.5 border border-emerald-500 bg-emerald-950/40 text-emerald-300 uppercase text-[10px]';
         }
         if (actionRow) {
           actionRow.innerHTML = `
-            <span class="text-[11px] text-zinc-400">Running as native standalone Web App with system notifications</span>
-            <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-              Active
-            </span>
+            <span class="text-[11px] text-zinc-400">Running as native standalone application</span>
+            <span class="text-xs text-emerald-400 font-bold uppercase">● ACTIVE</span>
           `;
         }
       } else if (!isPhone) {
-        // Desktop browser - hide install popup and header/login buttons
-        if (headerBtn) {
-          headerBtn.classList.add('hidden');
-          headerBtn.classList.remove('flex');
-        }
+        if (headerBtn) headerBtn.classList.add('hidden');
         if (loginBanner) loginBanner.classList.add('hidden');
         if (popup) popup.classList.add('hidden');
         if (badge) {
-          badge.innerText = 'Desktop Web';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-surface text-zinc-400 border border-white/[0.08]';
+          badge.innerText = 'DESKTOP WEB';
+          badge.className = 'px-2 py-0.5 border border-zinc-700 bg-zinc-900 text-zinc-400 uppercase text-[10px]';
         }
         if (actionRow) {
           actionRow.innerHTML = `
-            <span class="text-[11px] text-zinc-400">Desktop browser mode. To install on PC, click the <strong>⊕</strong> icon in your browser address bar.</span>
+            <span class="text-[11px] text-zinc-400">Desktop browser mode. To install on PC, click the ⊕ icon in address bar.</span>
           `;
         }
       } else {
-        // Phone browser - show header button and login banner if not installed
-        if (headerBtn) {
-          headerBtn.classList.remove('hidden');
-          headerBtn.classList.add('flex');
-        }
+        if (headerBtn) headerBtn.classList.remove('hidden');
         if (loginBanner) loginBanner.classList.remove('hidden');
         if (badge) {
-          badge.innerText = 'Not Installed';
-          badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
+          badge.innerText = 'NOT INSTALLED';
+          badge.className = 'px-2 py-0.5 border border-amber-500 bg-amber-950/40 text-amber-300 uppercase text-[10px]';
         }
         if (actionRow) {
           actionRow.innerHTML = `
-            <span id="pwaInstallDesc" class="text-[11px] text-zinc-400">Run Redunxt natively from your home screen</span>
-            <button id="settingsInstallBtn" onclick="triggerPwaInstall()" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              <span>Install App</span>
+            <span id="pwaInstallDesc" class="text-[11px] text-zinc-400">Install to device home screen</span>
+            <button id="settingsInstallBtn" onclick="triggerPwaInstall()" class="px-3 py-1 bg-white text-black font-bold uppercase text-xs hover:bg-zinc-200 transition">
+              INSTALL NOW
             </button>
           `;
         }
@@ -2323,19 +2290,17 @@
     function checkAndShowInstallBanner() {
       if (isPwaInstalled() || !isMobilePhone()) return;
 
-      // Don't show if user dismissed it within the last 24 hours
       const dismissedTime = localStorage.getItem('redunxt_pwa_dismissed_at');
       if (dismissedTime) {
         const elapsed = Date.now() - parseInt(dismissedTime, 10);
         if (elapsed < 24 * 60 * 60 * 1000) return;
       }
 
-      // Smooth delay so the prompt glides in gracefully
       setTimeout(() => {
         if (isPwaInstalled() || !isMobilePhone()) return;
         const popup = document.getElementById('pwaInstallPopup');
         if (popup) popup.classList.remove('hidden');
-      }, 1800);
+      }, 1500);
     }
 
     function dismissInstallBanner(permanent = false) {
@@ -2349,7 +2314,6 @@
     }
 
     async function triggerPwaInstall() {
-      // If native browser prompt is captured (Chrome on Android / Chromium desktop)
       if (deferredInstallPrompt) {
         try {
           deferredInstallPrompt.prompt();
@@ -2358,14 +2322,13 @@
             deferredInstallPrompt = null;
             dismissInstallBanner(true);
             updatePwaInstallUi();
-            showToast('Installing Redunxt app to your device...', 'success');
+            showToast('INSTALLING APPLICATION...', 'success');
           }
         } catch (err) {
           console.warn('Install prompt error:', err);
           openPwaGuideModal();
         }
       } else {
-        // Fallback: Show visual step-by-step guide tailored to OS/Browser
         openPwaGuideModal();
       }
     }
@@ -2379,67 +2342,43 @@
 
       if (platform === 'ios') {
         content.innerHTML = `
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
-            <div>
-              <p class="font-bold text-white text-xs">Tap the Share Button</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">At the bottom of Safari, tap the <strong>Share</strong> icon (square with arrow pointing up).</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">01. Tap Share in Safari</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Tap the Share icon at the bottom of Safari (square with arrow up).</p>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
-            <div>
-              <p class="font-bold text-white text-xs">Select "Add to Home Screen"</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen"</strong>.</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">02. Select "Add to Home Screen"</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Scroll down the share sheet and tap <strong>Add to Home Screen</strong>.</p>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">3</div>
-            <div>
-              <p class="font-bold text-white text-xs">Tap "Add"</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Tap <strong>Add</strong> in the top-right corner. Redunxt will appear on your home screen!</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">03. Confirm Add</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Tap Add in the top-right corner to place Redunxt on your screen.</p>
           </div>
         `;
       } else if (platform === 'android') {
         content.innerHTML = `
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
-            <div>
-              <p class="font-bold text-white text-xs">Open Chrome Menu</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Tap the <strong>three dots (⋮)</strong> in the top-right corner of Chrome.</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">01. Open Chrome Menu</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Tap the three vertical dots (⋮) in Chrome's top right.</p>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
-            <div>
-              <p class="font-bold text-white text-xs">Tap "Install app" or "Add to Home screen"</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Select <strong>"Install app"</strong> (or <strong>"Add to Home screen"</strong>).</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">02. Tap "Install App"</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Select <strong>Install app</strong> or <strong>Add to Home screen</strong>.</p>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">3</div>
-            <div>
-              <p class="font-bold text-white text-xs">Confirm Install</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Confirm installation. Android will automatically download and install the WebAPK on your phone with native notification support.</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">03. Confirm Installation</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Confirm install to get native notification support.</p>
           </div>
         `;
       } else {
         content.innerHTML = `
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">1</div>
-            <div>
-              <p class="font-bold text-white text-xs">Address Bar Install Icon</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Click the <strong>Install (⊕)</strong> icon on the right side of Chrome's address bar.</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">01. Address Bar Icon</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Click the ⊕ icon on the right side of Chrome's address bar.</p>
           </div>
-          <div class="p-3.5 rounded-2xl bg-surface-muted border border-white/[0.06] flex items-start gap-3">
-            <div class="w-7 h-7 rounded-xl bg-brand-500/20 text-brand-300 flex items-center justify-center font-bold flex-shrink-0 text-xs">2</div>
-            <div>
-              <p class="font-bold text-white text-xs">Click Install</p>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Redunxt will install and launch in its own dedicated, clean window.</p>
-            </div>
+          <div class="border border-zinc-800 p-3 bg-[#050505]">
+            <p class="font-bold text-white uppercase text-[11px]">02. Click Install</p>
+            <p class="text-[11px] text-zinc-400 mt-1">Redunxt opens in an isolated desktop window.</p>
           </div>
         `;
       }
@@ -2454,7 +2393,7 @@
       document.body.classList.remove('overflow-hidden');
     }
 
-    // Sanitization & Utilities
+    // Sanitization Helpers
     function stripHtml(html) {
       if (!html) return '';
       const tmp = document.createElement('div');
